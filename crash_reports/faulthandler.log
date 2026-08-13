@@ -1,0 +1,618 @@
+Windows fatal exception: access violation
+
+Thread 0x00006334 (most recent call first):
+  <no Python frame>
+
+Current thread 0x00008a94 (most recent call first):
+  <no Python frame>
+
+Thread 0x00008318 [loguru-writer-55] (most recent call first):
+  File "C:\Users\Pushkar\AppData\Local\Programs\Python\Python314\Lib\multiprocessing\connection.py", line 335 in _recv_bytes
+  File "C:\Users\Pushkar\AppData\Local\Programs\Python\Python314\Lib\multiprocessing\connection.py", line 226 in recv_bytes
+  File "C:\Users\Pushkar\AppData\Local\Programs\Python\Python314\Lib\multiprocessing\queues.py", line 385 in get
+  File "C:\Users\Pushkar\AppData\Local\Programs\Python\Python314\Lib\site-packages\loguru\_handler.py", line 300 in _queued_writer
+  File "C:\Users\Pushkar\AppData\Local\Programs\Python\Python314\Lib\threading.py", line 1024 in run
+  File "C:\Users\Pushkar\AppData\Local\Programs\Python\Python314\Lib\threading.py", line 1082 in _bootstrap_inner
+  File "C:\Users\Pushkar\AppData\Local\Programs\Python\Python314\Lib\threading.py", line 1044 in _bootstrap
+
+Thread 0x00004d54 [loguru-writer-54] (most recent call first):
+  File "C:\Users\Pushkar\AppData\Local\Programs\Python\Python314\Lib\multiprocessing\connection.py", line 335 in _recv_bytes
+  File "C:\Users\Pushkar\AppData\Local\Programs\Python\Python314\Lib\multiprocessing\connection.py", line 226 in recv_bytes
+  File "C:\Users\Pushkar\AppData\Local\Programs\Python\Python314\Lib\multiprocessing\queues.py", line 385 in get
+  File "C:\Users\Pushkar\AppData\Local\Programs\Python\Python314\Lib\site-packages\loguru\_handler.py", line 300 in _queued_writer
+  File "C:\Users\Pushkar\AppData\Local\Programs\Python\Python314\Lib\threading.py", line 1024 in run
+  File "C:\Users\Pushkar\AppData\Local\Programs\Python\Python314\Lib\threading.py", line 1082 in _bootstrap_inner
+  File "C:\Users\Pushkar\AppData\Local\Programs\Python\Python314\Lib\threading.py", line 1044 in _bootstrap
+
+Thread 0x000069a4 [loguru-writer-53] (most recent call first):
+  File "C:\Users\Pushkar\AppData\Local\Programs\Python\Python314\Lib\multiprocessing\connection.py", line 335 in _recv_bytes
+  File "C:\Users\Pushkar\AppData\Local\Programs\Python\Python314\Lib\multiprocessing\connection.py", line 226 in recv_bytes
+  File "C:\Users\Pushkar\AppData\Local\Programs\Python\Python314\Lib\multiprocessing\queues.py", line 385 in get
+  File "C:\Users\Pushkar\AppData\Local\Programs\Python\Python314\Lib\site-packages\loguru\_handler.py", line 300 in _queued_writer
+  File "C:\Users\Pushkar\AppData\Local\Programs\Python\Python314\Lib\threading.py", line 1024 in run
+  File "C:\Users\Pushkar\AppData\Local\Programs\Python\Python314\Lib\threading.py", line 1082 in _bootstrap_inner
+  File "C:\Users\Pushkar\AppData\Local\Programs\Python\Python314\Lib\threading.py", line 1044 in _bootstrap
+
+Thread 0x00001a28 [loguru-writer-52] (most recent call first):
+  File "C:\Users\Pushkar\AppData\Local\Programs\Python\Python314\Lib\multiprocessing\connection.py", line 335 in _recv_bytes
+  File "C:\Users\Pushkar\AppData\Local\Programs\Python\Python314\Lib\multiprocessing\connection.py", line 226 in recv_bytes
+  File "C:\Users\Pushkar\AppData\Local\Programs\Python\Python314\Lib\multiprocessing\queues.py", line 385 in get
+  File "C:\Users\Pushkar\AppData\Local\Programs\Python\Python314\Lib\site-packages\loguru\_handler.py", line 300 in _queued_writer
+  File "C:\Users\Pushkar\AppData\Local\Programs\Python\Python314\Lib\threading.py", line 1024 in run
+  File "C:\Users\Pushkar\AppData\Local\Programs\Python\Python314\Lib\threading.py", line 1082 in _bootstrap_inner
+  File "C:\Users\Pushkar\AppData\Local\Programs\Python\Python314\Lib\threading.py", line 1044 in _bootstrap
+
+Thread 0x00006030 [loguru-writer-51] (most recent call first):
+  File "C:\Users\Pushkar\AppData\Local\Programs\Python\Python314\Lib\multiprocessing\connection.py", line 335 in _recv_bytes
+  File "C:\Users\Pushkar\AppData\Local\Programs\Python\Python314\Lib\multiprocessing\connection.py", line 226 in recv_bytes
+  File "C:\Users\Pushkar\AppData\Local\Programs\Python\Python314\Lib\multiprocessing\queues.py", line 385 in get
+  File "C:\Users\Pushkar\AppData\Local\Programs\Python\Python314\Lib\site-packages\loguru\_handler.py", line 300 in _queued_writer
+  File "C:\Users\Pushkar\AppData\Local\Programs\Python\Python314\Lib\threading.py", line 1024 in run
+  File "C:\Users\Pushkar\AppData\Local\Programs\Python\Python314\Lib\threading.py", line 1082 in _bootstrap_inner
+  File "C:\Users\Pushkar\AppData\Local\Programs\Python\Python314\Lib\threading.py", line 1044 in _bootstrap
+
+Thread 0x00004550 [FridayWorker_0] (most recent call first):
+  File "C:\Users\Pushkar\AppData\Local\Programs\Python\Python314\Lib\concurrent\futures\thread.py", line 116 in _worker
+  File "C:\Users\Pushkar\AppData\Local\Programs\Python\Python314\Lib\threading.py", line 1024 in run
+  File "C:\Users\Pushkar\AppData\Local\Programs\Python\Python314\Lib\threading.py", line 1082 in _bootstrap_inner
+  File "C:\Users\Pushkar\AppData\Local\Programs\Python\Python314\Lib\threading.py", line 1044 in _bootstrap
+
+Thread 0x00004238 [tqdm_monitor] (most recent call first):
+  File "C:\Users\Pushkar\AppData\Local\Programs\Python\Python314\Lib\threading.py", line 373 in wait
+  File "C:\Users\Pushkar\AppData\Local\Programs\Python\Python314\Lib\threading.py", line 670 in wait
+  File "C:\Users\Pushkar\AppData\Local\Programs\Python\Python314\Lib\site-packages\tqdm\_monitor.py", line 69 in run
+  File "C:\Users\Pushkar\AppData\Local\Programs\Python\Python314\Lib\threading.py", line 1082 in _bootstrap_inner
+  File "C:\Users\Pushkar\AppData\Local\Programs\Python\Python314\Lib\threading.py", line 1044 in _bootstrap
+
+Thread 0x000088e8 (most recent call first):
+  File "C:\Users\Pushkar\AppData\Local\Programs\Python\Python314\Lib\site-packages\onnxruntime\capi\onnxruntime_inference_collection.py", line 326 in run
+  File "C:\Users\Pushkar\AppData\Local\Programs\Python\Python314\Lib\site-packages\openwakeword\utils.py", line 93 in <lambda>
+  File "C:\Users\Pushkar\AppData\Local\Programs\Python\Python314\Lib\site-packages\openwakeword\utils.py", line 235 in _get_embeddings
+  File "C:\Users\Pushkar\AppData\Local\Programs\Python\Python314\Lib\site-packages\openwakeword\utils.py", line 169 in __init__
+  File "C:\Users\Pushkar\AppData\Local\Programs\Python\Python314\Lib\site-packages\openwakeword\model.py", line 213 in __init__
+  File "C:\Users\Pushkar\AppData\Local\Programs\Python\Python314\Lib\site-packages\openwakeword\utils.py", line 686 in wrapped
+  File "D:\Friday AI\app\voice\wakeword\model_provider.py", line 85 in load_model
+  File "D:\Friday AI\app\voice\wakeword\wakeword_detector.py", line 104 in _do_initialize
+  File "D:\Friday AI\app\services\base\service_interface.py", line 88 in initialize
+  File "D:\Friday AI\app\services\core\service_manager.py", line 67 in initialize_all
+  File "D:\Friday AI\app\bootstrap\bootstrapper.py", line 322 in _step5_register_services
+  File "D:\Friday AI\app\bootstrap\bootstrapper.py", line 93 in run
+  File "D:\Friday AI\tests\test_tts_service.py", line 204 in test_tts_bootstrapper_integration
+  File "C:\Users\Pushkar\AppData\Local\Programs\Python\Python314\Lib\site-packages\_pytest\python.py", line 167 in pytest_pyfunc_call
+  File "C:\Users\Pushkar\AppData\Local\Programs\Python\Python314\Lib\site-packages\pluggy\_callers.py", line 121 in _multicall
+  File "C:\Users\Pushkar\AppData\Local\Programs\Python\Python314\Lib\site-packages\pluggy\_manager.py", line 120 in _hookexec
+  File "C:\Users\Pushkar\AppData\Local\Programs\Python\Python314\Lib\site-packages\pluggy\_hooks.py", line 512 in __call__
+  File "C:\Users\Pushkar\AppData\Local\Programs\Python\Python314\Lib\site-packages\_pytest\python.py", line 1707 in runtest
+  File "C:\Users\Pushkar\AppData\Local\Programs\Python\Python314\Lib\site-packages\_pytest\runner.py", line 184 in pytest_runtest_call
+  File "C:\Users\Pushkar\AppData\Local\Programs\Python\Python314\Lib\site-packages\pluggy\_callers.py", line 121 in _multicall
+  File "C:\Users\Pushkar\AppData\Local\Programs\Python\Python314\Lib\site-packages\pluggy\_manager.py", line 120 in _hookexec
+  File "C:\Users\Pushkar\AppData\Local\Programs\Python\Python314\Lib\site-packages\pluggy\_hooks.py", line 512 in __call__
+  File "C:\Users\Pushkar\AppData\Local\Programs\Python\Python314\Lib\site-packages\_pytest\runner.py", line 250 in <lambda>
+  File "C:\Users\Pushkar\AppData\Local\Programs\Python\Python314\Lib\site-packages\_pytest\runner.py", line 361 in from_call
+  File "C:\Users\Pushkar\AppData\Local\Programs\Python\Python314\Lib\site-packages\_pytest\runner.py", line 249 in call_and_report
+  File "C:\Users\Pushkar\AppData\Local\Programs\Python\Python314\Lib\site-packages\_pytest\runner.py", line 139 in runtestprotocol
+  File "C:\Users\Pushkar\AppData\Local\Programs\Python\Python314\Lib\site-packages\_pytest\runner.py", line 118 in pytest_runtest_protocol
+  File "C:\Users\Pushkar\AppData\Local\Programs\Python\Python314\Lib\site-packages\pluggy\_callers.py", line 121 in _multicall
+  File "C:\Users\Pushkar\AppData\Local\Programs\Python\Python314\Lib\site-packages\pluggy\_manager.py", line 120 in _hookexec
+  File "C:\Users\Pushkar\AppData\Local\Programs\Python\Python314\Lib\site-packages\pluggy\_hooks.py", line 512 in __call__
+  File "C:\Users\Pushkar\AppData\Local\Programs\Python\Python314\Lib\site-packages\_pytest\main.py", line 408 in pytest_runtestloop
+  File "C:\Users\Pushkar\AppData\Local\Programs\Python\Python314\Lib\site-packages\pluggy\_callers.py", line 121 in _multicall
+  File "C:\Users\Pushkar\AppData\Local\Programs\Python\Python314\Lib\site-packages\pluggy\_manager.py", line 120 in _hookexec
+  File "C:\Users\Pushkar\AppData\Local\Programs\Python\Python314\Lib\site-packages\pluggy\_hooks.py", line 512 in __call__
+  File "C:\Users\Pushkar\AppData\Local\Programs\Python\Python314\Lib\site-packages\_pytest\main.py", line 384 in _main
+  File "C:\Users\Pushkar\AppData\Local\Programs\Python\Python314\Lib\site-packages\_pytest\main.py", line 330 in wrap_session
+  File "C:\Users\Pushkar\AppData\Local\Programs\Python\Python314\Lib\site-packages\_pytest\main.py", line 377 in pytest_cmdline_main
+  File "C:\Users\Pushkar\AppData\Local\Programs\Python\Python314\Lib\site-packages\pluggy\_callers.py", line 121 in _multicall
+  File "C:\Users\Pushkar\AppData\Local\Programs\Python\Python314\Lib\site-packages\pluggy\_manager.py", line 120 in _hookexec
+  File "C:\Users\Pushkar\AppData\Local\Programs\Python\Python314\Lib\site-packages\pluggy\_hooks.py", line 512 in __call__
+  File "C:\Users\Pushkar\AppData\Local\Programs\Python\Python314\Lib\site-packages\_pytest\config\__init__.py", line 229 in _main
+  File "C:\Users\Pushkar\AppData\Local\Programs\Python\Python314\Lib\site-packages\_pytest\config\__init__.py", line 253 in _console_main
+  File "C:\Users\Pushkar\AppData\Local\Programs\Python\Python314\Lib\site-packages\pytest\__main__.py", line 9 in <module>
+  File "<frozen runpy>", line 88 in _run_code
+  File "<frozen runpy>", line 203 in _run_module_as_main
+
+Current thread's C stack trace (most recent call first):
+  <cannot get C stack on this system>
+Windows fatal exception: access violation
+
+Current thread 0x00006334 (most recent call first):
+  <no Python frame>
+
+Thread 0x00008a94 (most recent call first):
+  <no Python frame>
+
+Thread 0x00008318 [loguru-writer-55] (most recent call first):
+  File "C:\Users\Pushkar\AppData\Local\Programs\Python\Python314\Lib\multiprocessing\connection.py", line 335 in _recv_bytes
+  File "C:\Users\Pushkar\AppData\Local\Programs\Python\Python314\Lib\multiprocessing\connection.py", line 226 in recv_bytes
+  File "C:\Users\Pushkar\AppData\Local\Programs\Python\Python314\Lib\multiprocessing\queues.py", line 385 in get
+  File "C:\Users\Pushkar\AppData\Local\Programs\Python\Python314\Lib\site-packages\loguru\_handler.py", line 300 in _queued_writer
+  File "C:\Users\Pushkar\AppData\Local\Programs\Python\Python314\Lib\threading.py", line 1024 in run
+  File "C:\Users\Pushkar\AppData\Local\Programs\Python\Python314\Lib\threading.py", line 1082 in _bootstrap_inner
+  File "C:\Users\Pushkar\AppData\Local\Programs\Python\Python314\Lib\threading.py", line 1044 in _bootstrap
+
+Thread 0x00004d54 [loguru-writer-54] (most recent call first):
+  File "C:\Users\Pushkar\AppData\Local\Programs\Python\Python314\Lib\multiprocessing\connection.py", line 335 in _recv_bytes
+  File "C:\Users\Pushkar\AppData\Local\Programs\Python\Python314\Lib\multiprocessing\connection.py", line 226 in recv_bytes
+  File "C:\Users\Pushkar\AppData\Local\Programs\Python\Python314\Lib\multiprocessing\queues.py", line 385 in get
+  File "C:\Users\Pushkar\AppData\Local\Programs\Python\Python314\Lib\site-packages\loguru\_handler.py", line 300 in _queued_writer
+  File "C:\Users\Pushkar\AppData\Local\Programs\Python\Python314\Lib\threading.py", line 1024 in run
+  File "C:\Users\Pushkar\AppData\Local\Programs\Python\Python314\Lib\threading.py", line 1082 in _bootstrap_inner
+  File "C:\Users\Pushkar\AppData\Local\Programs\Python\Python314\Lib\threading.py", line 1044 in _bootstrap
+
+Thread 0x000069a4 [loguru-writer-53] (most recent call first):
+  File "C:\Users\Pushkar\AppData\Local\Programs\Python\Python314\Lib\multiprocessing\connection.py", line 335 in _recv_bytes
+  File "C:\Users\Pushkar\AppData\Local\Programs\Python\Python314\Lib\multiprocessing\connection.py", line 226 in recv_bytes
+  File "C:\Users\Pushkar\AppData\Local\Programs\Python\Python314\Lib\multiprocessing\queues.py", line 385 in get
+  File "C:\Users\Pushkar\AppData\Local\Programs\Python\Python314\Lib\site-packages\loguru\_handler.py", line 300 in _queued_writer
+  File "C:\Users\Pushkar\AppData\Local\Programs\Python\Python314\Lib\threading.py", line 1024 in run
+  File "C:\Users\Pushkar\AppData\Local\Programs\Python\Python314\Lib\threading.py", line 1082 in _bootstrap_inner
+  File "C:\Users\Pushkar\AppData\Local\Programs\Python\Python314\Lib\threading.py", line 1044 in _bootstrap
+
+Thread 0x00001a28 [loguru-writer-52] (most recent call first):
+  File "C:\Users\Pushkar\AppData\Local\Programs\Python\Python314\Lib\multiprocessing\connection.py", line 335 in _recv_bytes
+  File "C:\Users\Pushkar\AppData\Local\Programs\Python\Python314\Lib\multiprocessing\connection.py", line 226 in recv_bytes
+  File "C:\Users\Pushkar\AppData\Local\Programs\Python\Python314\Lib\multiprocessing\queues.py", line 385 in get
+  File "C:\Users\Pushkar\AppData\Local\Programs\Python\Python314\Lib\site-packages\loguru\_handler.py", line 300 in _queued_writer
+  File "C:\Users\Pushkar\AppData\Local\Programs\Python\Python314\Lib\threading.py", line 1024 in run
+  File "C:\Users\Pushkar\AppData\Local\Programs\Python\Python314\Lib\threading.py", line 1082 in _bootstrap_inner
+  File "C:\Users\Pushkar\AppData\Local\Programs\Python\Python314\Lib\threading.py", line 1044 in _bootstrap
+
+Thread 0x00006030 [loguru-writer-51] (most recent call first):
+  File "C:\Users\Pushkar\AppData\Local\Programs\Python\Python314\Lib\multiprocessing\connection.py", line 335 in _recv_bytes
+  File "C:\Users\Pushkar\AppData\Local\Programs\Python\Python314\Lib\multiprocessing\connection.py", line 226 in recv_bytes
+  File "C:\Users\Pushkar\AppData\Local\Programs\Python\Python314\Lib\multiprocessing\queues.py", line 385 in get
+  File "C:\Users\Pushkar\AppData\Local\Programs\Python\Python314\Lib\site-packages\loguru\_handler.py", line 300 in _queued_writer
+  File "C:\Users\Pushkar\AppData\Local\Programs\Python\Python314\Lib\threading.py", line 1024 in run
+  File "C:\Users\Pushkar\AppData\Local\Programs\Python\Python314\Lib\threading.py", line 1082 in _bootstrap_inner
+  File "C:\Users\Pushkar\AppData\Local\Programs\Python\Python314\Lib\threading.py", line 1044 in _bootstrap
+
+Thread 0x00004550 [FridayWorker_0] (most recent call first):
+  File "C:\Users\Pushkar\AppData\Local\Programs\Python\Python314\Lib\concurrent\futures\thread.py", line 116 in _worker
+  File "C:\Users\Pushkar\AppData\Local\Programs\Python\Python314\Lib\threading.py", line 1024 in run
+  File "C:\Users\Pushkar\AppData\Local\Programs\Python\Python314\Lib\threading.py", line 1082 in _bootstrap_inner
+  File "C:\Users\Pushkar\AppData\Local\Programs\Python\Python314\Lib\threading.py", line 1044 in _bootstrap
+
+Thread 0x00004238 [tqdm_monitor] (most recent call first):
+  File "C:\Users\Pushkar\AppData\Local\Programs\Python\Python314\Lib\threading.py", line 373 in wait
+  File "C:\Users\Pushkar\AppData\Local\Programs\Python\Python314\Lib\threading.py", line 670 in wait
+  File "C:\Users\Pushkar\AppData\Local\Programs\Python\Python314\Lib\site-packages\tqdm\_monitor.py", line 69 in run
+  File "C:\Users\Pushkar\AppData\Local\Programs\Python\Python314\Lib\threading.py", line 1082 in _bootstrap_inner
+  File "C:\Users\Pushkar\AppData\Local\Programs\Python\Python314\Lib\threading.py", line 1044 in _bootstrap
+
+Thread 0x000088e8 (most recent call first):
+  File "C:\Users\Pushkar\AppData\Local\Programs\Python\Python314\Lib\site-packages\onnxruntime\capi\onnxruntime_inference_collection.py", line 326 in run
+  File "C:\Users\Pushkar\AppData\Local\Programs\Python\Python314\Lib\site-packages\openwakeword\utils.py", line 93 in <lambda>
+  File "C:\Users\Pushkar\AppData\Local\Programs\Python\Python314\Lib\site-packages\openwakeword\utils.py", line 235 in _get_embeddings
+  File "C:\Users\Pushkar\AppData\Local\Programs\Python\Python314\Lib\site-packages\openwakeword\utils.py", line 169 in __init__
+  File "C:\Users\Pushkar\AppData\Local\Programs\Python\Python314\Lib\site-packages\openwakeword\model.py", line 213 in __init__
+  File "C:\Users\Pushkar\AppData\Local\Programs\Python\Python314\Lib\site-packages\openwakeword\utils.py", line 686 in wrapped
+  File "D:\Friday AI\app\voice\wakeword\model_provider.py", line 85 in load_model
+  File "D:\Friday AI\app\voice\wakeword\wakeword_detector.py", line 104 in _do_initialize
+  File "D:\Friday AI\app\services\base\service_interface.py", line 88 in initialize
+  File "D:\Friday AI\app\services\core\service_manager.py", line 67 in initialize_all
+  File "D:\Friday AI\app\bootstrap\bootstrapper.py", line 322 in _step5_register_services
+  File "D:\Friday AI\app\bootstrap\bootstrapper.py", line 93 in run
+  File "D:\Friday AI\tests\test_tts_service.py", line 204 in test_tts_bootstrapper_integration
+  File "C:\Users\Pushkar\AppData\Local\Programs\Python\Python314\Lib\site-packages\_pytest\python.py", line 167 in pytest_pyfunc_call
+  File "C:\Users\Pushkar\AppData\Local\Programs\Python\Python314\Lib\site-packages\pluggy\_callers.py", line 121 in _multicall
+  File "C:\Users\Pushkar\AppData\Local\Programs\Python\Python314\Lib\site-packages\pluggy\_manager.py", line 120 in _hookexec
+  File "C:\Users\Pushkar\AppData\Local\Programs\Python\Python314\Lib\site-packages\pluggy\_hooks.py", line 512 in __call__
+  File "C:\Users\Pushkar\AppData\Local\Programs\Python\Python314\Lib\site-packages\_pytest\python.py", line 1707 in runtest
+  File "C:\Users\Pushkar\AppData\Local\Programs\Python\Python314\Lib\site-packages\_pytest\runner.py", line 184 in pytest_runtest_call
+  File "C:\Users\Pushkar\AppData\Local\Programs\Python\Python314\Lib\site-packages\pluggy\_callers.py", line 121 in _multicall
+  File "C:\Users\Pushkar\AppData\Local\Programs\Python\Python314\Lib\site-packages\pluggy\_manager.py", line 120 in _hookexec
+  File "C:\Users\Pushkar\AppData\Local\Programs\Python\Python314\Lib\site-packages\pluggy\_hooks.py", line 512 in __call__
+  File "C:\Users\Pushkar\AppData\Local\Programs\Python\Python314\Lib\site-packages\_pytest\runner.py", line 250 in <lambda>
+  File "C:\Users\Pushkar\AppData\Local\Programs\Python\Python314\Lib\site-packages\_pytest\runner.py", line 361 in from_call
+  File "C:\Users\Pushkar\AppData\Local\Programs\Python\Python314\Lib\site-packages\_pytest\runner.py", line 249 in call_and_report
+  File "C:\Users\Pushkar\AppData\Local\Programs\Python\Python314\Lib\site-packages\_pytest\runner.py", line 139 in runtestprotocol
+  File "C:\Users\Pushkar\AppData\Local\Programs\Python\Python314\Lib\site-packages\_pytest\runner.py", line 118 in pytest_runtest_protocol
+  File "C:\Users\Pushkar\AppData\Local\Programs\Python\Python314\Lib\site-packages\pluggy\_callers.py", line 121 in _multicall
+  File "C:\Users\Pushkar\AppData\Local\Programs\Python\Python314\Lib\site-packages\pluggy\_manager.py", line 120 in _hookexec
+  File "C:\Users\Pushkar\AppData\Local\Programs\Python\Python314\Lib\site-packages\pluggy\_hooks.py", line 512 in __call__
+  File "C:\Users\Pushkar\AppData\Local\Programs\Python\Python314\Lib\site-packages\_pytest\main.py", line 408 in pytest_runtestloop
+  File "C:\Users\Pushkar\AppData\Local\Programs\Python\Python314\Lib\site-packages\pluggy\_callers.py", line 121 in _multicall
+  File "C:\Users\Pushkar\AppData\Local\Programs\Python\Python314\Lib\site-packages\pluggy\_manager.py", line 120 in _hookexec
+  File "C:\Users\Pushkar\AppData\Local\Programs\Python\Python314\Lib\site-packages\pluggy\_hooks.py", line 512 in __call__
+  File "C:\Users\Pushkar\AppData\Local\Programs\Python\Python314\Lib\site-packages\_pytest\main.py", line 384 in _main
+  File "C:\Users\Pushkar\AppData\Local\Programs\Python\Python314\Lib\site-packages\_pytest\main.py", line 330 in wrap_session
+  File "C:\Users\Pushkar\AppData\Local\Programs\Python\Python314\Lib\site-packages\_pytest\main.py", line 377 in pytest_cmdline_main
+  File "C:\Users\Pushkar\AppData\Local\Programs\Python\Python314\Lib\site-packages\pluggy\_callers.py", line 121 in _multicall
+  File "C:\Users\Pushkar\AppData\Local\Programs\Python\Python314\Lib\site-packages\pluggy\_manager.py", line 120 in _hookexec
+  File "C:\Users\Pushkar\AppData\Local\Programs\Python\Python314\Lib\site-packages\pluggy\_hooks.py", line 512 in __call__
+  File "C:\Users\Pushkar\AppData\Local\Programs\Python\Python314\Lib\site-packages\_pytest\config\__init__.py", line 229 in _main
+  File "C:\Users\Pushkar\AppData\Local\Programs\Python\Python314\Lib\site-packages\_pytest\config\__init__.py", line 253 in _console_main
+  File "C:\Users\Pushkar\AppData\Local\Programs\Python\Python314\Lib\site-packages\pytest\__main__.py", line 9 in <module>
+  File "<frozen runpy>", line 88 in _run_code
+  File "<frozen runpy>", line 203 in _run_module_as_main
+
+Current thread's C stack trace (most recent call first):
+  <cannot get C stack on this system>
+Windows fatal exception: access violation
+
+Current thread 0x000070f4 (most recent call first):
+  <no Python frame>
+
+Thread 0x000024e4 (most recent call first):
+  <no Python frame>
+
+Thread 0x000092f0 (most recent call first):
+  File "D:\Friday AI\app\bootstrap\bootstrapper.py", line 134 in _ensure_qt_app
+  File "D:\Friday AI\app\bootstrap\bootstrapper.py", line 78 in run
+  File "D:\Friday AI\tests\test_tts_service.py", line 204 in test_tts_bootstrapper_integration
+  File "C:\Users\Pushkar\AppData\Local\Programs\Python\Python314\Lib\site-packages\_pytest\python.py", line 167 in pytest_pyfunc_call
+  File "C:\Users\Pushkar\AppData\Local\Programs\Python\Python314\Lib\site-packages\pluggy\_callers.py", line 121 in _multicall
+  File "C:\Users\Pushkar\AppData\Local\Programs\Python\Python314\Lib\site-packages\pluggy\_manager.py", line 120 in _hookexec
+  File "C:\Users\Pushkar\AppData\Local\Programs\Python\Python314\Lib\site-packages\pluggy\_hooks.py", line 512 in __call__
+  File "C:\Users\Pushkar\AppData\Local\Programs\Python\Python314\Lib\site-packages\_pytest\python.py", line 1707 in runtest
+  File "C:\Users\Pushkar\AppData\Local\Programs\Python\Python314\Lib\site-packages\_pytest\runner.py", line 184 in pytest_runtest_call
+  File "C:\Users\Pushkar\AppData\Local\Programs\Python\Python314\Lib\site-packages\pluggy\_callers.py", line 121 in _multicall
+  File "C:\Users\Pushkar\AppData\Local\Programs\Python\Python314\Lib\site-packages\pluggy\_manager.py", line 120 in _hookexec
+  File "C:\Users\Pushkar\AppData\Local\Programs\Python\Python314\Lib\site-packages\pluggy\_hooks.py", line 512 in __call__
+  File "C:\Users\Pushkar\AppData\Local\Programs\Python\Python314\Lib\site-packages\_pytest\runner.py", line 250 in <lambda>
+  File "C:\Users\Pushkar\AppData\Local\Programs\Python\Python314\Lib\site-packages\_pytest\runner.py", line 361 in from_call
+  File "C:\Users\Pushkar\AppData\Local\Programs\Python\Python314\Lib\site-packages\_pytest\runner.py", line 249 in call_and_report
+  File "C:\Users\Pushkar\AppData\Local\Programs\Python\Python314\Lib\site-packages\_pytest\runner.py", line 139 in runtestprotocol
+  File "C:\Users\Pushkar\AppData\Local\Programs\Python\Python314\Lib\site-packages\_pytest\runner.py", line 118 in pytest_runtest_protocol
+  File "C:\Users\Pushkar\AppData\Local\Programs\Python\Python314\Lib\site-packages\pluggy\_callers.py", line 121 in _multicall
+  File "C:\Users\Pushkar\AppData\Local\Programs\Python\Python314\Lib\site-packages\pluggy\_manager.py", line 120 in _hookexec
+  File "C:\Users\Pushkar\AppData\Local\Programs\Python\Python314\Lib\site-packages\pluggy\_hooks.py", line 512 in __call__
+  File "C:\Users\Pushkar\AppData\Local\Programs\Python\Python314\Lib\site-packages\_pytest\main.py", line 408 in pytest_runtestloop
+  File "C:\Users\Pushkar\AppData\Local\Programs\Python\Python314\Lib\site-packages\pluggy\_callers.py", line 121 in _multicall
+  File "C:\Users\Pushkar\AppData\Local\Programs\Python\Python314\Lib\site-packages\pluggy\_manager.py", line 120 in _hookexec
+  File "C:\Users\Pushkar\AppData\Local\Programs\Python\Python314\Lib\site-packages\pluggy\_hooks.py", line 512 in __call__
+  File "C:\Users\Pushkar\AppData\Local\Programs\Python\Python314\Lib\site-packages\_pytest\main.py", line 384 in _main
+  File "C:\Users\Pushkar\AppData\Local\Programs\Python\Python314\Lib\site-packages\_pytest\main.py", line 330 in wrap_session
+  File "C:\Users\Pushkar\AppData\Local\Programs\Python\Python314\Lib\site-packages\_pytest\main.py", line 377 in pytest_cmdline_main
+  File "C:\Users\Pushkar\AppData\Local\Programs\Python\Python314\Lib\site-packages\pluggy\_callers.py", line 121 in _multicall
+  File "C:\Users\Pushkar\AppData\Local\Programs\Python\Python314\Lib\site-packages\pluggy\_manager.py", line 120 in _hookexec
+  File "C:\Users\Pushkar\AppData\Local\Programs\Python\Python314\Lib\site-packages\pluggy\_hooks.py", line 512 in __call__
+  File "C:\Users\Pushkar\AppData\Local\Programs\Python\Python314\Lib\site-packages\_pytest\config\__init__.py", line 229 in _main
+  File "C:\Users\Pushkar\AppData\Local\Programs\Python\Python314\Lib\site-packages\_pytest\config\__init__.py", line 253 in _console_main
+  File "C:\Users\Pushkar\AppData\Local\Programs\Python\Python314\Lib\site-packages\pytest\__main__.py", line 9 in <module>
+  File "<frozen runpy>", line 88 in _run_code
+  File "<frozen runpy>", line 203 in _run_module_as_main
+
+Current thread's C stack trace (most recent call first):
+  <cannot get C stack on this system>
+Windows fatal exception: access violation
+
+Current thread 0x000085d0 (most recent call first):
+  <no Python frame>
+
+Thread 0x00004a98 (most recent call first):
+  <no Python frame>
+
+Thread 0x00007ea0 (most recent call first):
+  File "D:\Friday AI\app\bootstrap\bootstrapper.py", line 134 in _ensure_qt_app
+  File "D:\Friday AI\app\bootstrap\bootstrapper.py", line 78 in run
+  File "D:\Friday AI\tests\test_tts_service.py", line 204 in test_tts_bootstrapper_integration
+  File "C:\Users\Pushkar\AppData\Local\Programs\Python\Python314\Lib\site-packages\_pytest\python.py", line 167 in pytest_pyfunc_call
+  File "C:\Users\Pushkar\AppData\Local\Programs\Python\Python314\Lib\site-packages\pluggy\_callers.py", line 121 in _multicall
+  File "C:\Users\Pushkar\AppData\Local\Programs\Python\Python314\Lib\site-packages\pluggy\_manager.py", line 120 in _hookexec
+  File "C:\Users\Pushkar\AppData\Local\Programs\Python\Python314\Lib\site-packages\pluggy\_hooks.py", line 512 in __call__
+  File "C:\Users\Pushkar\AppData\Local\Programs\Python\Python314\Lib\site-packages\_pytest\python.py", line 1707 in runtest
+  File "C:\Users\Pushkar\AppData\Local\Programs\Python\Python314\Lib\site-packages\_pytest\runner.py", line 184 in pytest_runtest_call
+  File "C:\Users\Pushkar\AppData\Local\Programs\Python\Python314\Lib\site-packages\pluggy\_callers.py", line 121 in _multicall
+  File "C:\Users\Pushkar\AppData\Local\Programs\Python\Python314\Lib\site-packages\pluggy\_manager.py", line 120 in _hookexec
+  File "C:\Users\Pushkar\AppData\Local\Programs\Python\Python314\Lib\site-packages\pluggy\_hooks.py", line 512 in __call__
+  File "C:\Users\Pushkar\AppData\Local\Programs\Python\Python314\Lib\site-packages\_pytest\runner.py", line 250 in <lambda>
+  File "C:\Users\Pushkar\AppData\Local\Programs\Python\Python314\Lib\site-packages\_pytest\runner.py", line 361 in from_call
+  File "C:\Users\Pushkar\AppData\Local\Programs\Python\Python314\Lib\site-packages\_pytest\runner.py", line 249 in call_and_report
+  File "C:\Users\Pushkar\AppData\Local\Programs\Python\Python314\Lib\site-packages\_pytest\runner.py", line 139 in runtestprotocol
+  File "C:\Users\Pushkar\AppData\Local\Programs\Python\Python314\Lib\site-packages\_pytest\runner.py", line 118 in pytest_runtest_protocol
+  File "C:\Users\Pushkar\AppData\Local\Programs\Python\Python314\Lib\site-packages\pluggy\_callers.py", line 121 in _multicall
+  File "C:\Users\Pushkar\AppData\Local\Programs\Python\Python314\Lib\site-packages\pluggy\_manager.py", line 120 in _hookexec
+  File "C:\Users\Pushkar\AppData\Local\Programs\Python\Python314\Lib\site-packages\pluggy\_hooks.py", line 512 in __call__
+  File "C:\Users\Pushkar\AppData\Local\Programs\Python\Python314\Lib\site-packages\_pytest\main.py", line 408 in pytest_runtestloop
+  File "C:\Users\Pushkar\AppData\Local\Programs\Python\Python314\Lib\site-packages\pluggy\_callers.py", line 121 in _multicall
+  File "C:\Users\Pushkar\AppData\Local\Programs\Python\Python314\Lib\site-packages\pluggy\_manager.py", line 120 in _hookexec
+  File "C:\Users\Pushkar\AppData\Local\Programs\Python\Python314\Lib\site-packages\pluggy\_hooks.py", line 512 in __call__
+  File "C:\Users\Pushkar\AppData\Local\Programs\Python\Python314\Lib\site-packages\_pytest\main.py", line 384 in _main
+  File "C:\Users\Pushkar\AppData\Local\Programs\Python\Python314\Lib\site-packages\_pytest\main.py", line 330 in wrap_session
+  File "C:\Users\Pushkar\AppData\Local\Programs\Python\Python314\Lib\site-packages\_pytest\main.py", line 377 in pytest_cmdline_main
+  File "C:\Users\Pushkar\AppData\Local\Programs\Python\Python314\Lib\site-packages\pluggy\_callers.py", line 121 in _multicall
+  File "C:\Users\Pushkar\AppData\Local\Programs\Python\Python314\Lib\site-packages\pluggy\_manager.py", line 120 in _hookexec
+  File "C:\Users\Pushkar\AppData\Local\Programs\Python\Python314\Lib\site-packages\pluggy\_hooks.py", line 512 in __call__
+  File "C:\Users\Pushkar\AppData\Local\Programs\Python\Python314\Lib\site-packages\_pytest\config\__init__.py", line 229 in _main
+  File "C:\Users\Pushkar\AppData\Local\Programs\Python\Python314\Lib\site-packages\_pytest\config\__init__.py", line 253 in _console_main
+  File "C:\Users\Pushkar\AppData\Local\Programs\Python\Python314\Lib\site-packages\pytest\__main__.py", line 9 in <module>
+  File "<frozen runpy>", line 88 in _run_code
+  File "<frozen runpy>", line 203 in _run_module_as_main
+
+Current thread's C stack trace (most recent call first):
+  <cannot get C stack on this system>
+Windows fatal exception: access violation
+
+Thread 0x00004e14 [loguru-writer-6] (most recent call first):
+  File "C:\Users\Pushkar\AppData\Local\Programs\Python\Python314\Lib\multiprocessing\connection.py", line 335 in _recv_bytes
+  File "C:\Users\Pushkar\AppData\Local\Programs\Python\Python314\Lib\multiprocessing\connection.py", line 226 in recv_bytes
+  File "C:\Users\Pushkar\AppData\Local\Programs\Python\Python314\Lib\multiprocessing\queues.py", line 385 in get
+  File "C:\Users\Pushkar\AppData\Local\Programs\Python\Python314\Lib\site-packages\loguru\_handler.py", line 300 in _queued_writer
+  File "C:\Users\Pushkar\AppData\Local\Programs\Python\Python314\Lib\threading.py", line 1024 in run
+  File "C:\Users\Pushkar\AppData\Local\Programs\Python\Python314\Lib\threading.py", line 1082 in _bootstrap_inner
+  File "C:\Users\Pushkar\AppData\Local\Programs\Python\Python314\Lib\threading.py", line 1044 in _bootstrap
+
+Thread 0x00006f70 [loguru-writer-5] (most recent call first):
+  File "C:\Users\Pushkar\AppData\Local\Programs\Python\Python314\Lib\multiprocessing\connection.py", line 335 in _recv_bytes
+  File "C:\Users\Pushkar\AppData\Local\Programs\Python\Python314\Lib\multiprocessing\connection.py", line 226 in recv_bytes
+  File "C:\Users\Pushkar\AppData\Local\Programs\Python\Python314\Lib\multiprocessing\queues.py", line 385 in get
+  File "C:\Users\Pushkar\AppData\Local\Programs\Python\Python314\Lib\site-packages\loguru\_handler.py", line 300 in _queued_writer
+  File "C:\Users\Pushkar\AppData\Local\Programs\Python\Python314\Lib\threading.py", line 1024 in run
+  File "C:\Users\Pushkar\AppData\Local\Programs\Python\Python314\Lib\threading.py", line 1082 in _bootstrap_inner
+  File "C:\Users\Pushkar\AppData\Local\Programs\Python\Python314\Lib\threading.py", line 1044 in _bootstrap
+
+Thread 0x0000653c [loguru-writer-4] (most recent call first):
+  File "C:\Users\Pushkar\AppData\Local\Programs\Python\Python314\Lib\multiprocessing\connection.py", line 335 in _recv_bytes
+  File "C:\Users\Pushkar\AppData\Local\Programs\Python\Python314\Lib\multiprocessing\connection.py", line 226 in recv_bytes
+  File "C:\Users\Pushkar\AppData\Local\Programs\Python\Python314\Lib\multiprocessing\queues.py", line 385 in get
+  File "C:\Users\Pushkar\AppData\Local\Programs\Python\Python314\Lib\site-packages\loguru\_handler.py", line 300 in _queued_writer
+  File "C:\Users\Pushkar\AppData\Local\Programs\Python\Python314\Lib\threading.py", line 1024 in run
+  File "C:\Users\Pushkar\AppData\Local\Programs\Python\Python314\Lib\threading.py", line 1082 in _bootstrap_inner
+  File "C:\Users\Pushkar\AppData\Local\Programs\Python\Python314\Lib\threading.py", line 1044 in _bootstrap
+
+Thread 0x00000740 [loguru-writer-3] (most recent call first):
+  File "C:\Users\Pushkar\AppData\Local\Programs\Python\Python314\Lib\multiprocessing\connection.py", line 335 in _recv_bytes
+  File "C:\Users\Pushkar\AppData\Local\Programs\Python\Python314\Lib\multiprocessing\connection.py", line 226 in recv_bytes
+  File "C:\Users\Pushkar\AppData\Local\Programs\Python\Python314\Lib\multiprocessing\queues.py", line 385 in get
+  File "C:\Users\Pushkar\AppData\Local\Programs\Python\Python314\Lib\site-packages\loguru\_handler.py", line 300 in _queued_writer
+  File "C:\Users\Pushkar\AppData\Local\Programs\Python\Python314\Lib\threading.py", line 1024 in run
+  File "C:\Users\Pushkar\AppData\Local\Programs\Python\Python314\Lib\threading.py", line 1082 in _bootstrap_inner
+  File "C:\Users\Pushkar\AppData\Local\Programs\Python\Python314\Lib\threading.py", line 1044 in _bootstrap
+
+Thread 0x00008224 [loguru-writer-2] (most recent call first):
+  File "C:\Users\Pushkar\AppData\Local\Programs\Python\Python314\Lib\multiprocessing\connection.py", line 335 in _recv_bytes
+  File "C:\Users\Pushkar\AppData\Local\Programs\Python\Python314\Lib\multiprocessing\connection.py", line 226 in recv_bytes
+  File "C:\Users\Pushkar\AppData\Local\Programs\Python\Python314\Lib\multiprocessing\queues.py", line 385 in get
+  File "C:\Users\Pushkar\AppData\Local\Programs\Python\Python314\Lib\site-packages\loguru\_handler.py", line 300 in _queued_writer
+  File "C:\Users\Pushkar\AppData\Local\Programs\Python\Python314\Lib\threading.py", line 1024 in run
+  File "C:\Users\Pushkar\AppData\Local\Programs\Python\Python314\Lib\threading.py", line 1082 in _bootstrap_inner
+  File "C:\Users\Pushkar\AppData\Local\Programs\Python\Python314\Lib\threading.py", line 1044 in _bootstrap
+
+Thread 0x000085d0 (most recent call first):
+  <no Python frame>
+
+Current thread 0x00004a98 (most recent call first):
+  <no Python frame>
+
+Thread 0x00007ea0 (most recent call first):
+  File "C:\Users\Pushkar\AppData\Local\Programs\Python\Python314\Lib\tempfile.py", line 520 in func_wrapper
+  File "C:\Users\Pushkar\AppData\Local\Programs\Python\Python314\Lib\site-packages\loguru\_simple_sinks.py", line 16 in write
+  File "C:\Users\Pushkar\AppData\Local\Programs\Python\Python314\Lib\site-packages\loguru\_handler.py", line 206 in emit
+  File "C:\Users\Pushkar\AppData\Local\Programs\Python\Python314\Lib\site-packages\loguru\_logger.py", line 2066 in _log
+  File "C:\Users\Pushkar\AppData\Local\Programs\Python\Python314\Lib\site-packages\loguru\_logger.py", line 2078 in info
+  File "D:\Friday AI\app\logging\logger_config.py", line 120 in log_startup
+  File "D:\Friday AI\app\bootstrap\bootstrapper.py", line 158 in _step3_initialize_logging
+  File "D:\Friday AI\app\bootstrap\bootstrapper.py", line 87 in run
+  File "D:\Friday AI\tests\test_tts_service.py", line 204 in test_tts_bootstrapper_integration
+  File "C:\Users\Pushkar\AppData\Local\Programs\Python\Python314\Lib\site-packages\_pytest\python.py", line 167 in pytest_pyfunc_call
+  File "C:\Users\Pushkar\AppData\Local\Programs\Python\Python314\Lib\site-packages\pluggy\_callers.py", line 121 in _multicall
+  File "C:\Users\Pushkar\AppData\Local\Programs\Python\Python314\Lib\site-packages\pluggy\_manager.py", line 120 in _hookexec
+  File "C:\Users\Pushkar\AppData\Local\Programs\Python\Python314\Lib\site-packages\pluggy\_hooks.py", line 512 in __call__
+  File "C:\Users\Pushkar\AppData\Local\Programs\Python\Python314\Lib\site-packages\_pytest\python.py", line 1707 in runtest
+  File "C:\Users\Pushkar\AppData\Local\Programs\Python\Python314\Lib\site-packages\_pytest\runner.py", line 184 in pytest_runtest_call
+  File "C:\Users\Pushkar\AppData\Local\Programs\Python\Python314\Lib\site-packages\pluggy\_callers.py", line 121 in _multicall
+  File "C:\Users\Pushkar\AppData\Local\Programs\Python\Python314\Lib\site-packages\pluggy\_manager.py", line 120 in _hookexec
+  File "C:\Users\Pushkar\AppData\Local\Programs\Python\Python314\Lib\site-packages\pluggy\_hooks.py", line 512 in __call__
+  File "C:\Users\Pushkar\AppData\Local\Programs\Python\Python314\Lib\site-packages\_pytest\runner.py", line 250 in <lambda>
+  File "C:\Users\Pushkar\AppData\Local\Programs\Python\Python314\Lib\site-packages\_pytest\runner.py", line 361 in from_call
+  File "C:\Users\Pushkar\AppData\Local\Programs\Python\Python314\Lib\site-packages\_pytest\runner.py", line 249 in call_and_report
+  File "C:\Users\Pushkar\AppData\Local\Programs\Python\Python314\Lib\site-packages\_pytest\runner.py", line 139 in runtestprotocol
+  File "C:\Users\Pushkar\AppData\Local\Programs\Python\Python314\Lib\site-packages\_pytest\runner.py", line 118 in pytest_runtest_protocol
+  File "C:\Users\Pushkar\AppData\Local\Programs\Python\Python314\Lib\site-packages\pluggy\_callers.py", line 121 in _multicall
+  File "C:\Users\Pushkar\AppData\Local\Programs\Python\Python314\Lib\site-packages\pluggy\_manager.py", line 120 in _hookexec
+  File "C:\Users\Pushkar\AppData\Local\Programs\Python\Python314\Lib\site-packages\pluggy\_hooks.py", line 512 in __call__
+  File "C:\Users\Pushkar\AppData\Local\Programs\Python\Python314\Lib\site-packages\_pytest\main.py", line 408 in pytest_runtestloop
+  File "C:\Users\Pushkar\AppData\Local\Programs\Python\Python314\Lib\site-packages\pluggy\_callers.py", line 121 in _multicall
+  File "C:\Users\Pushkar\AppData\Local\Programs\Python\Python314\Lib\site-packages\pluggy\_manager.py", line 120 in _hookexec
+  File "C:\Users\Pushkar\AppData\Local\Programs\Python\Python314\Lib\site-packages\pluggy\_hooks.py", line 512 in __call__
+  File "C:\Users\Pushkar\AppData\Local\Programs\Python\Python314\Lib\site-packages\_pytest\main.py", line 384 in _main
+  File "C:\Users\Pushkar\AppData\Local\Programs\Python\Python314\Lib\site-packages\_pytest\main.py", line 330 in wrap_session
+  File "C:\Users\Pushkar\AppData\Local\Programs\Python\Python314\Lib\site-packages\_pytest\main.py", line 377 in pytest_cmdline_main
+  File "C:\Users\Pushkar\AppData\Local\Programs\Python\Python314\Lib\site-packages\pluggy\_callers.py", line 121 in _multicall
+  File "C:\Users\Pushkar\AppData\Local\Programs\Python\Python314\Lib\site-packages\pluggy\_manager.py", line 120 in _hookexec
+  File "C:\Users\Pushkar\AppData\Local\Programs\Python\Python314\Lib\site-packages\pluggy\_hooks.py", line 512 in __call__
+  File "C:\Users\Pushkar\AppData\Local\Programs\Python\Python314\Lib\site-packages\_pytest\config\__init__.py", line 229 in _main
+  File "C:\Users\Pushkar\AppData\Local\Programs\Python\Python314\Lib\site-packages\_pytest\config\__init__.py", line 253 in _console_main
+  File "C:\Users\Pushkar\AppData\Local\Programs\Python\Python314\Lib\site-packages\pytest\__main__.py", line 9 in <module>
+  File "<frozen runpy>", line 88 in _run_code
+  File "<frozen runpy>", line 203 in _run_module_as_main
+
+Current thread's C stack trace (most recent call first):
+  <cannot get C stack on this system>
+Windows fatal exception: code 0xc0000096
+
+Thread 0x00002adc [loguru-writer-55] (most recent call first):
+  File "C:\Users\Pushkar\AppData\Local\Programs\Python\Python314\Lib\multiprocessing\connection.py", line 335 in _recv_bytes
+  File "C:\Users\Pushkar\AppData\Local\Programs\Python\Python314\Lib\multiprocessing\connection.py", line 226 in recv_bytes
+  File "C:\Users\Pushkar\AppData\Local\Programs\Python\Python314\Lib\multiprocessing\queues.py", line 385 in get
+  File "C:\Users\Pushkar\AppData\Local\Programs\Python\Python314\Lib\site-packages\loguru\_handler.py", line 300 in _queued_writer
+  File "C:\Users\Pushkar\AppData\Local\Programs\Python\Python314\Lib\threading.py", line 1024 in run
+  File "C:\Users\Pushkar\AppData\Local\Programs\Python\Python314\Lib\threading.py", line 1082 in _bootstrap_inner
+  File "C:\Users\Pushkar\AppData\Local\Programs\Python\Python314\Lib\threading.py", line 1044 in _bootstrap
+
+Thread 0x00009520 [loguru-writer-54] (most recent call first):
+  File "C:\Users\Pushkar\AppData\Local\Programs\Python\Python314\Lib\multiprocessing\connection.py", line 335 in _recv_bytes
+  File "C:\Users\Pushkar\AppData\Local\Programs\Python\Python314\Lib\multiprocessing\connection.py", line 226 in recv_bytes
+  File "C:\Users\Pushkar\AppData\Local\Programs\Python\Python314\Lib\multiprocessing\queues.py", line 385 in get
+  File "C:\Users\Pushkar\AppData\Local\Programs\Python\Python314\Lib\site-packages\loguru\_handler.py", line 300 in _queued_writer
+  File "C:\Users\Pushkar\AppData\Local\Programs\Python\Python314\Lib\threading.py", line 1024 in run
+  File "C:\Users\Pushkar\AppData\Local\Programs\Python\Python314\Lib\threading.py", line 1082 in _bootstrap_inner
+  File "C:\Users\Pushkar\AppData\Local\Programs\Python\Python314\Lib\threading.py", line 1044 in _bootstrap
+
+Thread 0x000018e0 [loguru-writer-53] (most recent call first):
+  File "C:\Users\Pushkar\AppData\Local\Programs\Python\Python314\Lib\multiprocessing\connection.py", line 335 in _recv_bytes
+  File "C:\Users\Pushkar\AppData\Local\Programs\Python\Python314\Lib\multiprocessing\connection.py", line 226 in recv_bytes
+  File "C:\Users\Pushkar\AppData\Local\Programs\Python\Python314\Lib\multiprocessing\queues.py", line 385 in get
+  File "C:\Users\Pushkar\AppData\Local\Programs\Python\Python314\Lib\site-packages\loguru\_handler.py", line 300 in _queued_writer
+  File "C:\Users\Pushkar\AppData\Local\Programs\Python\Python314\Lib\threading.py", line 1024 in run
+  File "C:\Users\Pushkar\AppData\Local\Programs\Python\Python314\Lib\threading.py", line 1082 in _bootstrap_inner
+  File "C:\Users\Pushkar\AppData\Local\Programs\Python\Python314\Lib\threading.py", line 1044 in _bootstrap
+
+Thread 0x00001d84 [loguru-writer-52] (most recent call first):
+  File "C:\Users\Pushkar\AppData\Local\Programs\Python\Python314\Lib\multiprocessing\connection.py", line 335 in _recv_bytes
+  File "C:\Users\Pushkar\AppData\Local\Programs\Python\Python314\Lib\multiprocessing\connection.py", line 226 in recv_bytes
+  File "C:\Users\Pushkar\AppData\Local\Programs\Python\Python314\Lib\multiprocessing\queues.py", line 385 in get
+  File "C:\Users\Pushkar\AppData\Local\Programs\Python\Python314\Lib\site-packages\loguru\_handler.py", line 300 in _queued_writer
+  File "C:\Users\Pushkar\AppData\Local\Programs\Python\Python314\Lib\threading.py", line 1024 in run
+  File "C:\Users\Pushkar\AppData\Local\Programs\Python\Python314\Lib\threading.py", line 1082 in _bootstrap_inner
+  File "C:\Users\Pushkar\AppData\Local\Programs\Python\Python314\Lib\threading.py", line 1044 in _bootstrap
+
+Thread 0x00000d74 [loguru-writer-51] (most recent call first):
+  File "C:\Users\Pushkar\AppData\Local\Programs\Python\Python314\Lib\site-packages\loguru\_file_sink.py", line 106 in rotation_size
+  File "C:\Users\Pushkar\AppData\Local\Programs\Python\Python314\Lib\site-packages\loguru\_file_sink.py", line 203 in write
+  File "C:\Users\Pushkar\AppData\Local\Programs\Python\Python314\Lib\site-packages\loguru\_handler.py", line 315 in _queued_writer
+  File "C:\Users\Pushkar\AppData\Local\Programs\Python\Python314\Lib\threading.py", line 1024 in run
+  File "C:\Users\Pushkar\AppData\Local\Programs\Python\Python314\Lib\threading.py", line 1082 in _bootstrap_inner
+  File "C:\Users\Pushkar\AppData\Local\Programs\Python\Python314\Lib\threading.py", line 1044 in _bootstrap
+
+Thread 0x00003558 [FridayWorker_0] (most recent call first):
+  File "C:\Users\Pushkar\AppData\Local\Programs\Python\Python314\Lib\concurrent\futures\thread.py", line 116 in _worker
+  File "C:\Users\Pushkar\AppData\Local\Programs\Python\Python314\Lib\threading.py", line 1024 in run
+  File "C:\Users\Pushkar\AppData\Local\Programs\Python\Python314\Lib\threading.py", line 1082 in _bootstrap_inner
+  File "C:\Users\Pushkar\AppData\Local\Programs\Python\Python314\Lib\threading.py", line 1044 in _bootstrap
+
+Thread 0x00005464 [tqdm_monitor] (most recent call first):
+  File "C:\Users\Pushkar\AppData\Local\Programs\Python\Python314\Lib\threading.py", line 373 in wait
+  File "C:\Users\Pushkar\AppData\Local\Programs\Python\Python314\Lib\threading.py", line 670 in wait
+  File "C:\Users\Pushkar\AppData\Local\Programs\Python\Python314\Lib\site-packages\tqdm\_monitor.py", line 69 in run
+  File "C:\Users\Pushkar\AppData\Local\Programs\Python\Python314\Lib\threading.py", line 1082 in _bootstrap_inner
+  File "C:\Users\Pushkar\AppData\Local\Programs\Python\Python314\Lib\threading.py", line 1044 in _bootstrap
+
+Thread 0x000093c8 (most recent call first):
+  File "D:\Friday AI\app\bootstrap\bootstrapper.py", line 173 in _step4_build_dependency_container
+  File "D:\Friday AI\app\bootstrap\bootstrapper.py", line 90 in run
+  File "D:\Friday AI\tests\test_tts_service.py", line 204 in test_tts_bootstrapper_integration
+  File "C:\Users\Pushkar\AppData\Local\Programs\Python\Python314\Lib\site-packages\_pytest\python.py", line 167 in pytest_pyfunc_call
+  File "C:\Users\Pushkar\AppData\Local\Programs\Python\Python314\Lib\site-packages\pluggy\_callers.py", line 121 in _multicall
+  File "C:\Users\Pushkar\AppData\Local\Programs\Python\Python314\Lib\site-packages\pluggy\_manager.py", line 120 in _hookexec
+  File "C:\Users\Pushkar\AppData\Local\Programs\Python\Python314\Lib\site-packages\pluggy\_hooks.py", line 512 in __call__
+  File "C:\Users\Pushkar\AppData\Local\Programs\Python\Python314\Lib\site-packages\_pytest\python.py", line 1707 in runtest
+  File "C:\Users\Pushkar\AppData\Local\Programs\Python\Python314\Lib\site-packages\_pytest\runner.py", line 184 in pytest_runtest_call
+  File "C:\Users\Pushkar\AppData\Local\Programs\Python\Python314\Lib\site-packages\pluggy\_callers.py", line 121 in _multicall
+  File "C:\Users\Pushkar\AppData\Local\Programs\Python\Python314\Lib\site-packages\pluggy\_manager.py", line 120 in _hookexec
+  File "C:\Users\Pushkar\AppData\Local\Programs\Python\Python314\Lib\site-packages\pluggy\_hooks.py", line 512 in __call__
+  File "C:\Users\Pushkar\AppData\Local\Programs\Python\Python314\Lib\site-packages\_pytest\runner.py", line 250 in <lambda>
+  File "C:\Users\Pushkar\AppData\Local\Programs\Python\Python314\Lib\site-packages\_pytest\runner.py", line 361 in from_call
+  File "C:\Users\Pushkar\AppData\Local\Programs\Python\Python314\Lib\site-packages\_pytest\runner.py", line 249 in call_and_report
+  File "C:\Users\Pushkar\AppData\Local\Programs\Python\Python314\Lib\site-packages\_pytest\runner.py", line 139 in runtestprotocol
+  File "C:\Users\Pushkar\AppData\Local\Programs\Python\Python314\Lib\site-packages\_pytest\runner.py", line 118 in pytest_runtest_protocol
+  File "C:\Users\Pushkar\AppData\Local\Programs\Python\Python314\Lib\site-packages\pluggy\_callers.py", line 121 in _multicall
+  File "C:\Users\Pushkar\AppData\Local\Programs\Python\Python314\Lib\site-packages\pluggy\_manager.py", line 120 in _hookexec
+  File "C:\Users\Pushkar\AppData\Local\Programs\Python\Python314\Lib\site-packages\pluggy\_hooks.py", line 512 in __call__
+  File "C:\Users\Pushkar\AppData\Local\Programs\Python\Python314\Lib\site-packages\_pytest\main.py", line 408 in pytest_runtestloop
+  File "C:\Users\Pushkar\AppData\Local\Programs\Python\Python314\Lib\site-packages\pluggy\_callers.py", line 121 in _multicall
+  File "C:\Users\Pushkar\AppData\Local\Programs\Python\Python314\Lib\site-packages\pluggy\_manager.py", line 120 in _hookexec
+  File "C:\Users\Pushkar\AppData\Local\Programs\Python\Python314\Lib\site-packages\pluggy\_hooks.py", line 512 in __call__
+  File "C:\Users\Pushkar\AppData\Local\Programs\Python\Python314\Lib\site-packages\_pytest\main.py", line 384 in _main
+  File "C:\Users\Pushkar\AppData\Local\Programs\Python\Python314\Lib\site-packages\_pytest\main.py", line 330 in wrap_session
+  File "C:\Users\Pushkar\AppData\Local\Programs\Python\Python314\Lib\site-packages\_pytest\main.py", line 377 in pytest_cmdline_main
+  File "C:\Users\Pushkar\AppData\Local\Programs\Python\Python314\Lib\site-packages\pluggy\_callers.py", line 121 in _multicall
+  File "C:\Users\Pushkar\AppData\Local\Programs\Python\Python314\Lib\site-packages\pluggy\_manager.py", line 120 in _hookexec
+  File "C:\Users\Pushkar\AppData\Local\Programs\Python\Python314\Lib\site-packages\pluggy\_hooks.py", line 512 in __call__
+  File "C:\Users\Pushkar\AppData\Local\Programs\Python\Python314\Lib\site-packages\_pytest\config\__init__.py", line 229 in _main
+  File "C:\Users\Pushkar\AppData\Local\Programs\Python\Python314\Lib\site-packages\_pytest\config\__init__.py", line 253 in _console_main
+  File "C:\Users\Pushkar\AppData\Local\Programs\Python\Python314\Lib\site-packages\pytest\__main__.py", line 9 in <module>
+  File "<frozen runpy>", line 88 in _run_code
+  File "<frozen runpy>", line 203 in _run_module_as_main
+
+Current thread's C stack trace (most recent call first):
+  <cannot get C stack on this system>
+Windows fatal exception: access violation
+
+Thread 0x00002adc [loguru-writer-55] (most recent call first):
+  File "C:\Users\Pushkar\AppData\Local\Programs\Python\Python314\Lib\multiprocessing\connection.py", line 335 in _recv_bytes
+  File "C:\Users\Pushkar\AppData\Local\Programs\Python\Python314\Lib\multiprocessing\connection.py", line 226 in recv_bytes
+  File "C:\Users\Pushkar\AppData\Local\Programs\Python\Python314\Lib\multiprocessing\queues.py", line 385 in get
+  File "C:\Users\Pushkar\AppData\Local\Programs\Python\Python314\Lib\site-packages\loguru\_handler.py", line 300 in _queued_writer
+  File "C:\Users\Pushkar\AppData\Local\Programs\Python\Python314\Lib\threading.py", line 1024 in run
+  File "C:\Users\Pushkar\AppData\Local\Programs\Python\Python314\Lib\threading.py", line 1082 in _bootstrap_inner
+  File "C:\Users\Pushkar\AppData\Local\Programs\Python\Python314\Lib\threading.py", line 1044 in _bootstrap
+
+Thread 0x00009520 [loguru-writer-54] (most recent call first):
+  File "C:\Users\Pushkar\AppData\Local\Programs\Python\Python314\Lib\multiprocessing\connection.py", line 335 in _recv_bytes
+  File "C:\Users\Pushkar\AppData\Local\Programs\Python\Python314\Lib\multiprocessing\connection.py", line 226 in recv_bytes
+  File "C:\Users\Pushkar\AppData\Local\Programs\Python\Python314\Lib\multiprocessing\queues.py", line 385 in get
+  File "C:\Users\Pushkar\AppData\Local\Programs\Python\Python314\Lib\site-packages\loguru\_handler.py", line 300 in _queued_writer
+  File "C:\Users\Pushkar\AppData\Local\Programs\Python\Python314\Lib\threading.py", line 1024 in run
+  File "C:\Users\Pushkar\AppData\Local\Programs\Python\Python314\Lib\threading.py", line 1082 in _bootstrap_inner
+  File "C:\Users\Pushkar\AppData\Local\Programs\Python\Python314\Lib\threading.py", line 1044 in _bootstrap
+
+Thread 0x000018e0 [loguru-writer-53] (most recent call first):
+  File "C:\Users\Pushkar\AppData\Local\Programs\Python\Python314\Lib\multiprocessing\connection.py", line 335 in _recv_bytes
+  File "C:\Users\Pushkar\AppData\Local\Programs\Python\Python314\Lib\multiprocessing\connection.py", line 226 in recv_bytes
+  File "C:\Users\Pushkar\AppData\Local\Programs\Python\Python314\Lib\multiprocessing\queues.py", line 385 in get
+  File "C:\Users\Pushkar\AppData\Local\Programs\Python\Python314\Lib\site-packages\loguru\_handler.py", line 300 in _queued_writer
+  File "C:\Users\Pushkar\AppData\Local\Programs\Python\Python314\Lib\threading.py", line 1024 in run
+  File "C:\Users\Pushkar\AppData\Local\Programs\Python\Python314\Lib\threading.py", line 1082 in _bootstrap_inner
+  File "C:\Users\Pushkar\AppData\Local\Programs\Python\Python314\Lib\threading.py", line 1044 in _bootstrap
+
+Thread 0x00001d84 [loguru-writer-52] (most recent call first):
+  File "C:\Users\Pushkar\AppData\Local\Programs\Python\Python314\Lib\multiprocessing\connection.py", line 335 in _recv_bytes
+  File "C:\Users\Pushkar\AppData\Local\Programs\Python\Python314\Lib\multiprocessing\connection.py", line 226 in recv_bytes
+  File "C:\Users\Pushkar\AppData\Local\Programs\Python\Python314\Lib\multiprocessing\queues.py", line 385 in get
+  File "C:\Users\Pushkar\AppData\Local\Programs\Python\Python314\Lib\site-packages\loguru\_handler.py", line 300 in _queued_writer
+  File "C:\Users\Pushkar\AppData\Local\Programs\Python\Python314\Lib\threading.py", line 1024 in run
+  File "C:\Users\Pushkar\AppData\Local\Programs\Python\Python314\Lib\threading.py", line 1082 in _bootstrap_inner
+  File "C:\Users\Pushkar\AppData\Local\Programs\Python\Python314\Lib\threading.py", line 1044 in _bootstrap
+
+Thread 0x00000d74 [loguru-writer-51] (most recent call first):
+  File "C:\Users\Pushkar\AppData\Local\Programs\Python\Python314\Lib\site-packages\loguru\_file_sink.py", line 106 in rotation_size
+  File "C:\Users\Pushkar\AppData\Local\Programs\Python\Python314\Lib\site-packages\loguru\_file_sink.py", line 203 in write
+  File "C:\Users\Pushkar\AppData\Local\Programs\Python\Python314\Lib\site-packages\loguru\_handler.py", line 315 in _queued_writer
+  File "C:\Users\Pushkar\AppData\Local\Programs\Python\Python314\Lib\threading.py", line 1024 in run
+  File "C:\Users\Pushkar\AppData\Local\Programs\Python\Python314\Lib\threading.py", line 1082 in _bootstrap_inner
+  File "C:\Users\Pushkar\AppData\Local\Programs\Python\Python314\Lib\threading.py", line 1044 in _bootstrap
+
+Thread 0x00003558 [FridayWorker_0] (most recent call first):
+  File "C:\Users\Pushkar\AppData\Local\Programs\Python\Python314\Lib\concurrent\futures\thread.py", line 116 in _worker
+  File "C:\Users\Pushkar\AppData\Local\Programs\Python\Python314\Lib\threading.py", line 1024 in run
+  File "C:\Users\Pushkar\AppData\Local\Programs\Python\Python314\Lib\threading.py", line 1082 in _bootstrap_inner
+  File "C:\Users\Pushkar\AppData\Local\Programs\Python\Python314\Lib\threading.py", line 1044 in _bootstrap
+
+Thread 0x00005464 [tqdm_monitor] (most recent call first):
+  File "C:\Users\Pushkar\AppData\Local\Programs\Python\Python314\Lib\threading.py", line 373 in wait
+  File "C:\Users\Pushkar\AppData\Local\Programs\Python\Python314\Lib\threading.py", line 670 in wait
+  File "C:\Users\Pushkar\AppData\Local\Programs\Python\Python314\Lib\site-packages\tqdm\_monitor.py", line 69 in run
+  File "C:\Users\Pushkar\AppData\Local\Programs\Python\Python314\Lib\threading.py", line 1082 in _bootstrap_inner
+  File "C:\Users\Pushkar\AppData\Local\Programs\Python\Python314\Lib\threading.py", line 1044 in _bootstrap
+
+Thread 0x000093c8 (most recent call first):
+  File "D:\Friday AI\app\bootstrap\bootstrapper.py", line 173 in _step4_build_dependency_container
+  File "D:\Friday AI\app\bootstrap\bootstrapper.py", line 90 in run
+  File "D:\Friday AI\tests\test_tts_service.py", line 204 in test_tts_bootstrapper_integration
+  File "C:\Users\Pushkar\AppData\Local\Programs\Python\Python314\Lib\site-packages\_pytest\python.py", line 167 in pytest_pyfunc_call
+  File "C:\Users\Pushkar\AppData\Local\Programs\Python\Python314\Lib\site-packages\pluggy\_callers.py", line 121 in _multicall
+  File "C:\Users\Pushkar\AppData\Local\Programs\Python\Python314\Lib\site-packages\pluggy\_manager.py", line 120 in _hookexec
+  File "C:\Users\Pushkar\AppData\Local\Programs\Python\Python314\Lib\site-packages\pluggy\_hooks.py", line 512 in __call__
+  File "C:\Users\Pushkar\AppData\Local\Programs\Python\Python314\Lib\site-packages\_pytest\python.py", line 1707 in runtest
+  File "C:\Users\Pushkar\AppData\Local\Programs\Python\Python314\Lib\site-packages\_pytest\runner.py", line 184 in pytest_runtest_call
+  File "C:\Users\Pushkar\AppData\Local\Programs\Python\Python314\Lib\site-packages\pluggy\_callers.py", line 121 in _multicall
+  File "C:\Users\Pushkar\AppData\Local\Programs\Python\Python314\Lib\site-packages\pluggy\_manager.py", line 120 in _hookexec
+  File "C:\Users\Pushkar\AppData\Local\Programs\Python\Python314\Lib\site-packages\pluggy\_hooks.py", line 512 in __call__
+  File "C:\Users\Pushkar\AppData\Local\Programs\Python\Python314\Lib\site-packages\_pytest\runner.py", line 250 in <lambda>
+  File "C:\Users\Pushkar\AppData\Local\Programs\Python\Python314\Lib\site-packages\_pytest\runner.py", line 361 in from_call
+  File "C:\Users\Pushkar\AppData\Local\Programs\Python\Python314\Lib\site-packages\_pytest\runner.py", line 249 in call_and_report
+  File "C:\Users\Pushkar\AppData\Local\Programs\Python\Python314\Lib\site-packages\_pytest\runner.py", line 139 in runtestprotocol
+  File "C:\Users\Pushkar\AppData\Local\Programs\Python\Python314\Lib\site-packages\_pytest\runner.py", line 118 in pytest_runtest_protocol
+  File "C:\Users\Pushkar\AppData\Local\Programs\Python\Python314\Lib\site-packages\pluggy\_callers.py", line 121 in _multicall
+  File "C:\Users\Pushkar\AppData\Local\Programs\Python\Python314\Lib\site-packages\pluggy\_manager.py", line 120 in _hookexec
+  File "C:\Users\Pushkar\AppData\Local\Programs\Python\Python314\Lib\site-packages\pluggy\_hooks.py", line 512 in __call__
+  File "C:\Users\Pushkar\AppData\Local\Programs\Python\Python314\Lib\site-packages\_pytest\main.py", line 408 in pytest_runtestloop
+  File "C:\Users\Pushkar\AppData\Local\Programs\Python\Python314\Lib\site-packages\pluggy\_callers.py", line 121 in _multicall
+  File "C:\Users\Pushkar\AppData\Local\Programs\Python\Python314\Lib\site-packages\pluggy\_manager.py", line 120 in _hookexec
+  File "C:\Users\Pushkar\AppData\Local\Programs\Python\Python314\Lib\site-packages\pluggy\_hooks.py", line 512 in __call__
+  File "C:\Users\Pushkar\AppData\Local\Programs\Python\Python314\Lib\site-packages\_pytest\main.py", line 384 in _main
+  File "C:\Users\Pushkar\AppData\Local\Programs\Python\Python314\Lib\site-packages\_pytest\main.py", line 330 in wrap_session
+  File "C:\Users\Pushkar\AppData\Local\Programs\Python\Python314\Lib\site-packages\_pytest\main.py", line 377 in pytest_cmdline_main
+  File "C:\Users\Pushkar\AppData\Local\Programs\Python\Python314\Lib\site-packages\pluggy\_callers.py", line 121 in _multicall
+  File "C:\Users\Pushkar\AppData\Local\Programs\Python\Python314\Lib\site-packages\pluggy\_manager.py", line 120 in _hookexec
+  File "C:\Users\Pushkar\AppData\Local\Programs\Python\Python314\Lib\site-packages\pluggy\_hooks.py", line 512 in __call__
+  File "C:\Users\Pushkar\AppData\Local\Programs\Python\Python314\Lib\site-packages\_pytest\config\__init__.py", line 229 in _main
+  File "C:\Users\Pushkar\AppData\Local\Programs\Python\Python314\Lib\site-packages\_pytest\config\__init__.py", line 253 in _console_main
+  File "C:\Users\Pushkar\AppData\Local\Programs\Python\Python314\Lib\site-packages\pytest\__main__.py", line 9 in <module>
+  File "<frozen runpy>", line 88 in _run_code
+  File "<frozen runpy>", line 203 in _run_module_as_main
+
+Current thread's C stack trace (most recent call first):
+  <cannot get C stack on this system>

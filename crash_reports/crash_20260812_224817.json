@@ -1,0 +1,21 @@
+{
+  "app_name": "Friday AI Assistant",
+  "version": "1.0.0",
+  "timestamp": "2026-08-12 22:48:17.349547",
+  "python_version": "3.14.5 (tags/v3.14.5:5607950, May 10 2026, 10:43:50) [MSC v.1944 64 bit (AMD64)]",
+  "os_platform": "win32",
+  "pid": 23244,
+  "exception": {
+    "type": "AttributeError",
+    "message": "'ConversationManager' object has no attribute 'is_running'",
+    "traceback": [
+      "Traceback (most recent call last):\n",
+      "  File \"D:\\Friday AI\\main.py\", line 2004, in <module>\n    sys.exit(main())\n             ~~~~^^\n",
+      "  File \"D:\\Friday AI\\main.py\", line 1952, in main\n    return run_conversation_continuity_health_check(bootstrapper)\n",
+      "  File \"D:\\Friday AI\\main.py\", line 1369, in run_conversation_continuity_health_check\n    report = mgr.get_health_report()\n",
+      "  File \"D:\\Friday AI\\app\\voice\\conversation\\conversation_manager.py\", line 652, in get_health_report\n    service_state=\"RUNNING\" if self.is_running else \"STOPPED\",\n                               ^^^^^^^^^^^^^^^\n",
+      "AttributeError: 'ConversationManager' object has no attribute 'is_running'\n"
+    ]
+  },
+  "extra_context": {}
+}

@@ -1,0 +1,20 @@
+{
+  "app_name": "Friday AI Assistant",
+  "version": "1.0.0",
+  "timestamp": "2026-08-12 19:26:06.377766",
+  "python_version": "3.14.5 (tags/v3.14.5:5607950, May 10 2026, 10:43:50) [MSC v.1944 64 bit (AMD64)]",
+  "os_platform": "win32",
+  "pid": 15064,
+  "exception": {
+    "type": "AttributeError",
+    "message": "'GreetingService' object has no attribute 'generate_activation_greeting'",
+    "traceback": [
+      "Traceback (most recent call last):\n",
+      "  File \"D:\\Friday AI\\main.py\", line 1780, in <module>\n",
+      "  File \"D:\\Friday AI\\main.py\", line 1749, in main\n    print(f\"[FATAL STARTUP ERROR] {exc.message}\", file=sys.stderr)\n           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n",
+      "  File \"D:\\Friday AI\\main.py\", line 1372, in run_greeting_repetition_test\n    parser = argparse.ArgumentParser(description=\"Friday AI Assistant Desktop Shell\")\n         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n",
+      "AttributeError: 'GreetingService' object has no attribute 'generate_activation_greeting'\n"
+    ]
+  },
+  "extra_context": {}
+}

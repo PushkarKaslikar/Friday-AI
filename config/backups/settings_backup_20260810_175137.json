@@ -1,0 +1,38 @@
+{
+  "version": "1.0",
+  "general": {
+    "app_name": "Friday AI Assistant",
+    "environment": "development",
+    "autostart": false
+  },
+  "appearance": {
+    "theme": "dark",
+    "ui_scaling": 1.0,
+    "animations_enabled": true,
+    "window_transparency": false
+  },
+  "performance": {
+    "max_worker_threads": 8,
+    "background_monitoring": true
+  },
+  "plugins": {
+    "enabled": true,
+    "auto_load": true
+  },
+  "tools": {
+    "tool_engine_enabled": true,
+    "default_timeout": 10.0,
+    "default_risk_policy": "STRICT"
+  },
+  "diagnostics": {
+    "health_check_interval_sec": 30,
+    "metrics_collection": true
+  },
+  "developer": {
+    "developer_mode": false,
+    "verbose_logging": false
+  },
+  "ai": {},
+  "audio": {},
+  "automation": {}
+}

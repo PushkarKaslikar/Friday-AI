@@ -1,0 +1,22 @@
+{
+  "app_name": "Friday AI Assistant",
+  "version": "1.0.0",
+  "timestamp": "2026-08-12 22:48:25.470878",
+  "python_version": "3.14.5 (tags/v3.14.5:5607950, May 10 2026, 10:43:50) [MSC v.1944 64 bit (AMD64)]",
+  "os_platform": "win32",
+  "pid": 41784,
+  "exception": {
+    "type": "NameError",
+    "message": "name 'ConversationalStateCategory' is not defined",
+    "traceback": [
+      "Traceback (most recent call last):\n",
+      "  File \"D:\\Friday AI\\main.py\", line 2004, in <module>\n    sys.exit(main())\n             ~~~~^^\n",
+      "  File \"D:\\Friday AI\\main.py\", line 1955, in main\n    return run_conversation_continuity_test(bootstrapper)\n",
+      "  File \"D:\\Friday AI\\main.py\", line 1392, in run_conversation_continuity_test\n    r1 = mgr.generate_contextual_response(\"Open Chrome\", s_id)\n",
+      "  File \"D:\\Friday AI\\app\\voice\\conversation\\conversation_manager.py\", line 383, in generate_contextual_response\n    state_cat = self.classify_conversational_state(session_id, clean)\n",
+      "  File \"D:\\Friday AI\\app\\voice\\conversation\\conversation_manager.py\", line 372, in classify_conversational_state\n    return ConversationalStateCategory.NEW_REQUEST\n           ^^^^^^^^^^^^^^^^^^^^^^^^^^^\n",
+      "NameError: name 'ConversationalStateCategory' is not defined\n"
+    ]
+  },
+  "extra_context": {}
+}

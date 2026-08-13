@@ -1,0 +1,21 @@
+{
+  "app_name": "Friday AI Assistant",
+  "version": "1.0.0",
+  "timestamp": "2026-08-12 00:33:42.905926",
+  "python_version": "3.14.5 (tags/v3.14.5:5607950, May 10 2026, 10:43:50) [MSC v.1944 64 bit (AMD64)]",
+  "os_platform": "win32",
+  "pid": 19480,
+  "exception": {
+    "type": "AttributeError",
+    "message": "'str' object has no attribute 'value'",
+    "traceback": [
+      "Traceback (most recent call last):\n",
+      "  File \"D:\\Friday AI\\main.py\", line 785, in <module>\n    sys.exit(main())\n             ~~~~^^\n",
+      "  File \"D:\\Friday AI\\main.py\", line 751, in main\n    return run_conversation_test(bootstrapper)\n",
+      "  File \"D:\\Friday AI\\main.py\", line 554, in run_conversation_test\n    sess = conversation_sm.activate(source=\"WAKE_WORD\")\n",
+      "  File \"D:\\Friday AI\\app\\voice\\conversation\\state_machine.py\", line 221, in activate\n    ConversationActivated(session_id=sess_id, activation_source=source.value)\n                                                                ^^^^^^^^^^^^\n",
+      "AttributeError: 'str' object has no attribute 'value'\n"
+    ]
+  },
+  "extra_context": {}
+}

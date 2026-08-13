@@ -1,0 +1,21 @@
+{
+  "app_name": "Friday AI Assistant",
+  "version": "1.0.0",
+  "timestamp": "2026-08-12 00:33:51.348408",
+  "python_version": "3.14.5 (tags/v3.14.5:5607950, May 10 2026, 10:43:50) [MSC v.1944 64 bit (AMD64)]",
+  "os_platform": "win32",
+  "pid": 2700,
+  "exception": {
+    "type": "AttributeError",
+    "message": "'str' object has no attribute 'value'",
+    "traceback": [
+      "Traceback (most recent call last):\n",
+      "  File \"D:\\Friday AI\\main.py\", line 785, in <module>\n    sys.exit(main())\n             ~~~~^^\n",
+      "  File \"D:\\Friday AI\\main.py\", line 754, in main\n    return run_conversation_barge_in_test(bootstrapper)\n",
+      "  File \"D:\\Friday AI\\main.py\", line 579, in run_conversation_barge_in_test\n    conversation_sm.activate(source=\"DOUBLE_CLAP\")\n    ~~~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^\n",
+      "  File \"D:\\Friday AI\\app\\voice\\conversation\\state_machine.py\", line 221, in activate\n    self.event_bus.publish(\n    \n",
+      "AttributeError: 'str' object has no attribute 'value'\n"
+    ]
+  },
+  "extra_context": {}
+}

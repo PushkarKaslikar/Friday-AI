@@ -1,0 +1,26 @@
+{
+  "app_name": "Friday AI Assistant",
+  "version": "1.0.0",
+  "timestamp": "2026-08-12 19:16:26.578665",
+  "python_version": "3.14.5 (tags/v3.14.5:5607950, May 10 2026, 10:43:50) [MSC v.1944 64 bit (AMD64)]",
+  "os_platform": "win32",
+  "pid": 14232,
+  "exception": {
+    "type": "InitializationError",
+    "message": "Application bootstrap failed during startup sequence: 'DynamicContainer' object has no attribute 'tool_calling_engine'",
+    "traceback": [
+      "Traceback (most recent call last):\n",
+      "  File \"D:\\Friday AI\\app\\bootstrap\\bootstrapper.py\", line 93, in run\n    self._step5_register_services()\n    ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~^^\n",
+      "  File \"D:\\Friday AI\\app\\bootstrap\\bootstrapper.py\", line 203, in _step5_register_services\n    tool_calling_engine = self.container.tool_calling_engine()\n                          ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n",
+      "AttributeError: 'DynamicContainer' object has no attribute 'tool_calling_engine'\n",
+      "\nThe above exception was the direct cause of the following exception:\n\n",
+      "Traceback (most recent call last):\n",
+      "  File \"D:\\Friday AI\\main.py\", line 1630, in <module>\n    sys.exit(main())\n             ~~~~^^\n",
+      "  File \"D:\\Friday AI\\main.py\", line 1593, in main\n    return run_response_context_test(bootstrapper)\n",
+      "  File \"D:\\Friday AI\\main.py\", line 1174, in run_response_context_test\n    bootstrap_result = bootstrapper.run()\n",
+      "  File \"D:\\Friday AI\\app\\bootstrap\\bootstrapper.py\", line 125, in run\n    raise InitializationError(\n    ...<2 lines>...\n    ) from exc\n",
+      "app.exceptions.bootstrap.InitializationError: Application bootstrap failed during startup sequence: 'DynamicContainer' object has no attribute 'tool_calling_engine'\n"
+    ]
+  },
+  "extra_context": {}
+}
