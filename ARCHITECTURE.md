@@ -6,7 +6,7 @@
 
 The codebase enforces unidirectional inward dependency flow:
 
-```text
+
 Presentation Layer (PySide6 UI)
        ↓
 Tool Execution Engine & AI Services
