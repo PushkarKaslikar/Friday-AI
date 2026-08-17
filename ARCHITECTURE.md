@@ -989,11 +989,454 @@ flowchart TD
 
 ---
 
+## 3.10 Phase 5.1 — Short-Term Memory Architecture & Diagrams
+
+Phase 5.1 provides a clean, bounded, thread-safe, memory-resident **Short-Term Memory Subsystem** representing active conversational state.
+
+### Diagram 1 — Short-Term Memory Architecture
+```mermaid
+flowchart TD
+    CM[ConversationManager] --> STM[Short-Term Memory Store]
+    STM --> TS[Turn Store]
+    STM --> ES[Entity Store]
+    TS --> SNAP[Memory Snapshot]
+    ES --> SNAP
+    SNAP --> CONT[Context / Continuity]
+    CONT --> ORCH[AI Orchestrator]
+```
+
+### Diagram 2 — Memory Lifecycle
+```mermaid
+flowchart TD
+    ADD[ADD Entry] --> UPDATE[UPDATE Entry]
+    UPDATE --> READ[READ Entry]
+    READ --> SNAP[SNAPSHOT]
+    SNAP --> EVICT[EVICT Entry]
+    SNAP --> INVALIDATE[INVALIDATE Entity]
+    EVICT --> CLEAR[CLEAR SESSION]
+    INVALIDATE --> CLEAR
+```
+
+### Diagram 3 — Memory Bounding & Eviction
+```mermaid
+flowchart TD
+    IN[Incoming Memory Entry] --> VAL[Validation & Bounds Check]
+    VAL --> SIZE{Within Bounds?}
+    SIZE -->|Yes| STORE[In-Memory Store]
+    SIZE -->|No| EVICT[Priority + Recency Eviction]
+    EVICT --> STORE
+```
+
+### Diagram 4 — Context Flow
+```mermaid
+flowchart TD
+    TURN[User Turn Input] --> CM[ConversationManager]
+    CM --> STM[Short-Term Memory]
+    STM --> SNAP[Bounded Read-Only Snapshot]
+    SNAP --> INTENT[Intent Engine]
+    SNAP --> ORCH[AI Orchestrator]
+    SNAP --> RESP[Response Generator]
+    SNAP --> CONT[Conversational Continuity]
+```
+
+### Diagram 5 — Local Privacy Boundary
+```mermaid
+flowchart TD
+    RAW[User / Tool Data] --> SAN[SensitiveDataSanitizer]
+    SAN --> STM[Local Short-Term Memory]
+    STM --> LAI[Local AI LLM Engine]
+    LAI --> NOCLOUD[NO CLOUD / 100% Local]
+```
+
+### Diagram 6 — Phase 5 Memory Evolution
+```mermaid
+flowchart TD
+    P51[Phase 5.1: Short-Term Memory] --> P52[Phase 5.2: Session Memory]
+    P52 --> P53[Phase 5.3: Long-Term Memory]
+    P53 --> P54[Phase 5.4: User Profile]
+    P54 --> P55[Phase 5.5: Semantic Memory]
+    P55 --> P56[Phase 5.6: Memory Retrieval]
+```
+
+---
+
+## 3.11 Phase 5.2 — Session Memory Architecture & Diagrams
+
+Phase 5.2 provides a clean, bounded, thread-safe, memory-resident **Session Memory Subsystem** representing active session context, task execution tracking, topic history, workflows, entity relationships, and temporary preferences.
+
+### Diagram 1 — Session Memory Architecture
+```mermaid
+flowchart TD
+    CSM[ConversationStateMachine] --> CM[ConversationManager]
+    CM --> SMS[SessionMemoryService]
+    SMS --> Task[Task Engine]
+    SMS --> Topic[Topic History]
+    SMS --> Ent[Entity Relationships]
+    SMS --> Wf[Workflow Memory]
+    SMS --> Pref[Temporary Preferences]
+    Task --> Snap[Session Memory Snapshot]
+    Topic --> Snap
+    Ent --> Snap
+    Wf --> Snap
+    Pref --> Snap
+    Snap --> AI[AI Orchestrator / Context Builder]
+```
+
+### Diagram 2 — Session Lifecycle
+```mermaid
+flowchart TD
+    NO_SESSION[NO_SESSION] --> CREATING[CREATING]
+    CREATING --> ACTIVE[ACTIVE]
+    ACTIVE --> IDLE[IDLE]
+    IDLE --> ACTIVE
+    ACTIVE --> ENDING[ENDING]
+    ENDING --> ENDED[ENDED]
+    ENDED --> NO_SESSION[NO_SESSION]
+```
+
+### Diagram 3 — Session Context Flow
+```mermaid
+flowchart TD
+    UserTurn[User Turn Input] --> STM[Short-Term Memory]
+    STM --> SMS[Session Memory Service]
+    SMS --> Task[Current Task]
+    SMS --> Topic[Current Topic]
+    SMS --> Ent[Active Entities]
+    SMS --> Wf[Workflow State]
+    SMS --> Pref[Temporary Preferences]
+    Task --> Snap[Session Snapshot]
+    Topic --> Snap
+    Ent --> Snap
+    Wf --> Snap
+    Pref --> Snap
+    Snap --> CB[Context Builder]
+    CB --> ORCH[AI Orchestrator]
+```
+
+### Diagram 4 — Clarification Continuity
+```mermaid
+flowchart TD
+    Req[User Request: 'Open the project'] --> Check{Missing info?}
+    Check -->|Yes| Pend[Pending Clarification: missing project_name]
+    Pend --> SMS[Session Memory Context]
+    SMS --> Prompt[Clarification Prompt: 'Which project?']
+    Prompt --> Ans[User Answer: 'Friday']
+    Ans --> Res[Resolve & Merge Context]
+    Res --> Exec[Execute: Open Friday AI]
+```
+
+### Diagram 5 — Session Reset / Privacy
+```mermaid
+flowchart TD
+    SessA[Session A State: Tasks, Entities, Prefs] --> EndSess[Session Ended]
+    EndSess --> Clear[Flush Memory / Zero Disk Write]
+    Clear --> SessB[Session B Started]
+    SessB --> Fresh[100% Fresh Isolated Context]
+```
+
+### Diagram 6 — Phase 5 Memory Evolution
+```mermaid
+flowchart TD
+    P51[5.1 Short-Term Memory] --> P52[5.2 Session Memory]
+    P52 --> P53[5.3 Long-Term Memory]
+    P53 --> P54[5.4 User Profile]
+    P54 --> P55[5.5 Semantic Memory]
+    P55 --> P56[5.6 Memory Retrieval]
+    P56 --> P57[5.7 Memory Privacy]
+```
+
+## Phase 5.3 — Long-Term Memory & Persistent Memory Architecture
+
+Phase 5.3 introduces SQLite database persistence powered by SQLAlchemy ORM.
+
+### Diagram 1 — Long-Term Memory Component Architecture
+```mermaid
+flowchart TD
+    User[User Request / Intent] --> AI[AI Orchestrator / MemoryRequest]
+    AI --> LMS[LongTermMemoryService]
+    SMS[Session Memory Service Candidate] --> MPS[MemoryPromotionService]
+    MPS --> LMS
+    LMS --> Rep[SQLAlchemyMemoryRepository]
+    Rep --> DB[(SQLite DB: friday_memory.db)]
+```
+
+### Diagram 2 — Persistence Flow
+```mermaid
+flowchart TD
+    ProcA[Process A: Write Memory] --> SQL[SQLite Save]
+    SQL --> Disk[disk: friday_memory.db]
+    Disk --> Close[App Exit]
+    Close --> Restart[App Restart / Process B]
+    Restart --> Fetch[Process B: Fetch Memory]
+    Fetch --> Verified[Value Retained & Restored]
+```
+
+### Diagram 3 — Memory Promotion Policy
+```mermaid
+flowchart TD
+    Cand[Session Candidate Memory] --> SecCheck{Contains Credentials / Secrets?}
+    SecCheck -->|Yes| Reject[REJECT: Credential Secret]
+    SecCheck -->|No| DedupCheck{Duplicate Active Record?}
+    DedupCheck -->|Yes| NoOp[NO-OP: Retain Active Record]
+    DedupCheck -->|No| ConflictCheck{Conflicting Preference?}
+    ConflictCheck -->|Yes| Update[Update Active Preference Record]
+    ConflictCheck -->|No| Create[Create New Active LongTermMemoryEntry]
+```
+
+### Diagram 4 — Forget & Deactivation Flow
+```mermaid
+flowchart TD
+    Req[Forget Request: subject / ID] --> Repo[SQLAlchemyMemoryRepository]
+    Repo --> Deact[Set user_control_state = DELETED]
+    Deact --> Save[Commit Transaction]
+    Save --> ReadFilter[Excluded from Active Memory Queries]
+```
+
+### Diagram 5 — Local Privacy & Security Boundary
+```mermaid
+flowchart TD
+    MemReq[Memory Entry Request] --> Sanitizer[SensitiveDataSanitizer]
+    Sanitizer --> KeyCheck{Password / Key / Token Keyword?}
+    KeyCheck -->|Yes| Deny[DENY: Zero Persistence]
+    KeyCheck -->|No| LocalDB[Local SQLite DB Only]
+    LocalDB --> Privacy[100% Offline / Zero Telemetry]
+```
+
+## Phase 5.4 — User Profile & Personal Context Architecture
+
+Phase 5.4 provides a structured domain layer over persistent memory without creating duplicate storage.
+
+### Diagram 1 — User Profile Architecture & Hierarchy
+```mermaid
+flowchart TD
+    User[User / Intent Engine] --> UPS[UserProfileService]
+    UPS -->|Domain Mapping Layer| LMS[LongTermMemoryService]
+    LMS --> Rep[SQLAlchemyMemoryRepository]
+    Rep --> DB[(SQLite DB: friday_memory.db)]
+
+    subgraph User Profile Domain Models
+        UPS --> Identity[UserIdentity]
+        UPS --> Prefs[UserPreferences]
+        UPS --> Proj[UserProjects]
+        UPS --> Contact[UserContacts]
+        UPS --> Workflows[UserWorkflows]
+        UPS --> Patterns[UserInteractionPatterns]
+    end
+```
+
+### Diagram 2 — Zero Duplicate Storage Boundary
+```mermaid
+flowchart TD
+    ProfileSet[UserProfileService.set_preference] --> CallLMS[LongTermMemoryService.remember]
+    CallLMS --> OneDB[Single SQLite DB: friday_memory.db]
+    OneDB --> ReadProf[UserProfileService.build_profile]
+    ReadProf --> Mapped[Mapped Typed UserProfile Object]
+```
+
+### Diagram 3 — Preference Lifecycle & Superseding
+```mermaid
+flowchart TD
+    P1[Set preferred_browser = Chrome] --> Save1[Active Preference: Chrome]
+    P2[Set preferred_browser = Edge] --> Update[Update Memory Record]
+    Update --> ActiveEdge[Active Preference: Edge]
+    ActiveEdge --> ProfileView[UserProfile.preferences.preferred_browser == Edge]
+```
+
+### Diagram 4 — Contact & Identity Privacy Floor
+```mermaid
+flowchart TD
+    UserReq[User Explicitly Says: Sarah is my team lead] --> Store[Store Contact Memory]
+    Store --> Profile[UserProfile.contacts]
+    BgScrape[Background Address Book / Email Scraping] --> Block[STRICTLY BLOCKED / ZERO SURVEILLANCE]
+```
+
+### Diagram 5 — Prompt Snapshot Generation
+```mermaid
+flowchart TD
+    UPS[UserProfileService] --> Build[build_profile]
+    Build --> Filter[Filter Active Entries]
+    Filter --> Format[Format Text Lines]
+    Format --> Budget{Length > Max Budget?}
+    Budget -->|Yes| Trunc[Truncate + Tag]
+    Budget -->|No| Snap[UserProfileSnapshot Context String]
+```
+
+---
+
+## 5. Phase 5.6 Memory Retrieval Subsystem Architecture Diagrams
+
+### Diagram 1 — Hybrid Memory Retrieval Pipeline
+```mermaid
+flowchart TD
+    Req[User Request Turn] --> Policy{MemoryRetrievalPolicy.should_retrieve}
+    Policy -->|Skip| NoRet[No Retrieval Needed]
+    Policy -->|Trigger| Builder[MemoryQueryBuilder]
+    
+    Builder --> Query[Normalized Vector Query]
+    
+    Query --> HybridGathering[Hybrid Candidate Gathering]
+    
+    subgraph Hybrid Candidates
+        Prof[UserProfileService]
+        LT[LongTermMemoryService]
+        Vector[SemanticMemoryService / FAISS Search]
+    end
+    
+    HybridGathering --> Prof
+    HybridGathering --> LT
+    HybridGathering --> Vector
+    
+    Prof --> Ranker[MemoryRankingService]
+    LT --> Ranker
+    Vector --> Ranker
+    
+    Ranker -->|Multi-Factor Scoring| RankedList[Ranked CandidateMemories]
+    RankedList --> ContextBuilder[MemoryContextBuilder]
+    ContextBuilder --> Sanitizer[SensitiveDataSanitizer]
+    Sanitizer --> DelimitedContext[Data-Delimited <RELEVANT_MEMORY_CONTEXT>]
+    DelimitedContext --> Orchestrator[AI Orchestrator / LLM Prompt]
+```
+
+### Diagram 2 — Precedence Hierarchy (Current Request Always Wins)
+```mermaid
+flowchart TD
+    SecurityFloor[1. Security Floor & Sanitizer] --> CurrReq[2. Current User Request]
+    CurrReq --> SessCtx[3. Current Session Context]
+    SessCtx --> STMem[4. Short-Term Memory Store]
+    STMem --> UserProf[5. User Profile Preferences]
+    UserProf --> LTMem[6. Long-Term Semantic Vector Memory]
+```
+
+### Diagram 3 — Multi-Factor Scoring Formula
+```mermaid
+flowchart LR
+    VectorSim[Semantic Similarity 40%] --> Formula[Final Weighted Score]
+    Recency[Recency Decay 15%] --> Formula
+    Importance[Importance Score 15%] --> Formula
+    Confidence[Confidence Score 15%] --> Formula
+    SourceTrust[Source Trust Score 15%] --> Formula
+    ContextMatch[Context Match Bonus 10%] --> Formula
+    Formula --> Filter{Score >= Threshold?}
+    Filter -->|Yes| Select[Selected Candidate]
+    Filter -->|No| Discard[Discarded Candidate]
+```
+
+### Diagram 4 — Prompt Injection Isolation & Data Delimiting
+```mermaid
+flowchart TD
+    MemoryContent[Raw Candidate Memory] --> MaskSecrets[SensitiveDataSanitizer: Mask Credentials]
+    MaskSecrets --> TagData[Wrap in RELEVANT_MEMORY_CONTEXT Delimiters]
+    TagData --> LabelData[Label as Untrusted DATA Context]
+    LabelData --> SafePrompt[Safe LLM Prompt Context]
+```
+
+### Diagram 5 — Degraded Offline Structured Fallback
+```mermaid
+flowchart TD
+    SearchReq[Retrieval Request] --> CheckFAISS{FAISS / Embedding Provider Available?}
+    CheckFAISS -->|Yes| FullHybrid[Full Vector + Structured Hybrid Search]
+    CheckFAISS -->|No / Corrupt| Fallback[Structured SQLite + UserProfile Fallback]
+    Fallback --> DegradedResult[MemoryRetrievalResult degraded_mode=True]
+```
+
+### Diagram 6 — Read-Only Invariance Guarantee
+```mermaid
+flowchart TD
+    RetReq[MemoryRetrievalService.retrieve_memory_context] --> ReadDB[SELECT Queries Only]
+    ReadDB --> ReadVector[FAISS Index Search Only]
+    ReadVector --> OutResult[Formatted Prompt Context]
+    OutResult --> StateCheck[SQLite DB & Vector Index Intact / Zero Mutations]
+```
+
+---
+
+## 6. Phase 5.7 Memory Privacy, Security & Governance Architecture Diagrams
+
+### Diagram 1 — Memory Privacy Governance Boundary
+```mermaid
+flowchart TD
+    Req[User / AI Memory Request] --> Policy{MemoryPrivacyPolicy Evaluation}
+    Policy -->|ALLOW| Exec[Execute Persistence / Retrieval]
+    Policy -->|REQUIRE_CONFIRMATION| PromptUser[Prompt User for Confirmation]
+    Policy -->|RESTRICTED_DATA| DenySecrets[REJECT: Secret / Credential Block]
+    Policy -->|NO_PERSISTENCE| DenyMode[REJECT: NO_PERSISTENCE Mode Active]
+```
+
+### Diagram 2 — End-to-End Governance Across Memory Layers
+```mermaid
+flowchart TD
+    Candidate[Session Memory Candidate] --> WriteEval{MemoryPrivacyPolicy.evaluate_write}
+    WriteEval -->|Allowed| LT[LongTermMemory SQLite]
+    
+    LT --> IndexEval{MemoryPrivacyPolicy.evaluate_index}
+    IndexEval -->|Allowed| FAISS[FAISS Vector Store]
+    
+    LT --> ProfEval{MemoryPrivacyPolicy.evaluate_profile}
+    ProfEval -->|Allowed| Profile[UserProfile]
+    
+    FAISS --> ReadEval{MemoryPrivacyPolicy.evaluate_read}
+    Profile --> ReadEval
+    
+    ReadEval -->|Allowed| LLM[Safe Prompt Context]
+```
+
+### Diagram 3 — End-to-End Deletion Propagation
+```mermaid
+flowchart TD
+    UserReq[User: Forget that preference] --> ForgetCall[MemoryPrivacyService.forget_memory]
+    ForgetCall --> SQLiteDel[1. SQLite Record Deactivated / Deleted]
+    ForgetCall --> FAISSRem[2. FAISS Vector Removed / Tombstoned]
+    ForgetCall --> ProfInval[3. UserProfile Cache Invalidated]
+    ForgetCall --> RetInval[4. Memory Retrieval Cache Invalidated]
+    RetInval --> ZeroStale[5. Zero Stale Context Retained]
+```
+
+### Diagram 4 — Retention & Expiration Propagation
+```mermaid
+flowchart TD
+    Scan[MemoryRetentionService background cleanup] --> CheckExp{expires_at <= Current Time?}
+    CheckExp -->|Yes| ExpireRecord[Mark SQLite State = EXPIRED]
+    ExpireRecord --> RebuildFAISS[Rebuild FAISS Index Without Vector]
+    RebuildFAISS --> InvalProf[Invalidate UserProfile Context]
+    InvalProf --> ExcludeRet[Exclude from Retrieval Results]
+```
+
+### Diagram 5 — Privacy-Aware Retrieval Filtering
+```mermaid
+flowchart TD
+    HybridHit[Vector / SQLite Search Candidate] --> ReadCheck{MemoryPrivacyPolicy.evaluate_read}
+    ReadCheck -->|Pass| MaskSecrets[SensitiveDataSanitizer: Mask Key Values]
+    MaskSecrets --> PromptContext[Formatted Context Block]
+    ReadCheck -->|Block| ExcludeCandidate[Candidate Excluded from Context]
+```
+
+### Diagram 6 — Cross-Cutting Phase 5 Architecture
+```mermaid
+flowchart TD
+    subgraph Cross-Cutting Privacy Governance Layer Phase 5.7
+        PrivacyPolicy[MemoryPrivacyPolicy & MemoryPrivacyService]
+    end
+
+    ST[5.1 Short-Term Memory] --> Sess[5.2 Session Memory]
+    Sess --> LT[5.3 Long-Term Memory SQLite]
+    LT --> Prof[5.4 User Profile]
+    LT --> Sem[5.5 Semantic FAISS Index]
+    Sem --> Ret[5.6 Memory Retrieval Service]
+    Prof --> Ret
+    
+    PrivacyPolicy -. Governance .-> LT
+    PrivacyPolicy -. Governance .-> Prof
+    PrivacyPolicy -. Governance .-> Sem
+    PrivacyPolicy -. Governance .-> Ret
+```
+
+---
+
 ## 4. Engineering, Security & Privacy Rationale
 
-- **Local-First Privacy Floor**: Friday's Audio Engine, Clap Detector, Wake Word Detector, Silero VAD Detector, browser controller, session management, and tool execution run 100% locally in-memory. Zero raw microphone recordings are stored to disk or uploaded to cloud services.
+- **Local-First Privacy Floor**: Friday's Audio Engine, Clap Detector, Wake Word Detector, Silero VAD Detector, Short-Term Memory Engine, Session Memory Engine, Long-Term Memory Store, User Profile Service, browser controller, session management, and tool execution run 100% locally in-memory or in local SQLite (`friday_memory.db`). Zero raw microphone recordings, conversation entries, or session state are stored in cloud services.
 - **Single Audio Pipeline Architecture**: Exactly one microphone capture stream (`sounddevice`) feeds `AudioEngine`. `ClapDetector`, `WakeWordDetector`, and `VADDetector` subscribe to the same `AudioEngine` frame delivery without device contention or thread blocking.
-- **Activation vs Authorization Boundary**: Wake word, double-clap activation, and voice activity signals act purely as interface triggers. They **never** bypass authorization or grant administrative permissions to tools.
+- **Activation vs Authorization Boundary**: Wake word, double-clap activation, voice activity signals, short-term memory, session memory, long-term persistent memory, and user profile act purely as interface triggers or contextual data. They **never** bypass authorization or grant administrative permissions to tools.
 - **ONNX Local Runtime Execution**: Wake word detection (OpenWakeWord) and voice activity detection (Silero VAD) execute via local ONNX runtime with zero network dependencies (< 0.5ms per frame inference latency).
 - **Timing Window & Cooldown Protection**: Enforces temporal state machine thresholds (64ms start confirmation, 300ms silence timeout, 2000ms wake word cooldown) to prevent false activations from noise or continuous speech frames.
 - **Thread-Safe Architecture**: All subsystem singletons are managed via the DI container and protected by thread Locks for safe execution across UI, background workers, and real-time audio threads.

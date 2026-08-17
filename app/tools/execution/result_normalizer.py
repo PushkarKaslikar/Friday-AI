@@ -45,6 +45,14 @@ class SensitiveDataSanitizer:
             return [cls.sanitize(item) for item in data]
         return data
 
+    @classmethod
+    def contains_sensitive_data(cls, text: str) -> bool:
+        """Check whether a text string contains sensitive keys or credential patterns."""
+        if not text or not isinstance(text, str):
+            return False
+        text_lower = text.lower()
+        return any(s_key in text_lower for s_key in SENSITIVE_KEYS)
+
 
 class ResultNormalizer:
     """Normalizes raw tool output values or exceptions into standardized ToolResult models."""

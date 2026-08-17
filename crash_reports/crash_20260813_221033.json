@@ -1,0 +1,31 @@
+{
+  "app_name": "Friday AI Assistant",
+  "version": "1.0.0",
+  "timestamp": "2026-08-13 22:10:33.246427",
+  "python_version": "3.14.5 (tags/v3.14.5:5607950, May 10 2026, 10:43:50) [MSC v.1944 64 bit (AMD64)]",
+  "os_platform": "win32",
+  "pid": 30784,
+  "exception": {
+    "type": "AttributeError",
+    "message": "'MemoryDatabaseManager' object has no attribute 'db_dir'",
+    "traceback": [
+      "Traceback (most recent call last):\n",
+      "  File \"D:\\Friday AI\\main.py\", line 3410, in <module>\n    sys.exit(main())\n             ~~~~^^\n",
+      "  File \"D:\\Friday AI\\main.py\", line 3115, in main\n    return run_semantic_memory_health_check(bootstrapper)\n",
+      "  File \"D:\\Friday AI\\main.py\", line 2453, in run_semantic_memory_health_check\n    diagnostics = bootstrap_result.container.semantic_memory_diagnostics()\n",
+      "  File \"src/dependency_injector/providers.pyx\", line 246, in dependency_injector.providers.Provider.__call__\n",
+      "  File \"src/dependency_injector/providers.pyx\", line 3003, in dependency_injector.providers.Singleton._provide\n",
+      "  File \"src/dependency_injector/providers.pxd\", line 665, in dependency_injector.providers.__factory_call\n",
+      "  File \"src/dependency_injector/providers.pxd\", line 592, in dependency_injector.providers.__call\n",
+      "  File \"src/dependency_injector/providers.pxd\", line 460, in dependency_injector.providers.__provide_keyword_args\n",
+      "  File \"src/dependency_injector/providers.pxd\", line 380, in dependency_injector.providers.__get_value\n",
+      "  File \"src/dependency_injector/providers.pyx\", line 246, in dependency_injector.providers.Provider.__call__\n",
+      "  File \"src/dependency_injector/providers.pyx\", line 3003, in dependency_injector.providers.Singleton._provide\n",
+      "  File \"src/dependency_injector/providers.pxd\", line 665, in dependency_injector.providers.__factory_call\n",
+      "  File \"src/dependency_injector/providers.pxd\", line 623, in dependency_injector.providers.__call\n",
+      "  File \"D:\\Friday AI\\app\\memory\\semantic_service.py\", line 57, in __init__\n    base_dir = self._db_manager.db_dir\n               ^^^^^^^^^^^^^^^^^^^^^^^\n",
+      "AttributeError: 'MemoryDatabaseManager' object has no attribute 'db_dir'\n"
+    ]
+  },
+  "extra_context": {}
+}
