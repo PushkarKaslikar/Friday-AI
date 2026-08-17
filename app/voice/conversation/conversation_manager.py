@@ -10,6 +10,8 @@ from typing import Any
 
 from app.config.manager import ConfigurationManager
 from app.logging import logger
+from app.memory.service import ShortTermMemoryService
+from app.memory.session_service import SessionMemoryService
 from app.services.base.service_interface import BaseService
 from app.services.events.event_bus import EventBus
 from app.voice.conversation.context_builder import ContextBuilder
@@ -76,11 +78,19 @@ class ConversationManager(BaseService, IConversationManager):
         context_builder: ContextBuilder | None = None,
         metrics: ConversationManagerMetrics | None = None,
         diagnostics: ConversationManagerDiagnostics | None = None,
+        memory_service: ShortTermMemoryService | None = None,
+        session_memory_service: SessionMemoryService | None = None,
     ) -> None:
         super().__init__(name="ConversationManager", is_critical=False)
         self.config_manager = config_manager or ConfigurationManager()
         self.event_bus = event_bus or EventBus()
         self.store = store or InMemConversationStore()
+        self.memory_service = memory_service or ShortTermMemoryService(
+            store=self.store.memory_store
+        )
+        self.session_memory_service = session_memory_service or SessionMemoryService(
+            short_term_service=self.memory_service
+        )
         self.resolver = resolver or DeterministicReferenceResolver()
         self.metrics = metrics or ConversationManagerMetrics()
         self.diagnostics = diagnostics or ConversationManagerDiagnostics(
@@ -143,6 +153,7 @@ class ConversationManager(BaseService, IConversationManager):
 
     def _do_stop(self) -> None:
         """Stop service and flush in-memory store."""
+        self.session_memory_service.clear_all()
         self.store.clear_all()
         logger.info(
             "ConversationManager: Service stopped and short-term memory flushed."
@@ -160,6 +171,7 @@ class ConversationManager(BaseService, IConversationManager):
 
             self._active_session_id = session_id
             self.store.get_or_create_session(session_id, activation_source)
+            self.session_memory_service.create_session_context(session_id)
             self.metrics.record_session_start()
             self.event_bus.publish(
                 ConversationSessionStarted(
@@ -173,6 +185,7 @@ class ConversationManager(BaseService, IConversationManager):
     def end_session(self, session_id: str, reason: str = "normal_completion") -> None:
         """Flush short-term memory for session."""
         with self._lock:
+            self.session_memory_service.end_session(session_id)
             container = self.store.end_session(session_id, reason)
             turns = len(container.turns) if container else 0
             duration = (
@@ -322,6 +335,22 @@ class ConversationManager(BaseService, IConversationManager):
                     ),
                 )
             self._rebuild_context_snapshot(session_id)
+
+    def invalidate_entity(self, session_id: str, entity_id: str) -> bool:
+        """Invalidate an entity in memory (e.g. app terminated, file deleted)."""
+        with self._lock:
+            res = self.memory_service.invalidate_entity(session_id, entity_id)
+            container = self.store.get_session(session_id)
+            if container:
+                container.entities = [
+                    e
+                    for e in container.entities
+                    if e.entity_id != entity_id
+                    and e.identifier.lower() != entity_id.lower()
+                    and e.name.lower() != entity_id.lower()
+                ]
+                self._rebuild_context_snapshot(session_id)
+            return res
 
     def classify_conversational_state(
         self, session_id: str, user_input: str

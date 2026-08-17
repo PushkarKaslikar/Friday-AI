@@ -524,6 +524,226 @@ class ResponseGenerationSettings(BaseModel):
     )
 
 
+class ShortTermMemorySettings(BaseModel):
+    """Configuration settings for Phase 5.1 Short-Term Memory Engine."""
+
+    enabled: bool = Field(
+        default=True, description="Enable or disable Short-Term Memory subsystem"
+    )
+    max_entries: int = Field(
+        default=100, description="Maximum stored memory entries per session"
+    )
+    max_turns: int = Field(
+        default=20, description="Maximum conversation turns preserved in context"
+    )
+    max_entities: int = Field(
+        default=30, description="Maximum active entities retained in memory"
+    )
+    max_context_characters: int = Field(
+        default=4000, description="Maximum character budget for memory snapshots"
+    )
+    max_tool_result_characters: int = Field(
+        default=2000, description="Maximum character size for individual tool results"
+    )
+    max_entry_size: int = Field(
+        default=1000, description="Maximum character size for individual turn texts"
+    )
+    eviction_policy: str = Field(
+        default="RECENCY_PRIORITY", description="Eviction policy for bounded memory"
+    )
+
+
+class SessionMemorySettings(BaseModel):
+    """Configuration settings for Phase 5.2 Session Memory Engine."""
+
+    enabled: bool = Field(
+        default=True, description="Enable or disable Session Memory subsystem"
+    )
+    max_tasks: int = Field(
+        default=10, description="Maximum session tasks retained in memory"
+    )
+    max_topics: int = Field(
+        default=10, description="Maximum bounded topic history preserved in session"
+    )
+    max_workflows: int = Field(
+        default=10, description="Maximum workflow execution records per session"
+    )
+    max_entities: int = Field(
+        default=30, description="Maximum active session entities retained"
+    )
+    max_snapshot_characters: int = Field(
+        default=4000, description="Maximum character budget for session snapshots"
+    )
+    max_session_preferences: int = Field(
+        default=20, description="Maximum temporary session-only preferences"
+    )
+
+
+class LongTermMemorySettings(BaseModel):
+    """Configuration settings for Phase 5.3 Long-Term Persistent Memory Engine."""
+
+    enabled: bool = Field(
+        default=True, description="Enable or disable Long-Term Memory subsystem"
+    )
+    db_path: str = Field(
+        default="", description="Configurable path to SQLite memory database file"
+    )
+    max_total_memories: int = Field(
+        default=1000, description="Maximum total active persistent long-term memories"
+    )
+    max_content_chars: int = Field(
+        default=1000, description="Maximum character budget for memory text"
+    )
+    max_metadata_chars: int = Field(
+        default=2000, description="Maximum character budget for metadata"
+    )
+
+
+class UserProfileSettings(BaseModel):
+    """Configuration settings for Phase 5.4 User Profile Domain Subsystem."""
+
+    enabled: bool = Field(
+        default=True, description="Enable or disable User Profile subsystem"
+    )
+    max_projects: int = Field(
+        default=20, description="Maximum active project profiles retained"
+    )
+    max_contacts: int = Field(
+        default=50, description="Maximum explicitly remembered contact profiles"
+    )
+    max_workflows: int = Field(
+        default=20, description="Maximum workflow profiles retained"
+    )
+    max_snapshot_chars: int = Field(
+        default=4000,
+        description="Maximum character budget for profile prompt snapshots",
+    )
+
+
+class SemanticMemorySettings(BaseModel):
+    """Configuration settings for Phase 5.5 Semantic Memory & FAISS Subsystem."""
+
+    enabled: bool = Field(
+        default=True, description="Enable or disable Semantic Memory subsystem"
+    )
+    embedding_provider: str = Field(
+        default="local", description="Embedding provider type (e.g. 'local')"
+    )
+    embedding_model: str = Field(
+        default="all-MiniLM-L6-v2", description="Local embedding model identifier"
+    )
+    device: str = Field(
+        default="AUTO", description="Execution device (CPU, CUDA, AUTO)"
+    )
+    batch_size: int = Field(
+        default=32, description="Batch size for vector embedding generation"
+    )
+    normalize_embeddings: bool = Field(
+        default=True, description="Enable L2 vector normalization"
+    )
+    top_k: int = Field(
+        default=10, description="Default top-k nearest neighbor vector results"
+    )
+    index_path: str = Field(
+        default="", description="Configurable path to FAISS vector index file"
+    )
+    index_version: int = Field(default=1, description="Semantic index schema version")
+    auto_sync: bool = Field(
+        default=True, description="Enable automatic incremental synchronization"
+    )
+    max_memory_text_chars: int = Field(
+        default=1000, description="Maximum character budget for embedding text"
+    )
+
+
+class MemoryRetrievalSettings(BaseModel):
+    """Configuration settings for Phase 5.6 Memory Retrieval Subsystem."""
+
+    enabled: bool = Field(
+        default=True, description="Enable or disable Memory Retrieval subsystem"
+    )
+    auto_trigger: bool = Field(
+        default=True, description="Enable automatic policy-based retrieval triggering"
+    )
+    max_candidates: int = Field(
+        default=15, description="Maximum initial candidate memories fetched"
+    )
+    max_results: int = Field(
+        default=5, description="Maximum ranked candidate memories selected"
+    )
+    similarity_threshold: float = Field(
+        default=0.35, ge=0.0, le=1.0, description="Minimum relevance score threshold"
+    )
+    max_context_characters: int = Field(
+        default=1500, description="Maximum prompt context character budget"
+    )
+    max_context_memories: int = Field(
+        default=5, description="Maximum memories included in prompt context"
+    )
+    semantic_weight: float = Field(
+        default=0.40,
+        ge=0.0,
+        le=1.0,
+        description="Ranking weight for semantic similarity",
+    )
+    recency_weight: float = Field(
+        default=0.15, ge=0.0, le=1.0, description="Ranking weight for memory recency"
+    )
+    importance_weight: float = Field(
+        default=0.15, ge=0.0, le=1.0, description="Ranking weight for memory importance"
+    )
+    confidence_weight: float = Field(
+        default=0.15, ge=0.0, le=1.0, description="Ranking weight for memory confidence"
+    )
+    source_weight: float = Field(
+        default=0.15, ge=0.0, le=1.0, description="Ranking weight for source trust"
+    )
+    context_match_weight: float = Field(
+        default=0.10, ge=0.0, le=1.0, description="Ranking weight for context match"
+    )
+    session_priority: bool = Field(
+        default=True, description="Enable current session context precedence"
+    )
+    profile_priority: bool = Field(
+        default=True, description="Enable UserProfile context precedence"
+    )
+
+
+class MemoryPrivacySettings(BaseModel):
+    """Configuration settings for Phase 5.7 Memory Privacy Subsystem."""
+
+    enabled: bool = Field(
+        default=True, description="Enable or disable Memory Privacy subsystem"
+    )
+    mode: str = Field(
+        default="NORMAL",
+        description="Operational privacy mode (NORMAL, STRICT, NO_PERSISTENCE)",
+    )
+    allow_persistent_memory: bool = Field(
+        default=True,
+        description="Enable or disable persistent long-term memory creation",
+    )
+    require_confirmation_for_personal: bool = Field(
+        default=False,
+        description="Require user confirmation for personal/sensitive memories",
+    )
+    allow_semantic_indexing: bool = Field(
+        default=True, description="Enable or disable semantic FAISS vector indexing"
+    )
+    allow_sensitive_retrieval: bool = Field(
+        default=True, description="Allow sensitive memory retrieval under policy"
+    )
+    default_retention: str = Field(
+        default="PERSISTENT", description="Default memory retention category"
+    )
+    auto_cleanup: bool = Field(
+        default=True, description="Enable automatic background retention cleanup"
+    )
+    audit_enabled: bool = Field(
+        default=True, description="Enable privacy audit event logging"
+    )
+
+
 class Settings(BaseModel):
     """Root configuration object containing sub-configuration domain models."""
 
@@ -548,3 +768,18 @@ class Settings(BaseModel):
     response_generation: ResponseGenerationSettings = Field(
         default_factory=ResponseGenerationSettings
     )
+    short_term_memory: ShortTermMemorySettings = Field(
+        default_factory=ShortTermMemorySettings
+    )
+    session_memory: SessionMemorySettings = Field(default_factory=SessionMemorySettings)
+    long_term_memory: LongTermMemorySettings = Field(
+        default_factory=LongTermMemorySettings
+    )
+    user_profile: UserProfileSettings = Field(default_factory=UserProfileSettings)
+    semantic_memory: SemanticMemorySettings = Field(
+        default_factory=SemanticMemorySettings
+    )
+    memory_retrieval: MemoryRetrievalSettings = Field(
+        default_factory=MemoryRetrievalSettings
+    )
+    memory_privacy: MemoryPrivacySettings = Field(default_factory=MemoryPrivacySettings)

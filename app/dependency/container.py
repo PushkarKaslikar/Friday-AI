@@ -36,6 +36,40 @@ from app.crash.crash_handler import CrashHandler
 from app.diagnostics.system_diagnostics import SystemDiagnostics
 from app.error.error_manager import ErrorManager
 from app.logging import LoggingManager
+from app.memory.context_builder import MemoryContextBuilder
+from app.memory.db_manager import MemoryDatabaseManager
+from app.memory.diagnostics import MemoryDiagnostics
+from app.memory.embedding_provider import LocalEmbeddingProvider
+from app.memory.long_term_diagnostics import LongTermMemoryDiagnostics
+from app.memory.long_term_metrics import LongTermMemoryMetrics
+from app.memory.long_term_service import LongTermMemoryService
+from app.memory.metrics import MemoryMetrics
+from app.memory.privacy_diagnostics import MemoryPrivacyDiagnostics
+from app.memory.privacy_metrics import MemoryPrivacyMetrics
+from app.memory.privacy_policy import MemoryPrivacyPolicy
+from app.memory.privacy_service import MemoryPrivacyService
+from app.memory.profile_diagnostics import UserProfileDiagnostics
+from app.memory.profile_metrics import UserProfileMetrics
+from app.memory.profile_service import UserProfileService
+from app.memory.promotion_service import MemoryPromotionService
+from app.memory.query_builder import MemoryQueryBuilder
+from app.memory.ranking_service import MemoryRankingService
+from app.memory.repository import SQLAlchemyMemoryRepository
+from app.memory.retention_service import MemoryRetentionService
+from app.memory.retrieval_diagnostics import MemoryRetrievalDiagnostics
+from app.memory.retrieval_metrics import MemoryRetrievalMetrics
+from app.memory.retrieval_policy import MemoryRetrievalPolicy
+from app.memory.retrieval_service import MemoryRetrievalService
+from app.memory.semantic_diagnostics import SemanticMemoryDiagnostics
+from app.memory.semantic_index import FAISSMemoryIndex
+from app.memory.semantic_metrics import SemanticMemoryMetrics
+from app.memory.semantic_service import SemanticMemoryService
+from app.memory.service import ShortTermMemoryService
+from app.memory.session_diagnostics import SessionMemoryDiagnostics
+from app.memory.session_metrics import SessionMemoryMetrics
+from app.memory.session_service import SessionMemoryService
+from app.memory.store import ShortTermMemoryStore
+from app.memory.text_builder import MemoryEmbeddingTextBuilder
 from app.monitoring.performance_monitor import PerformanceMonitor
 from app.platform.browser.browser_service import BrowserService
 from app.platform.browser.url_security import UrlSecurityManager
@@ -930,6 +964,196 @@ class ApplicationContainer(containers.DeclarativeContainer):
     orchestrator_diagnostics = providers.Singleton(
         OrchestratorDiagnostics,
         metrics=orchestrator_metrics,
+    )
+
+    # Phase 5.1 Short-Term Memory Subsystem singletons
+    short_term_memory_store = providers.Singleton(
+        ShortTermMemoryStore,
+    )
+
+    memory_metrics = providers.Singleton(
+        MemoryMetrics,
+    )
+
+    short_term_memory_service = providers.Singleton(
+        ShortTermMemoryService,
+        store=short_term_memory_store,
+    )
+
+    memory_diagnostics = providers.Singleton(
+        MemoryDiagnostics,
+        service=short_term_memory_service,
+        metrics=memory_metrics,
+    )
+
+    # Phase 5.2 Session Memory Subsystem singletons
+    session_memory_metrics = providers.Singleton(
+        SessionMemoryMetrics,
+    )
+
+    session_memory_service = providers.Singleton(
+        SessionMemoryService,
+        short_term_service=short_term_memory_service,
+    )
+
+    session_memory_diagnostics = providers.Singleton(
+        SessionMemoryDiagnostics,
+        service=session_memory_service,
+        metrics=session_memory_metrics,
+    )
+
+    # Phase 5.3 Long-Term Memory Subsystem singletons
+    memory_db_manager = providers.Singleton(
+        MemoryDatabaseManager,
+        config_manager=config_manager,
+    )
+
+    memory_repository = providers.Singleton(
+        SQLAlchemyMemoryRepository,
+        db_manager=memory_db_manager,
+    )
+
+    memory_promotion_service = providers.Singleton(
+        MemoryPromotionService,
+        repository=memory_repository,
+    )
+
+    long_term_memory_metrics = providers.Singleton(
+        LongTermMemoryMetrics,
+    )
+
+    long_term_memory_service = providers.Singleton(
+        LongTermMemoryService,
+        repository=memory_repository,
+        promotion_service=memory_promotion_service,
+    )
+
+    long_term_memory_diagnostics = providers.Singleton(
+        LongTermMemoryDiagnostics,
+        db_manager=memory_db_manager,
+        service=long_term_memory_service,
+        metrics=long_term_memory_metrics,
+    )
+
+    # Phase 5.4 User Profile Subsystem singletons
+    user_profile_metrics = providers.Singleton(
+        UserProfileMetrics,
+    )
+
+    user_profile_service = providers.Singleton(
+        UserProfileService,
+        long_term_service=long_term_memory_service,
+    )
+
+    user_profile_diagnostics = providers.Singleton(
+        UserProfileDiagnostics,
+        service=user_profile_service,
+        metrics=user_profile_metrics,
+    )
+
+    # Phase 5.5 Semantic Memory & FAISS Vector Index Subsystem singletons
+    embedding_provider = providers.Singleton(
+        LocalEmbeddingProvider,
+    )
+
+    semantic_memory_text_builder = providers.Singleton(
+        MemoryEmbeddingTextBuilder,
+    )
+
+    semantic_memory_index = providers.Singleton(
+        FAISSMemoryIndex,
+    )
+
+    semantic_memory_metrics = providers.Singleton(
+        SemanticMemoryMetrics,
+    )
+
+    semantic_memory_service = providers.Singleton(
+        SemanticMemoryService,
+        long_term_service=long_term_memory_service,
+        db_manager=memory_db_manager,
+        embedding_provider=embedding_provider,
+        semantic_index=semantic_memory_index,
+        text_builder=semantic_memory_text_builder,
+        metrics=semantic_memory_metrics,
+    )
+
+    semantic_memory_diagnostics = providers.Singleton(
+        SemanticMemoryDiagnostics,
+        service=semantic_memory_service,
+        metrics=semantic_memory_metrics,
+    )
+
+    # Phase 5.6 Memory Retrieval Subsystem singletons
+    memory_retrieval_policy = providers.Singleton(
+        MemoryRetrievalPolicy,
+    )
+
+    memory_query_builder = providers.Singleton(
+        MemoryQueryBuilder,
+    )
+
+    memory_ranking_service = providers.Singleton(
+        MemoryRankingService,
+    )
+
+    memory_context_builder = providers.Singleton(
+        MemoryContextBuilder,
+    )
+
+    memory_retrieval_metrics = providers.Singleton(
+        MemoryRetrievalMetrics,
+    )
+
+    memory_retrieval_service = providers.Singleton(
+        MemoryRetrievalService,
+        long_term_service=long_term_memory_service,
+        user_profile_service=user_profile_service,
+        session_service=session_memory_service,
+        semantic_service=semantic_memory_service,
+        policy=memory_retrieval_policy,
+        query_builder=memory_query_builder,
+        ranking_service=memory_ranking_service,
+        context_builder=memory_context_builder,
+        metrics=memory_retrieval_metrics,
+    )
+
+    memory_retrieval_diagnostics = providers.Singleton(
+        MemoryRetrievalDiagnostics,
+        service=memory_retrieval_service,
+        metrics=memory_retrieval_metrics,
+    )
+
+    # Phase 5.7 Memory Privacy Governance singletons
+    memory_privacy_policy = providers.Singleton(
+        MemoryPrivacyPolicy,
+    )
+
+    memory_retention_service = providers.Singleton(
+        MemoryRetentionService,
+        long_term_service=long_term_memory_service,
+        user_profile_service=user_profile_service,
+        semantic_service=semantic_memory_service,
+    )
+
+    memory_privacy_metrics = providers.Singleton(
+        MemoryPrivacyMetrics,
+    )
+
+    memory_privacy_service = providers.Singleton(
+        MemoryPrivacyService,
+        policy=memory_privacy_policy,
+        retention_service=memory_retention_service,
+        metrics=memory_privacy_metrics,
+        long_term_service=long_term_memory_service,
+        user_profile_service=user_profile_service,
+        semantic_service=semantic_memory_service,
+    )
+
+    memory_privacy_diagnostics = providers.Singleton(
+        MemoryPrivacyDiagnostics,
+        service=memory_privacy_service,
+        metrics=memory_privacy_metrics,
     )
 
     # Theme Manager singleton

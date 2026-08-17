@@ -27,9 +27,21 @@ The assistant launches automatically on Windows boot, runs efficiently in the ba
 - [x] **Phase 3.4 – Voice Activity Detection & Speech Boundary Engine** (Completed - **VERDICT: PASS**)
 - [x] **Phase 3.5 – Faster-Whisper Speech-to-Text Engine** (Completed - **VERDICT: PASS**)
 - [x] **Phase 3.6 – Piper Text-to-Speech Engine** (Completed - **VERDICT: PASS**)
-- [ ] **Phase 3.7 – Conversation State Machine** (Upcoming)
-- [ ] **Phase 3.8 – Conversation Orchestrator & Manager** (Upcoming)
-- [ ] **Phase 3.9 – Natural Greetings Foundation** (Upcoming)
+- [x] **Phase 3.7 – Conversation State Machine** (Completed - **VERDICT: PASS**)
+- [x] **Phase 3.8 – Conversation Orchestrator & Manager** (Completed - **VERDICT: PASS**)
+- [x] **Phase 3.9 – Natural Greetings Foundation** (Completed - **VERDICT: PASS**)
+- [x] **Phase 4.1 – Local LLM Runtime Engine** (Completed - **VERDICT: PASS**)
+- [x] **Phase 4.2 – Local AI Orchestrator & Multi-Step Execution** (Completed - **VERDICT: PASS**)
+- [x] **Phase 4.3 – Tool Calling & Function Binding Engine** (Completed - **VERDICT: PASS**)
+- [x] **Phase 4.4 – Personality Engine & Behavioral Identity System** (Completed - **VERDICT: PASS**)
+- [x] **Phase 4.5 – Dynamic Response Generation Engine** (Completed - **VERDICT: PASS**)
+- [x] **Phase 4.6 – Contextual Greetings & Intelligent Activation Responses** (Completed - **VERDICT: PASS**)
+- [x] **Phase 4.7 – Conversational Continuity & Context-Aware AI Dialogue** (Completed - **VERDICT: PASS**)
+- [x] **Phase 5.1 – Short-Term Memory Foundation & Active Conversation Memory** (Completed - **VERDICT: PASS**)
+- [x] **Phase 5.2 – Session Memory & Active Session Context Management** (Completed - **VERDICT: PASS**)
+- [x] **Phase 5.3 – Long-Term Memory & Persistent Memory Foundation** (Completed - **VERDICT: PASS**)
+- [x] **Phase 5.4 – User Profile & Personal Context Management** (Completed - **VERDICT: PASS**)
+- [x] **Phase 5.5 – Semantic Memory & Local Vector Index Foundation** (Completed - **VERDICT: PASS**)
 
 ---
 
@@ -260,4 +272,247 @@ graph TD
     F --> H[Friday Activation Controller]
     G --> H[Friday Activation Controller]
 ```
+
+---
+
+## 🧠 Phase 5.1 Short-Term Memory Subsystem & CLI Commands
+
+Friday includes dedicated CLI verification commands for Phase 5.1 Short-Term Memory:
+
+```bash
+# Run Short-Term Memory diagnostic health report
+python main.py --memory-health-check
+
+# Run interactive pronoun & entity memory resolution test ("Chrome" -> "it", "Edge" -> "it")
+python main.py --memory-test
+
+# Run 1,000 entry stress test verifying memory bounds and eviction
+python main.py --memory-stress-test
+
+# Run read-only snapshot immutability test
+python main.py --memory-snapshot-test
+
+# Run session reset isolation test (Session A vs Session B)
+python main.py --memory-session-reset-test
+```
+
+---
+
+## 🧠 Phase 5.2 Session Memory Subsystem & CLI Commands
+
+Friday includes dedicated CLI verification commands for Phase 5.2 Session Memory:
+
+```bash
+# Run Session Memory diagnostic health report
+python main.py --session-memory-health-check
+
+# Run interactive multi-turn session workflow test ("Open Chrome" -> "Search AI news" -> "Open first result" -> "Summarize it")
+python main.py --session-memory-test
+
+# Run session active task creation, update, and clear test
+python main.py --session-task-test
+
+# Run temporary session-only preference isolation test
+python main.py --session-preference-test
+
+# Run session reset and cross-session isolation test
+python main.py --session-reset-test
+
+# Run session memory stress test (100 topic/task/workflow simulation)
+python main.py --session-memory-stress-test
+```
+
+---
+
+## 💾 Phase 5.3 Long-Term Memory Subsystem & CLI Commands
+
+Friday includes dedicated CLI verification commands for Phase 5.3 Long-Term Persistent Memory:
+
+```bash
+# Run Long-Term Memory diagnostic health report
+python main.py --long-term-memory-health-check
+
+# Run basic CRUD operations test on SQLite persistent store
+python main.py --long-term-memory-test
+
+# Run process restart persistence test (Process A writes memory -> Process B verifies retrieval)
+python main.py --long-term-memory-persistence-test
+
+# Run candidate memory promotion test from Session Memory
+python main.py --memory-promotion-test
+
+# Run memory deduplication prevention test
+python main.py --memory-dedup-test
+
+# Run memory preference conflict resolution test (Chrome -> Edge update)
+python main.py --memory-conflict-test
+
+# Run explicit memory forget/deactivation test
+python main.py --memory-forget-test
+
+# Run memory clear test
+python main.py --memory-clear-test
+
+# Run SQLite database failure recovery test
+python main.py --memory-database-failure-test
+
+# Run secret credential rejection security test
+python main.py --long-term-memory-security-test
+```
+
+---
+
+## 👤 Phase 5.4 User Profile Subsystem & CLI Commands
+
+Friday includes dedicated CLI verification commands for Phase 5.4 User Profile & Personal Context Management:
+
+```bash
+# Run User Profile diagnostic health report
+python main.py --user-profile-health-check
+
+# Run User Profile read & build test from persistent long-term memory
+python main.py --user-profile-test
+
+# Run profile preference updates & superseding test (Chrome -> Edge update)
+python main.py --profile-preference-test
+
+# Run persistent project profile test
+python main.py --profile-project-test
+
+# Run explicit contact memory test (with zero background scraping protection)
+python main.py --profile-contact-test
+
+# Run recurring workflow profile storage test
+python main.py --profile-workflow-test
+
+# Run prompt-ready UserProfileSnapshot generation test
+python main.py --profile-snapshot-test
+
+# Run profile preference reset test
+python main.py --profile-reset-test
+```
+
+---
+
+## 🔍 Phase 5.5 Semantic Memory & Local Vector Index CLI Commands
+
+Friday includes dedicated CLI verification commands for Phase 5.5 Semantic Memory & Local Vector Index Foundation:
+
+```bash
+# Run Semantic Memory diagnostic health report
+python main.py --semantic-memory-health-check
+
+# Run local vector embedding provider test
+python main.py --embedding-test
+
+# Run low-level semantic vector search query test
+python main.py --semantic-memory-test
+
+# Run batch embedding & FAISS throughput benchmark
+python main.py --semantic-memory-benchmark
+
+# Run atomic FAISS index rebuild test from SQLite
+python main.py --semantic-memory-rebuild-test
+
+# Run vector vs SQLite metadata consistency test
+python main.py --semantic-memory-consistency-test
+
+# Run embedding model change detection test
+python main.py --semantic-memory-model-change-test
+
+# Run index corruption failure recovery test
+python main.py --semantic-memory-failure-test
+```
+
+---
+
+## 🎯 Phase 5.6 Memory Retrieval & Relevant Context Engine CLI Commands
+
+Friday includes dedicated CLI verification commands for Phase 5.6 Memory Retrieval Subsystem:
+
+```bash
+# Run Memory Retrieval diagnostic health report
+python main.py --memory-retrieval-health-check
+
+# Run basic memory retrieval test
+python main.py --memory-retrieval-test
+
+# Run profile preference retrieval test
+python main.py --memory-retrieval-profile-test
+
+# Run session instruction priority override test
+python main.py --memory-retrieval-session-priority-test
+
+# Run relevance candidate filtering test
+python main.py --memory-retrieval-filter-test
+
+# Run empty retrieval test (zero hallucination)
+python main.py --memory-retrieval-empty-test
+
+# Run semantic query variation retrieval test
+python main.py --memory-retrieval-semantic-test
+
+# Run explicit memory question retrieval test
+python main.py --memory-retrieval-explicit-test
+
+# Run system action policy skip test
+python main.py --memory-retrieval-skip-test
+
+# Run multi-factor ranking score test
+python main.py --memory-retrieval-ranking-test
+
+# Run context budgeting and formatting test
+python main.py --memory-retrieval-context-test
+
+# Run degraded offline structured fallback test
+python main.py --memory-retrieval-degraded-test
+
+# Run prompt injection isolation and secret masking test
+python main.py --memory-retrieval-security-test
+```
+
+---
+
+## 🛡️ Phase 5.7 Memory Privacy, Security, Governance & User Control CLI Commands
+
+Friday includes dedicated CLI verification commands for Phase 5.7 Memory Privacy Governance Subsystem:
+
+```bash
+# Run Memory Privacy diagnostic health report
+python main.py --memory-privacy-health-check
+
+# Run privacy policy write evaluation & secret defense test
+python main.py --memory-privacy-test
+
+# Run end-to-end privacy deletion propagation test
+python main.py --memory-privacy-delete-test
+
+# Run retention expiration cleanup test
+python main.py --memory-retention-test
+
+# Run NO_PERSISTENCE privacy mode block test
+python main.py --memory-no-persistence-test
+
+# Run STRICT privacy confirmation requirement test
+python main.py --memory-strict-privacy-test
+
+# Run retrieval privacy evaluation test
+python main.py --memory-retrieval-privacy-test
+
+# Run vector indexing privacy evaluation test
+python main.py --memory-index-privacy-test
+
+# Run profile visibility privacy evaluation test
+python main.py --memory-profile-privacy-test
+
+# Run complete memory wipe test with explicit confirmation
+python main.py --memory-clear-all-privacy-test
+
+# Run memory privacy reconciliation test
+python main.py --memory-privacy-reconcile-test
+```
+
+
+
+
 
