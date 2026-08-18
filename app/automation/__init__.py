@@ -1,0 +1,51 @@
+"""Friday AI Assistant - Phase 6.1 UI Automation Foundation Subsystem."""
+
+from app.automation.errors import (
+    AmbiguousElementError,
+    AmbiguousWindowError,
+    AutomationError,
+    ElementInvalidError,
+    ElementNotFoundError,
+    ElementStaleError,
+    PatternNotSupportedError,
+    ProcessExitedError,
+    TreeTraversalError,
+    UIAEngineError,
+)
+from app.automation.models import (
+    AutomationElement,
+    AutomationElementSnapshot,
+    AutomationTreeNode,
+    BoundingRectangle,
+    ElementSearchResult,
+    ElementSearchStatus,
+    MatchMode,
+    WindowCandidate,
+    WindowSearchResult,
+    WindowSearchStatus,
+    normalize_control_type,
+)
+
+__all__ = [
+    "AmbiguousElementError",
+    "AmbiguousWindowError",
+    "AutomationElement",
+    "AutomationElementSnapshot",
+    "AutomationError",
+    "AutomationTreeNode",
+    "BoundingRectangle",
+    "ElementInvalidError",
+    "ElementNotFoundError",
+    "ElementSearchResult",
+    "ElementSearchStatus",
+    "ElementStaleError",
+    "MatchMode",
+    "PatternNotSupportedError",
+    "ProcessExitedError",
+    "TreeTraversalError",
+    "UIAEngineError",
+    "WindowCandidate",
+    "WindowSearchResult",
+    "WindowSearchStatus",
+    "normalize_control_type",
+]

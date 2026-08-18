@@ -208,6 +208,11 @@ class AppBootstrapper:
         tool_calling_engine = self.container.tool_calling_engine()
         personality_engine = self.container.personality_engine()
         response_generator = self.container.response_generator()
+        uia_engine = self.container.ui_automation_engine()
+        try:
+            uia_engine.initialize()
+        except Exception as uia_exc:
+            logger.warning(f"UI Automation Engine non-fatal startup warning: {uia_exc}")
 
         # Register background services
         self.service_manager.register_service(scheduler_service)

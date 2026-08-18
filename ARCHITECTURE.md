@@ -1432,13 +1432,125 @@ flowchart TD
 
 ---
 
-## 4. Engineering, Security & Privacy Rationale
+## 7. Phase 6.1 UI Automation Foundation Architecture Diagrams
+
+### Diagram 1 — UI Automation Architecture
+```mermaid
+flowchart TD
+    Desktop["Windows Desktop"] --> UIA["Windows UI Automation / UIA"]
+    UIA --> PyWinAuto["pywinauto UIA Backend"]
+    UIA --> PyWin32["pywin32 Native Win32 APIs"]
+    PyWinAuto --> Engine["UIAutomationEngine"]
+    PyWin32 --> Engine
+    Engine --> Finder["ElementFinder"]
+    Engine --> Walker["UITreeWalker"]
+    Finder --> Model["AutomationElement"]
+    Walker --> Model
+```
+
+### Diagram 2 — Window Resolution
+```mermaid
+flowchart TD
+    Req["Window Request"] --> Resolver["WindowResolver"]
+    Resolver --> HWND["HWND"]
+    Resolver --> PID["Process ID"]
+    Resolver --> Title["Title Match"]
+    Resolver --> ProcName["Process Name"]
+    
+    HWND --> Candidates["Candidate Windows"]
+    PID --> Candidates
+    Title --> Candidates
+    ProcName --> Candidates
+    
+    Candidates -->|0 matches| NotFound["NOT_FOUND"]
+    Candidates -->|1 match| Found["FOUND"]
+    Candidates -->|>1 matches| Ambiguous["AMBIGUOUS"]
+```
+
+### Diagram 3 — Element Finding
+```mermaid
+flowchart TD
+    Query["Element Query"] --> Finder["ElementFinder"]
+    Finder --> Name["Name Match"]
+    Finder --> AutoID["AutomationId Match"]
+    Finder --> CtrlType["ControlType Match"]
+    Finder --> ClassName["ClassName Match"]
+    Finder --> PID["Process ID Match"]
+    Finder --> Combined["Combined Selector"]
+    
+    Name --> Matching["Matching Elements"]
+    AutoID --> Matching
+    CtrlType --> Matching
+    ClassName --> Matching
+    PID --> Matching
+    Combined --> Matching
+    
+    Matching -->|0 matches| NotFound["NOT_FOUND"]
+    Matching -->|1 match| Found["FOUND"]
+    Matching -->|>1 matches| Ambiguous["AMBIGUOUS"]
+```
+
+### Diagram 4 — UI Tree
+```mermaid
+flowchart TD
+    Root["Root Window"] --> Pane["Pane"]
+    Pane --> Btn1["Button: Save"]
+    Pane --> Edit1["Edit: Text"]
+    Root --> Toolbar["Toolbar"]
+    Toolbar --> Btn2["Button: Open"]
+    Toolbar --> Menu["Menu: File"]
+    
+    subgraph Traversal Safety Bounds
+        DepthLimit["Depth Limit: max_depth"]
+        NodeLimit["Node Limit: max_nodes"]
+        CycleProtection["Visited Set Duplicate Protection"]
+    end
+```
+
+### Diagram 5 — Control Pattern Architecture
+```mermaid
+flowchart TD
+    Elem["AutomationElement"] --> Discovery["Pattern Discovery"]
+    Discovery --> Invoke["InvokePattern"]
+    Discovery --> Value["ValuePattern"]
+    Discovery --> Toggle["TogglePattern"]
+    Discovery --> Select["SelectionItemPattern"]
+    Discovery --> Expand["ExpandCollapsePattern"]
+    Discovery --> Scroll["ScrollPattern"]
+    Discovery --> Range["RangeValuePattern"]
+    
+    Invoke --> SafeAction["Safe Low-Level Pattern Action"]
+    Value --> SafeAction
+    Toggle --> SafeAction
+    Select --> SafeAction
+    Expand --> SafeAction
+    Scroll --> SafeAction
+    Range --> SafeAction
+```
+
+### Diagram 6 — Phase 6 Evolution
+```mermaid
+flowchart TD
+    P61["6.1 UIA Foundation (CURRENT PHASE)"] --> P62["6.2 Input Engine (Mouse & Keyboard)"]
+    P62 --> P63["6.3 Desktop / Screen Control"]
+    P63 --> P64["6.4 Application Adapters"]
+    P64 --> P65["6.5 Workflow Engine"]
+    P65 --> P66["6.6 Automation Tools for AI"]
+    P66 --> P67["6.7 Security / Failsafe Guardrails"]
+
+    style P61 fill:#2d5a88,stroke:#333,stroke-width:2px,color:#fff
+```
+
+---
+
+## 8. Engineering, Security & Privacy Rationale
 
 - **Local-First Privacy Floor**: Friday's Audio Engine, Clap Detector, Wake Word Detector, Silero VAD Detector, Short-Term Memory Engine, Session Memory Engine, Long-Term Memory Store, User Profile Service, browser controller, session management, and tool execution run 100% locally in-memory or in local SQLite (`friday_memory.db`). Zero raw microphone recordings, conversation entries, or session state are stored in cloud services.
 - **Single Audio Pipeline Architecture**: Exactly one microphone capture stream (`sounddevice`) feeds `AudioEngine`. `ClapDetector`, `WakeWordDetector`, and `VADDetector` subscribe to the same `AudioEngine` frame delivery without device contention or thread blocking.
-- **Activation vs Authorization Boundary**: Wake word, double-clap activation, voice activity signals, short-term memory, session memory, long-term persistent memory, and user profile act purely as interface triggers or contextual data. They **never** bypass authorization or grant administrative permissions to tools.
+- **Activation vs Authorization Boundary**: Wake word, double-clap activation, voice activity signals, short-term memory, session memory, long-term persistent memory, user profile, and UIA inspection act purely as interface triggers or contextual data. They **never** bypass authorization or grant administrative permissions to tools.
 - **ONNX Local Runtime Execution**: Wake word detection (OpenWakeWord) and voice activity detection (Silero VAD) execute via local ONNX runtime with zero network dependencies (< 0.5ms per frame inference latency).
 - **Timing Window & Cooldown Protection**: Enforces temporal state machine thresholds (64ms start confirmation, 300ms silence timeout, 2000ms wake word cooldown) to prevent false activations from noise or continuous speech frames.
 - **Thread-Safe Architecture**: All subsystem singletons are managed via the DI container and protected by thread Locks for safe execution across UI, background workers, and real-time audio threads.
+
 
 

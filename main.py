@@ -34,6 +34,235 @@ def setup_global_exception_handler() -> None:
     sys.excepthook = handle_uncaught_exception
 
 
+from app.automation.models import WindowSearchStatus
+
+
+def run_uia_health_check(bootstrapper: AppBootstrapper) -> int:
+    """CLI handler for --uia-health-check."""
+    bootstrap_result = bootstrapper.run()
+    uia_engine = bootstrap_result.container.ui_automation_engine()
+    report = uia_engine.get_health_status()
+
+    print("\n=========================================")
+    print("  FRIDAY UI AUTOMATION HEALTH CHECK      ")
+    print("=========================================")
+    print(f"Status:                  {report['status']}")
+    print(f"Platform:                {report['platform']} (Windows={report['is_windows']})")
+    print(f"pywinauto:               {report['pywinauto']} ({report['pywinauto_version']})")
+    print(f"pywin32:                 {report['pywin32']}")
+    print(f"Windows Enumeration:     {report['windows_enumeration']}")
+    print(f"Element Discovery:       {report['element_discovery']}")
+    print(f"Tree Walker:             {report['tree_walker']}")
+    print(f"Pattern Support:         {report['pattern_support']}")
+    print("Metrics:")
+    print(json.dumps(report["metrics"], indent=2))
+    print("=========================================\n")
+    return 0
+
+
+def run_uia_inspect_window(
+    bootstrapper: AppBootstrapper,
+    title: str | None = None,
+    pid: int | None = None,
+    hwnd: int | None = None,
+) -> int:
+    """CLI handler for --uia-inspect-window."""
+    bootstrap_result = bootstrapper.run()
+    window_resolver = bootstrap_result.container.window_resolver()
+    uia_engine = bootstrap_result.container.ui_automation_engine()
+
+    res = window_resolver.resolve_window(title=title, process_id=pid, hwnd=hwnd)
+    print("\n=========================================")
+    print("   FRIDAY UIA WINDOW INSPECTION          ")
+    print("=========================================")
+    print(f"Status: {res.status.value}")
+    print(f"Matched Candidates Count: {len(res.candidates)}")
+
+    for i, c in enumerate(res.candidates, 1):
+        print(f"\n[{i}] HWND: {c.hwnd}")
+        print(f"    Title: '{c.title}'")
+        print(f"    Process ID: {c.process_id} ({c.process_name})")
+        print(f"    Class Name: '{c.class_name}'")
+        print(f"    Visible: {c.is_visible} | Enabled: {c.is_enabled}")
+
+    if res.status == WindowSearchStatus.FOUND and res.selected_hwnd:
+        try:
+            raw_root, root_elem = uia_engine.get_root_element(res.selected_hwnd)
+            walker = uia_engine.get_tree_walker()
+            children = walker.get_children(raw_root, root_elem)
+            print(f"\nTop-Level Children Count: {len(children)}")
+            for _, child_domain in children[:10]:
+                print(
+                    f"  - {child_domain.control_type}: '{child_domain.name}' [id={child_domain.automation_id}]"
+                )
+        except Exception as exc:
+            print(f"\nCould not inspect window children: {exc}")
+
+    print("=========================================\n")
+    return 0
+
+
+def run_uia_tree_dump(
+    bootstrapper: AppBootstrapper,
+    title: str | None = None,
+    process_name: str | None = None,
+    pid: int | None = None,
+    hwnd: int | None = None,
+    max_depth: int | None = None,
+    max_nodes: int | None = None,
+    control_type: str | None = None,
+    output_json: bool = False,
+) -> int:
+    """CLI handler for --uia-tree-dump."""
+    bootstrap_result = bootstrapper.run()
+    window_resolver = bootstrap_result.container.window_resolver()
+    uia_engine = bootstrap_result.container.ui_automation_engine()
+
+    res = window_resolver.resolve_window(
+        title=title, process_name=process_name, process_id=pid, hwnd=hwnd
+    )
+
+    if res.status != WindowSearchStatus.FOUND or not res.selected_hwnd:
+        print(
+            f"\n[ERROR] Window resolution status: {res.status.value}. Specify a unique target window."
+        )
+        return 1
+
+    raw_root, root_elem = uia_engine.get_root_element(res.selected_hwnd)
+    walker = uia_engine.get_tree_walker()
+
+    if output_json:
+        tree_node, truncated = walker.traverse_tree(
+            raw_root,
+            root_elem,
+            max_depth=max_depth,
+            max_nodes=max_nodes,
+            control_type_filter=control_type,
+        )
+        data = tree_node.model_dump()
+        print(json.dumps(data, indent=2))
+    else:
+        tree_str = walker.dump_tree_string(
+            raw_root,
+            root_elem,
+            max_depth=max_depth,
+            max_nodes=max_nodes,
+            control_type_filter=control_type,
+        )
+        print("\n=========================================")
+        print(f"  UI TREE DUMP — {root_elem.name} [HWND: {res.selected_hwnd}]")
+        print("=========================================")
+        print(tree_str)
+        print("=========================================\n")
+
+    return 0
+
+
+def run_uia_find_element(
+    bootstrapper: AppBootstrapper,
+    name: str | None = None,
+    automation_id: str | None = None,
+    control_type: str | None = None,
+    pid: int | None = None,
+    class_name: str | None = None,
+) -> int:
+    """CLI handler for --uia-find-element."""
+    bootstrap_result = bootstrapper.run()
+    window_resolver = bootstrap_result.container.window_resolver()
+    uia_engine = bootstrap_result.container.ui_automation_engine()
+    finder = uia_engine.get_element_finder()
+
+    win_res = window_resolver.resolve_window(process_id=pid)
+    if win_res.status != WindowSearchStatus.FOUND or not win_res.selected_hwnd:
+        candidates = window_resolver.enumerate_windows(include_hidden=False) or window_resolver.enumerate_windows(include_hidden=True)
+        if not candidates:
+            print("[UIA FINDER] No top-level windows found on desktop.")
+            return 1
+        target_hwnd = candidates[0].hwnd
+    else:
+        target_hwnd = win_res.selected_hwnd
+
+    raw_root, root_elem = uia_engine.get_root_element(target_hwnd)
+    criteria: dict[str, Any] = {}
+    if name:
+        criteria["name"] = name
+    if automation_id:
+        criteria["automation_id"] = automation_id
+    if control_type:
+        criteria["control_type"] = control_type
+    if class_name:
+        criteria["class_name"] = class_name
+
+    search_res = finder.find_by_properties(
+        criteria, raw_root=raw_root, root_element=root_elem
+    )
+
+    print("\n=========================================")
+    print("   FRIDAY UIA ELEMENT SEARCH RESULT      ")
+    print("=========================================")
+    print(f"Status:        {search_res.status.value}")
+    print(f"Matches Count: {search_res.match_count}")
+    print(f"Query:         {search_res.query}")
+    print(f"Truncated:     {search_res.truncated}")
+
+    for i, match in enumerate(search_res.matched_elements, 1):
+        print(f"\n[{i}] {match.control_type}: '{match.name}' [id={match.automation_id}]")
+        print(f"    Class: {match.class_name} | PID: {match.process_id}")
+        print(f"    Patterns: {match.supported_patterns}")
+        if match.value:
+            print(f"    Value: {match.value}")
+
+    print("=========================================\n")
+    return 0
+
+
+def run_uia_pattern_test(
+    bootstrapper: AppBootstrapper,
+    title: str | None = None,
+    pid: int | None = None,
+    hwnd: int | None = None,
+) -> int:
+    """CLI handler for --uia-pattern-test."""
+    bootstrap_result = bootstrapper.run()
+    window_resolver = bootstrap_result.container.window_resolver()
+    uia_engine = bootstrap_result.container.ui_automation_engine()
+
+    res = window_resolver.resolve_window(title=title, process_id=pid, hwnd=hwnd)
+    if res.status != WindowSearchStatus.FOUND or not res.selected_hwnd:
+        candidates = window_resolver.enumerate_windows(include_hidden=False) or window_resolver.enumerate_windows(include_hidden=True)
+        if not candidates:
+            print(
+                "\n[UIA PATTERN TEST] No top-level windows available for pattern testing."
+            )
+            return 1
+        target_hwnd = candidates[0].hwnd
+    else:
+        target_hwnd = res.selected_hwnd
+
+    raw_root, root_elem = uia_engine.get_root_element(target_hwnd)
+    walker = uia_engine.get_tree_walker()
+    children = walker.get_children(raw_root, root_elem)
+
+    print("\n=========================================")
+    print(f"  UIA CONTROL PATTERN TEST — {root_elem.name}")
+    print("=========================================")
+    print(f"Root Control Type: {root_elem.control_type}")
+    print(f"Root Supported Patterns: {root_elem.supported_patterns}")
+    print(f"\nInspecting {len(children)} top-level child elements for pattern support:")
+
+    for _, child_elem in children:
+        print(
+            f"  - {child_elem.control_type} '{child_elem.name}' [id={child_elem.automation_id}]:"
+        )
+        print(f"      Supported Patterns: {child_elem.supported_patterns}")
+        print(
+            f"      Enabled: {child_elem.is_enabled} | Visible: {child_elem.is_visible}"
+        )
+
+    print("=========================================\n")
+    return 0
+
+
 def run_audio_health_check(bootstrapper: AppBootstrapper) -> int:
     """CLI handler for --audio-health-check."""
     bootstrap_result = bootstrapper.run()
@@ -3915,10 +4144,82 @@ def main() -> int:
         action="store_true",
         help="Run memory privacy reconciliation test and exit",
     )
+    parser.add_argument(
+        "--uia-health-check",
+        action="store_true",
+        help="Run UI Automation diagnostic health report and exit",
+    )
+    parser.add_argument(
+        "--uia-inspect-window",
+        action="store_true",
+        help="Inspect top-level window metadata and exit",
+    )
+    parser.add_argument(
+        "--uia-tree-dump",
+        action="store_true",
+        help="Dump UI element hierarchy tree and exit",
+    )
+    parser.add_argument(
+        "--uia-find-element",
+        action="store_true",
+        help="Search for UI elements using structured locator criteria and exit",
+    )
+    parser.add_argument(
+        "--uia-pattern-test",
+        action="store_true",
+        help="Inspect supported control patterns for top-level controls and exit",
+    )
+    parser.add_argument("--uia-title", type=str, default=None, help="Filter window by title")
+    parser.add_argument("--uia-pid", type=int, default=None, help="Filter window/element by process ID")
+    parser.add_argument("--uia-hwnd", type=int, default=None, help="Filter window by handle HWND")
+    parser.add_argument("--uia-process-name", type=str, default=None, help="Filter window by process name")
+    parser.add_argument("--uia-max-depth", type=int, default=None, help="Maximum tree traversal depth")
+    parser.add_argument("--uia-max-nodes", type=int, default=None, help="Maximum tree nodes limit")
+    parser.add_argument("--uia-control-type", type=str, default=None, help="Filter elements by control type")
+    parser.add_argument("--uia-name", type=str, default=None, help="Filter element by name")
+    parser.add_argument("--uia-automation-id", type=str, default=None, help="Filter element by automation ID")
+    parser.add_argument("--uia-class-name", type=str, default=None, help="Filter element by class name")
+    parser.add_argument("--uia-json", action="store_true", help="Output tree dump in JSON format")
     args = parser.parse_args()
 
     setup_global_exception_handler()
     bootstrapper = AppBootstrapper()
+
+    if args.uia_health_check:
+        return run_uia_health_check(bootstrapper)
+
+    if args.uia_inspect_window:
+        return run_uia_inspect_window(
+            bootstrapper, title=args.uia_title, pid=args.uia_pid, hwnd=args.uia_hwnd
+        )
+
+    if args.uia_tree_dump:
+        return run_uia_tree_dump(
+            bootstrapper,
+            title=args.uia_title,
+            process_name=args.uia_process_name,
+            pid=args.uia_pid,
+            hwnd=args.uia_hwnd,
+            max_depth=args.uia_max_depth,
+            max_nodes=args.uia_max_nodes,
+            control_type=args.uia_control_type,
+            output_json=args.uia_json,
+        )
+
+    if args.uia_find_element:
+        return run_uia_find_element(
+            bootstrapper,
+            name=args.uia_name,
+            automation_id=args.uia_automation_id,
+            control_type=args.uia_control_type,
+            pid=args.uia_pid,
+            class_name=args.uia_class_name,
+        )
+
+    if args.uia_pattern_test:
+        return run_uia_pattern_test(
+            bootstrapper, title=args.uia_title, pid=args.uia_pid, hwnd=args.uia_hwnd
+        )
 
     if args.memory_privacy_health_check:
         return run_memory_privacy_health_check(bootstrapper)

@@ -1,0 +1,21 @@
+{
+  "app_name": "Friday AI Assistant",
+  "version": "1.0.0",
+  "timestamp": "2026-08-18 17:43:45.934282",
+  "python_version": "3.14.5 (tags/v3.14.5:5607950, May 10 2026, 10:43:50) [MSC v.1944 64 bit (AMD64)]",
+  "os_platform": "win32",
+  "pid": 3588,
+  "exception": {
+    "type": "OSError",
+    "message": "[Errno 22] Invalid argument",
+    "traceback": [
+      "Traceback (most recent call last):\n",
+      "  File \"<frozen runpy>\", line 203, in _run_module_as_main\n",
+      "  File \"<frozen runpy>\", line 88, in _run_code\n",
+      "  File \"C:\\Users\\Pushkar\\AppData\\Local\\Programs\\Python\\Python314\\Lib\\site-packages\\pytest\\__main__.py\", line 9, in <module>\n    raise SystemExit(_console_main())\n                     ~~~~~~~~~~~~~^^\n",
+      "  File \"C:\\Users\\Pushkar\\AppData\\Local\\Programs\\Python\\Python314\\Lib\\site-packages\\_pytest\\config\\__init__.py\", line 254, in _console_main\n    sys.stdout.flush()\n    ~~~~~~~~~~~~~~~~^^\n",
+      "OSError: [Errno 22] Invalid argument\n"
+    ]
+  },
+  "extra_context": {}
+}

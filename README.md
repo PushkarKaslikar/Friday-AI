@@ -512,7 +512,25 @@ python main.py --memory-clear-all-privacy-test
 python main.py --memory-privacy-reconcile-test
 ```
 
+---
 
+## 🖥️ Phase 6.1 UI Automation Foundation & Element Tree Explorer CLI Commands
 
+Friday includes dedicated CLI verification commands for Phase 6.1 UI Automation Foundation Subsystem:
 
+```bash
+# Run UI Automation diagnostic health report
+python main.py --uia-health-check
 
+# Inspect top-level window metadata and top-level children
+python main.py --uia-inspect-window [--uia-title "Title"] [--uia-pid PID] [--uia-hwnd HWND]
+
+# Dump UI element hierarchy tree (supports string formatted output or JSON)
+python main.py --uia-tree-dump [--uia-title "Title"] [--uia-process-name "chrome.exe"] [--uia-max-depth 5] [--uia-json]
+
+# Search for UI elements using structured locator criteria
+python main.py --uia-find-element [--uia-name "Save"] [--uia-control-type "Button"] [--uia-pid PID]
+
+# Inspect supported UIA control patterns for top-level controls
+python main.py --uia-pattern-test [--uia-title "Title"]
+```

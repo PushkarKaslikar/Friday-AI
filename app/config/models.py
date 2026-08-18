@@ -744,6 +744,45 @@ class MemoryPrivacySettings(BaseModel):
     )
 
 
+class UIAutomationSettings(BaseModel):
+    """Configuration settings for Phase 6.1 UI Automation Foundation Subsystem."""
+
+    enabled: bool = Field(
+        default=True, description="Enable or disable UI Automation engine"
+    )
+    max_tree_depth: int = Field(
+        default=10, ge=1, le=50, description="Maximum UI tree traversal depth limit"
+    )
+    max_tree_nodes: int = Field(
+        default=500, ge=10, le=5000, description="Maximum UI tree node traversal cap"
+    )
+    max_children: int = Field(
+        default=50, ge=5, le=500, description="Maximum direct children per node cap"
+    )
+    default_match_mode: str = Field(
+        default="EXACT",
+        description="Default locator string match mode (EXACT, CASE_INSENSITIVE, CONTAINS, STARTS_WITH)",
+    )
+    include_offscreen: bool = Field(
+        default=False,
+        description="Whether to include offscreen UI elements in tree search by default",
+    )
+    include_disabled: bool = Field(
+        default=False,
+        description="Whether to include disabled UI elements in tree search by default",
+    )
+    diagnostic_redaction: bool = Field(
+        default=True,
+        description="Enable automatic password field and secret UI data redaction",
+    )
+
+
+class AutomationSettings(BaseModel):
+    """Phase 6 Computer Automation Subsystem Settings."""
+
+    uia: UIAutomationSettings = Field(default_factory=UIAutomationSettings)
+
+
 class Settings(BaseModel):
     """Root configuration object containing sub-configuration domain models."""
 
@@ -783,3 +822,4 @@ class Settings(BaseModel):
         default_factory=MemoryRetrievalSettings
     )
     memory_privacy: MemoryPrivacySettings = Field(default_factory=MemoryPrivacySettings)
+    automation: AutomationSettings = Field(default_factory=AutomationSettings)

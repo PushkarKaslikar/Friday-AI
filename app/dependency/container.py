@@ -3,6 +3,13 @@
 from dependency_injector import containers, providers
 
 from app.ai.diagnostics.diagnostics import LLMDiagnostics
+from app.automation.models import MatchMode
+from app.automation.uia.diagnostics import UIAutomationDiagnostics
+from app.automation.uia.element_finder import ElementFinder
+from app.automation.uia.metrics import UIAutomationMetrics
+from app.automation.uia.tree_walker import UITreeWalker
+from app.automation.uia.uia_engine import UIAutomationEngine
+from app.automation.uia.window_resolver import WindowResolver
 from app.ai.gateway.model_manager import LLMModelManager
 from app.ai.metrics.metrics import LLMMetrics
 from app.ai.orchestration.ai_orchestrator import AIOrchestrator
@@ -1194,4 +1201,46 @@ class ApplicationContainer(containers.DeclarativeContainer):
         NotificationManager,
         tray_manager=tray_manager,
         event_bus=event_bus,
+    )
+
+    # Phase 6.1 UI Automation Foundation singletons
+    window_resolver = providers.Singleton(
+        WindowResolver,
+    )
+
+    ui_automation_metrics = providers.Singleton(
+        UIAutomationMetrics,
+    )
+
+    ui_tree_walker = providers.Singleton(
+        UITreeWalker,
+        max_depth=providers.Callable(lambda s: s.automation.uia.max_tree_depth, s=settings),
+        max_nodes=providers.Callable(lambda s: s.automation.uia.max_tree_nodes, s=settings),
+        max_children_per_node=providers.Callable(lambda s: s.automation.uia.max_children, s=settings),
+        include_offscreen=providers.Callable(lambda s: s.automation.uia.include_offscreen, s=settings),
+        include_disabled=providers.Callable(lambda s: s.automation.uia.include_disabled, s=settings),
+        sanitize_sensitive=providers.Callable(lambda s: s.automation.uia.diagnostic_redaction, s=settings),
+    )
+
+    ui_element_finder = providers.Singleton(
+        ElementFinder,
+        tree_walker=ui_tree_walker,
+        default_match_mode=providers.Callable(
+            lambda s: MatchMode(s.automation.uia.default_match_mode), s=settings
+        ),
+    )
+
+    ui_automation_diagnostics = providers.Singleton(
+        UIAutomationDiagnostics,
+        window_resolver=window_resolver,
+        metrics=ui_automation_metrics,
+    )
+
+    ui_automation_engine = providers.Singleton(
+        UIAutomationEngine,
+        window_resolver=window_resolver,
+        tree_walker=ui_tree_walker,
+        element_finder=ui_element_finder,
+        metrics=ui_automation_metrics,
+        diagnostics=ui_automation_diagnostics,
     )
