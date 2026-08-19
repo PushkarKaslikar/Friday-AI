@@ -30,5 +30,12 @@
     "enabled": true,
     "max_steps": 5,
     "allow_tools": true
+  },
+  "stt": {
+    "enabled": true,
+    "engine": "parakeet",
+    "model_name": "nvidia/parakeet-tdt-0.6b-v3",
+    "device": "auto",
+    "compute_type": "auto"
   }
 }

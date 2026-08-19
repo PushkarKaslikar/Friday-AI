@@ -289,6 +289,7 @@ from app.voice.greeting.template_provider import TemplateGreetingProvider
 from app.voice.stt.diagnostics import STTDiagnostics
 from app.voice.stt.faster_whisper_engine import FasterWhisperSTTEngine
 from app.voice.stt.metrics import STTMetrics
+from app.voice.stt.parakeet_tdt_engine import ParakeetTDTSTTEngine
 from app.voice.stt.stt_service import STTService
 from app.voice.tts.diagnostics import TTSDiagnostics
 from app.voice.tts.metrics import TTSMetrics
@@ -750,6 +751,10 @@ class ApplicationContainer(containers.DeclarativeContainer):
 
     faster_whisper_engine = providers.Singleton(
         FasterWhisperSTTEngine,
+    )
+
+    parakeet_tdt_engine = providers.Singleton(
+        ParakeetTDTSTTEngine,
     )
 
     stt_service = providers.Singleton(

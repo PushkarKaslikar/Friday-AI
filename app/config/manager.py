@@ -72,18 +72,12 @@ class ConfigurationManager:
         if env_autostart := os.getenv("FRIDAY_AUTO_START"):
             ui_dict["auto_start"] = env_autostart.lower() in ("true", "1", "yes")
 
-        if env_log_level := os.getenv("FRIDAY_LOG_LEVEL"):
-            logging_dict["level"] = env_log_level.upper()
+        json_data["app"] = app_dict
+        json_data["ui"] = ui_dict
+        json_data["logging"] = logging_dict
 
         try:
-            app_settings = AppInfoSettings(**app_dict)
-            ui_settings = UISettings(**ui_dict)
-            logging_settings = LoggingSettings(**logging_dict)
-            self._settings = Settings(
-                app=app_settings,
-                ui=ui_settings,
-                logging=logging_settings,
-            )
+            self._settings = Settings(**json_data)
             return self._settings
         except PydanticValidationError as exc:
             raise ConfigurationError(

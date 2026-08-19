@@ -2,6 +2,7 @@
 
 import collections
 import threading
+import time
 from typing import Any
 
 import numpy as np
@@ -41,6 +42,7 @@ class AudioOutputStream:
         )
         self._current_chunk: np.ndarray | None = None
         self._current_offset: int = 0
+        self._last_playback_time: float = 0.0
         self._lock = threading.Lock()
 
     @property
@@ -60,6 +62,12 @@ class AudioOutputStream:
         """Check if output queue contains pending playback audio."""
         with self._lock:
             return len(self._output_queue) > 0 or self._current_chunk is not None
+
+    @property
+    def last_playback_time(self) -> float:
+        """Timestamp when audio was last output to hardware speakers."""
+        with self._lock:
+            return self._last_playback_time
 
     def prepare(self, device: AudioDevice) -> None:
         """Prepare output stream parameters without starting playback stream."""
@@ -222,4 +230,6 @@ class AudioOutputStream:
             outdata[filled_frames:] = 0.0
 
         if filled_frames > 0:
+            import time
+            self._last_playback_time = time.time()
             self.metrics.record_output_frame(frame_sample_count=filled_frames)

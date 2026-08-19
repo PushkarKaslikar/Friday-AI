@@ -1,5 +1,6 @@
 """Assistant Interaction View connecting PySide6 Desktop UI with Friday Backend AI Engines & Voice Loop."""
 
+import re
 import time
 import uuid
 from typing import Any
@@ -428,13 +429,24 @@ class AssistantPage(BasePage):
             )
             return
 
-        # 2. Check recent spoken phrases similarity / containment
+        # 2. Check recent spoken phrases similarity, containment, and word overlap
+        words = set(re.findall(r"\b\w{3,}\b", clean_t))
         for phrase in self._recent_spoken_phrases:
-            if clean_t in phrase or phrase in clean_t:
+            phrase_lower = phrase.lower()
+            if clean_t in phrase_lower or phrase_lower in clean_t:
                 logger.info(
                     f"AssistantPage: Suppressing self-voice echo matching recent speech: '{transcribed_text}'"
                 )
                 return
+            if words:
+                phrase_words = set(re.findall(r"\b\w{3,}\b", phrase_lower))
+                if phrase_words:
+                    overlap = len(words & phrase_words) / len(words)
+                    if overlap >= 0.4:
+                        logger.info(
+                            f"AssistantPage: Suppressing acoustic echo with {overlap*100:.0f}% word overlap with recent speech: '{transcribed_text}'"
+                        )
+                        return
 
         # 3. Known system prompts / greetings / error phrases
         known_self_echos = (
@@ -452,6 +464,13 @@ class AssistantPage(BasePage):
             "processing your request",
             "current state",
             "local llm",
+            "mock response",
+            "winerror",
+            "file specified",
+            "cannot find the file",
+            "could not be resolved",
+            "attempted to open",
+            "attempted to close",
             "opening ",
             "closing ",
             "volume set to",

@@ -22,6 +22,7 @@ from app.voice.stt.models import (
     TranscriptionResult,
     TranscriptSegment,
 )
+from app.voice.stt.parakeet_tdt_engine import ParakeetTDTSTTEngine
 from app.voice.stt.speech_buffer import SpeechSegmentBuffer
 from app.voice.stt.stt_engine_interface import ISTTEngine
 from app.voice.stt.stt_service import STTService
@@ -31,6 +32,7 @@ __all__ = [
     "FasterWhisperSTTEngine",
     "ISTTEngine",
     "ISTTService",
+    "ParakeetTDTSTTEngine",
     "STTConfiguration",
     "STTDiagnostics",
     "STTError",

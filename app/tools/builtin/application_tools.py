@@ -20,19 +20,35 @@ from app.tools.models.errors import ToolErrorCode, ToolExecutionError
 KNOWN_APP_EXECUTABLES: dict[str, str] = {
     "chrome": "chrome.exe",
     "google chrome": "chrome.exe",
+    "browser": "chrome.exe",
     "notepad": "notepad.exe",
+    "notes": "notepad.exe",
     "calculator": "calc.exe",
+    "calculate": "calc.exe",
     "calc": "calc.exe",
     "cmd": "cmd.exe",
     "command prompt": "cmd.exe",
     "powershell": "powershell.exe",
     "explorer": "explorer.exe",
+    "file explorer": "explorer.exe",
+    "files": "explorer.exe",
+    "this pc": "explorer.exe",
+    "my computer": "explorer.exe",
     "edge": "msedge.exe",
     "msedge": "msedge.exe",
     "paint": "mspaint.exe",
     "mspaint": "mspaint.exe",
     "code": "code.cmd",
     "vscode": "code.cmd",
+    "vs code": "code.cmd",
+    "microsoft store": "ms-windows-store:",
+    "store": "ms-windows-store:",
+    "windows store": "ms-windows-store:",
+    "settings": "ms-settings:",
+    "task manager": "taskmgr.exe",
+    "taskmgr": "taskmgr.exe",
+    "control panel": "control.exe",
+    "control": "control.exe",
 }
 
 
@@ -72,6 +88,19 @@ class OpenApplicationTool(BaseTool):
 
         # Check known alias dictionary
         exe_name = KNOWN_APP_EXECUTABLES.get(app_name_raw, app_name_raw)
+
+        # Handle URI schemes directly (e.g., ms-windows-store:, ms-settings:)
+        if ":" in exe_name and not os.path.exists(exe_name):
+            try:
+                os.startfile(exe_name)
+                logger.info(f"OpenApplicationTool: Protocol launched '{exe_name}'.")
+                return {"launched": True, "application": exe_name, "path": "protocol_uri"}
+            except Exception as exc:
+                raise ToolExecutionError(
+                    error_code=ToolErrorCode.EXECUTION_FAILED,
+                    message=f"Failed to launch protocol URI '{exe_name}': {exc}",
+                    tool_id=self.tool_id,
+                ) from exc
 
         # Check path lookup
         target_path = shutil.which(exe_name) or shutil.which(f"{exe_name}.exe")

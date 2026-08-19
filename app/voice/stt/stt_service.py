@@ -31,6 +31,7 @@ from app.voice.stt.models import (
     STTState,
     TranscriptionResult,
 )
+from app.voice.stt.parakeet_tdt_engine import ParakeetTDTSTTEngine
 from app.voice.stt.speech_buffer import SpeechSegmentBuffer
 from app.voice.stt.stt_engine_interface import ISTTEngine
 from app.voice.stt.stt_service_interface import ISTTService
@@ -56,9 +57,12 @@ class STTService(BaseService, ISTTService):
         self.diagnostics = diagnostics or STTDiagnostics(metrics=self.metrics)
 
         self._stt_config: STTConfiguration = self._load_stt_configuration()
-        self.engine: ISTTEngine = engine or FasterWhisperSTTEngine(
-            config=self._stt_config
-        )
+        if engine is not None:
+            self.engine: ISTTEngine = engine
+        elif "parakeet" in getattr(self._stt_config, "engine", "").lower() or "parakeet" in getattr(self._stt_config, "model_name", "").lower():
+            self.engine = ParakeetTDTSTTEngine(config=self._stt_config)
+        else:
+            self.engine = FasterWhisperSTTEngine(config=self._stt_config)
         self.speech_buffer = SpeechSegmentBuffer(
             sample_rate=16000,
             max_duration_seconds=round(
@@ -102,6 +106,7 @@ class STTService(BaseService, ISTTService):
                 stt_cfg = settings.stt
                 return STTConfiguration(
                     enabled=stt_cfg.enabled,
+                    engine=getattr(stt_cfg, "engine", "faster_whisper"),
                     model_name=stt_cfg.model_name,
                     device=stt_cfg.device,
                     compute_type=stt_cfg.compute_type,
@@ -183,18 +188,32 @@ class STTService(BaseService, ISTTService):
         self.speech_buffer.clear()
         logger.info("STTService: Stopped listening.")
 
+    def _is_speaker_active(self) -> bool:
+        """Check if audio output stream is currently playing audio or within decay window."""
+        return getattr(self.audio_engine, "is_playing_audio", False)
+
     def _on_speech_started(self, event: Any) -> None:
         """EventBus handler when VAD confirms speech start."""
+        if self._is_speaker_active():
+            return
         if self._is_listening and self.stt_config.enabled:
             self.speech_buffer.start_collection()
 
     def _on_audio_frame(self, frame: AudioFrame) -> None:
         """AudioEngine subscriber receiving real-time audio frames."""
+        if self._is_speaker_active():
+            if self.speech_buffer.is_collecting:
+                self.speech_buffer.clear()
+            return
         if self._is_listening and self.speech_buffer.is_collecting:
             self.speech_buffer.push_frame(frame)
 
     def _on_speech_stopped(self, event: Any) -> None:
         """EventBus handler when VAD confirms speech stop."""
+        if self._is_speaker_active():
+            logger.info("STTService: Discarding speech segment recorded during speaker output.")
+            self.speech_buffer.clear()
+            return
         if not self._is_listening or not self.stt_config.enabled:
             return
 

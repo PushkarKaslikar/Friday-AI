@@ -196,3 +196,45 @@ def test_orchestrating_provider_greetings_fast_path():
     resp_who = provider.get_response("Who are you?")
     assert "personal AI assistant" in resp_who
 
+
+def test_orchestrating_provider_natural_phrasing_fast_path():
+    """Verify natural conversational phrasings trigger open/close tools correctly."""
+    executor = MagicMock(spec=ToolExecutor)
+    executor.execute.return_value = ToolResult(
+        tool_id="system.open_application",
+        success=True,
+        result_data={"launched": True, "application": "calc.exe"},
+    )
+    orchestrator = MagicMock(spec=AIOrchestrator)
+    orchestrator.tool_executor = executor
+
+    provider = OrchestratingResponseProvider(ai_orchestrator=orchestrator)
+
+    # 1. "can you open calculator?"
+    resp = provider.get_response("can you open calculator?")
+    assert "Opening Calculator now." in resp
+    assert executor.execute.call_args.kwargs["arguments"]["application"] == "calc"
+
+    # 2. "go to this pc"
+    executor.reset_mock()
+    executor.execute.return_value = ToolResult(
+        tool_id="system.open_application",
+        success=True,
+        result_data={"launched": True, "application": "explorer.exe"},
+    )
+    resp_pc = provider.get_response("go to this pc")
+    assert "Opening File Explorer now." in resp_pc
+    assert executor.execute.call_args.kwargs["arguments"]["application"] == "explorer"
+
+    # 3. "any close x file explorer."
+    executor.reset_mock()
+    executor.execute.return_value = ToolResult(
+        tool_id="system.close_application",
+        success=True,
+        result_data={"closed": True, "application_name": "explorer"},
+    )
+    resp_close = provider.get_response("any close x file explorer.")
+    assert "Closing File Explorer." in resp_close
+    assert executor.execute.call_args.kwargs["arguments"]["application_name"] == "explorer"
+
+

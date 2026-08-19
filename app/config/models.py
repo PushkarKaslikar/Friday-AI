@@ -216,9 +216,13 @@ class STTSettings(BaseModel):
     """Configuration model for Speech-to-Text (STT) Subsystem."""
 
     enabled: bool = Field(default=True, description="Enable or disable STT subsystem")
+    engine: str = Field(
+        default="faster_whisper",
+        description="Speech-to-text inference engine ('faster_whisper', 'parakeet')",
+    )
     model_name: str = Field(
         default="base",
-        description="Faster-Whisper model size ('tiny', 'base', 'small', 'medium', 'large-v3', 'turbo')",
+        description="Faster-Whisper or Parakeet model identifier ('tiny', 'base', 'small', 'medium', 'large-v3', 'turbo', 'nvidia/parakeet-tdt-0.6b-v3')",
     )
     device: str = Field(
         default="auto",

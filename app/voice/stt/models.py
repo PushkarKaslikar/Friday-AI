@@ -58,6 +58,7 @@ class STTConfiguration:
     """Configuration settings for Speech-to-Text (STT) Subsystem."""
 
     enabled: bool = True
+    engine: str = "faster_whisper"  # "faster_whisper" or "parakeet"
     model_name: str = "base"
     device: str = "auto"
     compute_type: str = "auto"

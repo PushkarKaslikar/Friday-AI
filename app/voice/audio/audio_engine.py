@@ -101,6 +101,18 @@ class AudioEngine(BaseService, IAudioEngine):
         """Current output stream state."""
         return self.output_stream.state
 
+    @property
+    def is_playing_audio(self) -> bool:
+        """Check if output stream is playing audio or within 1.5s reverberation decay."""
+        if hasattr(self, "output_stream") and self.output_stream:
+            if self.output_stream.is_playing:
+                return True
+            import time
+            last_t = getattr(self.output_stream, "last_playback_time", 0.0)
+            if (time.time() - last_t) < 1.5:
+                return True
+        return False
+
     def _load_configuration(self) -> AudioConfiguration:
         """Load AudioConfiguration from Settings Manager."""
         settings: Settings = self.config_manager.settings

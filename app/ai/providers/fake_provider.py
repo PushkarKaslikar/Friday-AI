@@ -79,7 +79,17 @@ class FakeAIModelProvider(IAIModelProvider):
 
         text = self.default_response_text
         if self.default_response_text == "FRIDAY LOCAL LLM TEST PASSED" and request.prompt:
-            text = f"Mock Response to: '{request.prompt[:30]}'"
+            p_lower = request.prompt.lower()
+            if "hello" in p_lower or "hi" in p_lower or "hey" in p_lower:
+                text = "Hello! I am Friday, your personal desktop AI assistant. How can I assist you today?"
+            elif "who are you" in p_lower or "what are you" in p_lower:
+                text = "I am Friday, an agentic desktop AI assistant with local tool calling and system control."
+            elif "time" in p_lower:
+                text = f"The current system time is {time.strftime('%I:%M %p')}."
+            elif "date" in p_lower:
+                text = f"Today is {time.strftime('%A, %B %d, %Y')}."
+            else:
+                text = "I am ready to help you with desktop automation, opening applications, and system management."
 
         with self._lock:
             self._state = ModelLifecycleState.READY

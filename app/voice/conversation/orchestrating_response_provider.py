@@ -36,12 +36,14 @@ class OrchestratingResponseProvider(IConversationResponseProvider):
         "file explorer": "explorer",
         "explorer": "explorer",
         "files": "explorer",
-        "my computer": "explorer",
         "this pc": "explorer",
-        "notepad": "notepad",
+        "my computer": "explorer",
+        "my pc": "explorer",
         "calculator": "calc",
         "calculate": "calc",
         "calc": "calc",
+        "notepad": "notepad",
+        "notes": "notepad",
         "chrome": "chrome",
         "google chrome": "chrome",
         "browser": "chrome",
@@ -60,6 +62,9 @@ class OrchestratingResponseProvider(IConversationResponseProvider):
         "task manager": "taskmgr",
         "control panel": "control",
         "settings": "ms-settings:",
+        "microsoft store": "ms-windows-store:",
+        "store": "ms-windows-store:",
+        "windows store": "ms-windows-store:",
     }
 
     APP_DISPLAY_NAMES: dict[str, str] = {
@@ -74,6 +79,8 @@ class OrchestratingResponseProvider(IConversationResponseProvider):
         "paint": "Paint",
         "taskmgr": "Task Manager",
         "control": "Control Panel",
+        "ms-windows-store:": "Microsoft Store",
+        "ms-settings:": "Settings",
     }
 
     def __init__(
@@ -159,68 +166,26 @@ class OrchestratingResponseProvider(IConversationResponseProvider):
         if not executor:
             return None
 
-        # --- OPEN APPLICATION ---
-        if lower.startswith("open ") or "launch " in lower or "start " in lower:
-            target = None
-            display_name = ""
-            for key, app_exe in self.KNOWN_APPS.items():
-                if key in lower:
-                    target = app_exe
-                    display_name = self.APP_DISPLAY_NAMES.get(app_exe, key.title())
-                    break
+        # --- WINDOW MANAGEMENT ---
+        if any(k in lower for k in ("list open windows", "list windows", "show open windows", "open windows", "window.list_open")):
+            res = executor.execute(tool_id="window.list_open", arguments={}, command_id=req_id)
+            data = getattr(res, "result_data", None) or getattr(res, "result", None) or {}
+            if res.is_success and isinstance(data, dict):
+                windows = data.get("windows", [])
+                w_titles = [w.get("title", "") for w in windows if w.get("title")][:5]
+                w_str = ", ".join(w_titles) if w_titles else "No titled windows found"
+                return f"Friday found {len(windows)} open windows: {w_str}."
+            return "Retrieved open window list."
 
-            if not target:
-                # Extract remainder after "open" / "launch" / "start"
-                for verb in ("open", "launch", "start"):
-                    if verb in lower:
-                        candidate = lower.split(verb, 1)[-1].strip()
-                        candidate = re.sub(r"\b(the|a|an|app|application|please)\b", "", candidate).strip()
-                        if candidate:
-                            target = self.KNOWN_APPS.get(candidate, candidate)
-                            display_name = self.APP_DISPLAY_NAMES.get(target, candidate.title())
-                            break
-
-            if target:
-                res = executor.execute(
-                    tool_id="system.open_application",
-                    arguments={"application": target},
-                    command_id=req_id,
-                )
-                self._record_in_conversation(session_id, "system.open_application", {"application": target}, res)
-                if res.is_success:
-                    return f"Opening {display_name} now."
-                return f"I attempted to open {display_name}, but encountered an error: {res.error}"
-
-        # --- CLOSE APPLICATION ---
-        if lower.startswith("close ") or lower.startswith("exit ") or lower.startswith("terminate ") or lower.startswith("kill "):
-            target = None
-            display_name = ""
-            for key, app_exe in self.KNOWN_APPS.items():
-                if key in lower:
-                    target = app_exe
-                    display_name = self.APP_DISPLAY_NAMES.get(app_exe, key.title())
-                    break
-
-            if not target:
-                for verb in ("close", "exit", "terminate", "kill"):
-                    if verb in lower:
-                        candidate = lower.split(verb, 1)[-1].strip()
-                        candidate = re.sub(r"\b(the|a|an|app|application|please)\b", "", candidate).strip()
-                        if candidate:
-                            target = self.KNOWN_APPS.get(candidate, candidate)
-                            display_name = self.APP_DISPLAY_NAMES.get(target, candidate.title())
-                            break
-
-            if target:
-                res = executor.execute(
-                    tool_id="system.close_application",
-                    arguments={"application_name": target},
-                    command_id=req_id,
-                )
-                self._record_in_conversation(session_id, "system.close_application", {"application_name": target}, res)
-                if res.is_success:
-                    return f"Closing {display_name}."
-                return f"Could not close {display_name}: {res.error}"
+        # --- SCREENSHOT / SCREEN CAPTURE ---
+        if any(k in lower for k in ("screenshot", "screen capture", "capture screen", "take screenshot", "capture desktop")):
+            res = executor.execute(tool_id="screen.capture", arguments={}, command_id=req_id)
+            data = getattr(res, "result_data", None) or getattr(res, "result", None) or {}
+            if res.is_success and isinstance(data, dict):
+                w = data.get("width", 1920)
+                h = data.get("height", 1080)
+                return f"Screen capture completed successfully. Dimensions: {w} by {h} pixels."
+            return "Screen capture completed."
 
         # --- AUDIO MUTE / UNMUTE / VOLUME ---
         if "mute audio" in lower or lower == "mute" or "silence" in lower:
@@ -248,27 +213,6 @@ class OrchestratingResponseProvider(IConversationResponseProvider):
                 tool_id="audio.set_volume", arguments={"volume": vol}, command_id=req_id
             )
             return f"Volume set to {vol} percent." if res.is_success else "Could not adjust volume."
-
-        # --- SCREENSHOT / SCREEN CAPTURE ---
-        if any(k in lower for k in ("screenshot", "screen capture", "capture screen", "take screenshot", "capture desktop")):
-            res = executor.execute(tool_id="screen.capture", arguments={}, command_id=req_id)
-            data = getattr(res, "result_data", None) or getattr(res, "result", None) or {}
-            if res.is_success and isinstance(data, dict):
-                w = data.get("width", 1920)
-                h = data.get("height", 1080)
-                return f"Screen capture completed successfully. Dimensions: {w} by {h} pixels."
-            return "Screen capture completed."
-
-        # --- WINDOW MANAGEMENT ---
-        if any(k in lower for k in ("list open windows", "list windows", "show open windows", "open windows", "window.list_open")):
-            res = executor.execute(tool_id="window.list_open", arguments={}, command_id=req_id)
-            data = getattr(res, "result_data", None) or getattr(res, "result", None) or {}
-            if res.is_success and isinstance(data, dict):
-                windows = data.get("windows", [])
-                w_titles = [w.get("title", "") for w in windows if w.get("title")][:5]
-                w_str = ", ".join(w_titles) if w_titles else "No titled windows found"
-                return f"Friday found {len(windows)} open windows: {w_str}."
-            return "Retrieved open window list."
 
         # --- SYSTEM POWER ---
         if "lock computer" in lower or "lock pc" in lower or "lock screen" in lower or lower == "lock":
@@ -321,9 +265,77 @@ class OrchestratingResponseProvider(IConversationResponseProvider):
                 text = res.result.get("text", res.result.get("content", ""))
                 if text:
                     preview = text[:100] + ("..." if len(text) > 100 else "")
-                    return f"Clipboard contents: {preview}"
-                return "Your clipboard is currently empty."
+                    return f"Clipboard contains: {preview}"
+                return "Clipboard is empty."
             return "Could not read clipboard."
+
+        # --- CLOSE APPLICATION ---
+        is_close_intent = any(v in lower for v in ("close", "exit", "terminate", "kill", "shut down", "quit"))
+        if is_close_intent:
+            target = None
+            display_name = ""
+            for key, app_exe in self.KNOWN_APPS.items():
+                if key in lower:
+                    target = app_exe
+                    display_name = self.APP_DISPLAY_NAMES.get(app_exe, key.title())
+                    break
+
+            if not target:
+                for verb in ("close", "exit", "terminate", "kill", "quit"):
+                    if verb in lower:
+                        candidate = lower.split(verb, 1)[-1].strip()
+                        candidate = re.sub(r"\b(the|a|an|app|application|please|x)\b", "", candidate).strip()
+                        if candidate:
+                            target = self.KNOWN_APPS.get(candidate, candidate)
+                            display_name = self.APP_DISPLAY_NAMES.get(target, candidate.title())
+                            break
+
+            if target:
+                res = executor.execute(
+                    tool_id="system.close_application",
+                    arguments={"application_name": target},
+                    command_id=req_id,
+                )
+                self._record_in_conversation(session_id, "system.close_application", {"application_name": target}, res)
+                if res.is_success:
+                    return f"Closing {display_name}."
+                return f"Could not close {display_name}: {res.error}"
+
+        # --- OPEN APPLICATION / NAVIGATION ---
+        is_open_intent = any(
+            v in lower for v in ("open", "launch", "start", "run", "bring up", "go to", "show", "view")
+        ) or any(k in lower for k in self.KNOWN_APPS)
+
+        if is_open_intent and not is_close_intent:
+            target = None
+            display_name = ""
+            for key, app_exe in self.KNOWN_APPS.items():
+                if key in lower:
+                    target = app_exe
+                    display_name = self.APP_DISPLAY_NAMES.get(app_exe, key.title())
+                    break
+
+            if not target:
+                # Extract remainder after action verbs
+                for verb in ("open", "launch", "start", "run", "bring up", "go to"):
+                    if verb in lower:
+                        candidate = lower.split(verb, 1)[-1].strip()
+                        candidate = re.sub(r"\b(the|a|an|app|application|please|up|to)\b", "", candidate).strip()
+                        if candidate:
+                            target = self.KNOWN_APPS.get(candidate, candidate)
+                            display_name = self.APP_DISPLAY_NAMES.get(target, candidate.title())
+                            break
+
+            if target:
+                res = executor.execute(
+                    tool_id="system.open_application",
+                    arguments={"application": target},
+                    command_id=req_id,
+                )
+                self._record_in_conversation(session_id, "system.open_application", {"application": target}, res)
+                if res.is_success:
+                    return f"Opening {display_name} now."
+                return f"I attempted to open {display_name}, but encountered an error: {res.error}"
 
         return None
 

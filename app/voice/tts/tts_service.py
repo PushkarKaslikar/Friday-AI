@@ -85,7 +85,7 @@ class TTSService(BaseService, ITTSService):
     @property
     def is_speaking(self) -> bool:
         """Check if TTS is actively synthesizing or playing audio."""
-        return self._is_speaking or self.audio_engine.output_stream.is_playing
+        return self._is_speaking or getattr(self.audio_engine, "is_playing_audio", False)
 
     def _set_tts_state(self, new_state: TTSState) -> None:
         """Transition TTS state and publish EventBus notification."""
