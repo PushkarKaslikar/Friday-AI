@@ -56,6 +56,16 @@ class BaseService(ABC):
         return self._last_error
 
     @property
+    def is_running(self) -> bool:
+        """Flag indicating if service is currently running."""
+        return self._state == ServiceState.RUNNING
+
+    @property
+    def is_initialized(self) -> bool:
+        """Flag indicating if service has been initialized."""
+        return self._state in (ServiceState.INITIALIZED, ServiceState.RUNNING)
+
+    @property
     def uptime_seconds(self) -> float:
         """Calculate active running uptime in seconds."""
         if self._state == ServiceState.RUNNING and self._start_time is not None:

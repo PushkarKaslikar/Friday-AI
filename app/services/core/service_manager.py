@@ -40,16 +40,15 @@ class ServiceManager:
             service: BaseService instance.
         """
         with self._lock:
-            if service.name in self._services:
-                logger.warning(
-                    f"ServiceManager: Service '{service.name}' is already registered."
-                )
-                return
-
             self._services[service.name] = service
             logger.info(
                 f"ServiceManager: Registered service '{service.name}' (critical={service.is_critical})."
             )
+
+    def clear(self) -> None:
+        """Clear all registered services from manager."""
+        with self._lock:
+            self._services.clear()
 
     def get_service(self, name: str) -> BaseService | None:
         """Retrieve registered service by name."""

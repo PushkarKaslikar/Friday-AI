@@ -56,7 +56,7 @@ class LLMModelManager(BaseService):
         super().__init__(name="LLMModelManager", is_critical=False)
         self.config_manager = config_manager or ConfigurationManager()
         self.event_bus = event_bus or EventBus()
-        self._lock = threading.Lock()
+        self._lock = threading.RLock()
 
         self._model_config: AIModelConfiguration = self._load_model_configuration()
         self._provider: IAIModelProvider = provider or self._select_provider(

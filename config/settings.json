@@ -16,5 +16,19 @@
     "log_to_file": true,
     "max_file_size_mb": 10,
     "retention_days": 30
+  },
+  "llm": {
+    "provider": "fake",
+    "model_name": "FakeModel-v1",
+    "model_path": "fake://model",
+    "preload_model": false,
+    "context_size": 4096,
+    "temperature": 0.3,
+    "max_tokens": 512
+  },
+  "orchestrator": {
+    "enabled": true,
+    "max_steps": 5,
+    "allow_tools": true
   }
 }

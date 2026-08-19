@@ -104,7 +104,7 @@ class ConversationManager(BaseService, IConversationManager):
             config=self._manager_config
         )
 
-        self._lock = threading.Lock()
+        self._lock = threading.RLock()
         self._last_error: str | None = None
         self._active_session_id: str | None = None
 
@@ -435,6 +435,7 @@ class ConversationManager(BaseService, IConversationManager):
             if container and container.pending_request:
                 pr = container.pending_request
                 container.pending_request = None
+                self._rebuild_context_snapshot(session_id)
                 self.metrics.record_clarification(resolved=True)
                 self.event_bus.publish(
                     ClarificationResolved(
@@ -447,7 +448,7 @@ class ConversationManager(BaseService, IConversationManager):
                 return (
                     f"Opening {clean}."
                     if "open" in target_action.lower()
-                    else f"Processing {target_action} for {clean}."
+                    else f"Executing {target_action} for {clean}."
                 )
 
             # 2. Handle User Correction ("No, I meant Edge")
@@ -496,11 +497,12 @@ class ConversationManager(BaseService, IConversationManager):
                     turn_number=turn_num,
                     original_text=clean,
                     missing_fields=["target_entity"],
-                    clarification_prompt=f"Which one should I target, {names}?",
+                    clarification_prompt=f"Which one would you like to target, {names}?",
                     candidate_options=[c.name for c in ref_res.candidates[:2]],
                 )
                 if container:
                     container.pending_request = pr
+                    self._rebuild_context_snapshot(session_id)
                 self.metrics.record_clarification(resolved=False)
                 self.event_bus.publish(
                     ClarificationRequired(
@@ -510,7 +512,7 @@ class ConversationManager(BaseService, IConversationManager):
                         missing_fields=pr.missing_fields,
                     )
                 )
-                return f"Which one should I target, {names}?"
+                return f"Which one would you like to target, {names}?"
 
             if (
                 ref_res.status == ReferenceResolutionStatus.RESOLVED

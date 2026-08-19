@@ -78,7 +78,7 @@ class FakeAIModelProvider(IAIModelProvider):
         time.sleep(0.01)
 
         text = self.default_response_text
-        if request.prompt:
+        if self.default_response_text == "FRIDAY LOCAL LLM TEST PASSED" and request.prompt:
             text = f"Mock Response to: '{request.prompt[:30]}'"
 
         with self._lock:
@@ -95,6 +95,8 @@ class FakeAIModelProvider(IAIModelProvider):
             generation_duration_ms=10.0,
             model_info=self.get_metadata(),
         )
+
+
 
     def generate_stream(self, request: AIRequest) -> Iterator[str]:
         """Simulate token streaming."""

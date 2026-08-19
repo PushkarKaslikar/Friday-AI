@@ -205,6 +205,12 @@ class GreetingService(BaseService):
                     should_speak=True,
                 )
 
+    def generate_activation_greeting(
+        self, session_id: str, activation_source: str = "WAKE_WORD"
+    ) -> GreetingResponse:
+        """Alias for generate_greeting for activation workflows."""
+        return self.generate_greeting(session_id, activation_source)
+
     def _on_conversation_activated(self, evt: ConversationActivated) -> None:
         """EventBus callback handler for conversation activation events."""
         self.generate_greeting(evt.session_id, evt.activation_source)

@@ -3,6 +3,8 @@
 Phase 4.2 - AI Orchestrator & Reasoning Workflow Engine
 """
 
+from pydantic import BaseModel
+
 from app.ai.gateway.model_manager import LLMModelManager
 from app.ai.orchestration.ai_orchestrator import AIOrchestrator
 from app.ai.orchestration.models import (
@@ -20,21 +22,27 @@ from app.tools.models.result import ToolResult
 from app.tools.registry.tool_registry import ToolRegistry
 
 
+class DummyEchoInput(BaseModel):
+    message: str = "Friday Test"
+
+
 class DummyEchoTool(BaseTool):
     """Dummy echo tool for orchestration workflow testing."""
 
     def __init__(self) -> None:
         metadata = ToolMetadata(
+            tool_id="echo_tool",
             name="echo_tool",
             display_name="Echo Tool",
             description="Echo back input message.",
-            category=ToolCategory.CORE,
+            category=ToolCategory.UTILITY,
+            input_schema=DummyEchoInput,
         )
         super().__init__(metadata)
 
-    def _execute(self, arguments: dict) -> ToolResult:
-        msg = arguments.get("message", "hello")
-        return ToolResult.success_result(result_id="res-1", result={"echoed": msg})
+    def run_tool(self, validated_input: BaseModel, command_id: str = "") -> Any:
+        inp: DummyEchoInput = validated_input  # type: ignore
+        return {"echoed": inp.message}
 
 
 def test_orchestrator_config_defaults():

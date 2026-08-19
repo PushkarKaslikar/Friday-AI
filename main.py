@@ -34,14 +34,19 @@ def setup_global_exception_handler() -> None:
     sys.excepthook = handle_uncaught_exception
 
 
-from app.automation.models import WindowSearchStatus
+from app.automation.apps.models import TerminalType
 from app.automation.input.models import (
     InputTarget,
     MouseButton,
     TargetType,
     TypingProfile,
 )
-from app.automation.apps.models import TerminalType
+from app.automation.models import WindowSearchStatus
+from app.automation.safety.models import (
+    AutomationBlastRadius,
+    AutomationSafetyDecision,
+    AutomationSafetyReasonCode,
+)
 from app.automation.workflow.examples import (
     build_arrange_workspace_workflow,
     build_open_project_explorer_workflow,
@@ -56,6 +61,7 @@ from app.automation.workflow.models import (
     WorkflowPlan,
     WorkflowStep,
 )
+from app.tools.base.risk import ToolRiskLevel
 from app.tools.execution.cancellation import CancellationToken
 
 
@@ -158,7 +164,7 @@ def run_uia_tree_dump(
     walker = uia_engine.get_tree_walker()
 
     if output_json:
-        tree_node, truncated = walker.traverse_tree(
+        tree_node, _truncated = walker.traverse_tree(
             raw_root,
             root_elem,
             max_depth=max_depth,
@@ -994,7 +1000,7 @@ def run_workflow_resource_test(bootstrapper: AppBootstrapper) -> int:
     print("\n=========================================")
     print("     FRIDAY WORKFLOW RESOURCE TEST       ")
     print("=========================================")
-
+    print(f"Workflow Engine State:   {wf_mgr.engine.state.value}")
     print("Resource Lock Inspection: PASS")
     print("=========================================\n")
     return 0
@@ -3518,6 +3524,8 @@ def run_semantic_memory_benchmark(bootstrapper: AppBootstrapper) -> int:
     t_search = (time.perf_counter() - t2) * 1000.0
 
     print(f"Batch Count:       {len(texts)} items")
+    print(f"Indexed Count:     {len(vids)} vectors")
+    print(f"Search Top-K:      {len(hits)} hits")
     print(
         f"Batch Embedding:   {round(t_batch, 2)} ms ({round(t_batch / len(texts), 2)} ms/item)"
     )
@@ -3669,7 +3677,7 @@ def run_memory_retrieval_profile_test(bootstrapper: AppBootstrapper) -> int:
     prof_svc = bootstrap_result.container.user_profile_service()
     ret_svc = bootstrap_result.container.memory_retrieval_service()
 
-    prof_svc.set_preference("preferred_editor", "VS Code", explicit=True)
+    prof_svc.set_preference("preferred_editor", "VS Code", source="USER_EXPLICIT")
 
     from app.memory.retrieval_models import MemoryRetrievalRequest
 

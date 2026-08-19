@@ -209,6 +209,17 @@ class AppBootstrapper:
         tool_calling_engine = self.container.tool_calling_engine()
         personality_engine = self.container.personality_engine()
         response_generator = self.container.response_generator()
+
+        # Connect the voice pipeline to the AI Orchestrator.
+        # The ConversationStateMachine is initially wired with TestResponseProvider
+        # (due to DI declaration ordering), so we swap in the real provider here.
+        orchestrating_provider = self.container.orchestrating_response_provider()
+        conversation_sm.response_provider = orchestrating_provider
+        logger.info(
+            "[Bootstrap Step 5/8] Connected voice pipeline to AI Orchestrator "
+            "via OrchestratingResponseProvider."
+        )
+
         uia_engine = self.container.ui_automation_engine()
         try:
             uia_engine.initialize()

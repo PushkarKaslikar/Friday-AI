@@ -11,6 +11,8 @@ from app.voice.conversation.response_provider_interface import (
 class TestResponseProvider(IConversationResponseProvider):
     """Deterministic fake response provider for state machine testing."""
 
+    __test__ = False
+
     def __init__(
         self, default_response: str = "Hello Pushkar. Friday is online."
     ) -> None:

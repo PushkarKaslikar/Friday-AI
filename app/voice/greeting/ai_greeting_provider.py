@@ -142,7 +142,11 @@ class AIGreetingProvider(IGreetingProvider):
                     "spoken_text": spoken_text,
                     "generation_duration_ms": round(duration_ms, 2),
                     "ai_generated": True,
-                    "model_name": ai_resp.model_name,
+                    "model_name": (
+                        ai_resp.model_info.model_name
+                        if ai_resp.model_info
+                        else "unknown"
+                    ),
                 },
             )
 

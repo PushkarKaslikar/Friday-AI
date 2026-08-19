@@ -79,3 +79,16 @@ def bootstrapper() -> Generator[AppBootstrapper, None, None]:
     yield b
     if b.service_manager:
         b.service_manager.stop_all()
+
+
+@pytest.fixture(autouse=True)
+def clean_event_bus_and_singletons():
+    """Autouse fixture ensuring clean EventBus and ServiceManager state for every test."""
+    from app.services.core.service_manager import ServiceManager
+    from app.services.events.event_bus import EventBus
+
+    EventBus().clear()
+    ServiceManager().clear()
+    yield
+    EventBus().clear()
+    ServiceManager().clear()

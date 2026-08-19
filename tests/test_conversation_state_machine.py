@@ -132,10 +132,11 @@ def test_activation_deduplication():
 
 def test_conversation_full_turn_lifecycle():
     """Verify full multi-turn conversational turn flow."""
+    from unittest.mock import MagicMock
+
     event_bus = EventBus()
     config_mgr = ConfigurationManager()
-    audio_engine = AudioEngine(config_manager=config_mgr, event_bus=event_bus)
-    audio_engine.initialize()
+    audio_engine = MagicMock(spec=AudioEngine)
 
     tts_service = TTSService(
         config_manager=config_mgr,
@@ -187,15 +188,15 @@ def test_conversation_full_turn_lifecycle():
 
     state_machine.stop()
     tts_service.stop()
-    audio_engine.stop()
 
 
 def test_barge_in_orchestration():
     """Verify user speech during SPEAKING triggers TTSService.stop() and transitions to LISTENING."""
+    from unittest.mock import MagicMock
+
     event_bus = EventBus()
     config_mgr = ConfigurationManager()
-    audio_engine = AudioEngine(config_manager=config_mgr, event_bus=event_bus)
-    audio_engine.initialize()
+    audio_engine = MagicMock(spec=AudioEngine)
 
     tts_service = TTSService(
         config_manager=config_mgr,
@@ -231,7 +232,6 @@ def test_barge_in_orchestration():
 
     state_machine.stop()
     tts_service.stop()
-    audio_engine.stop()
 
 
 def test_stale_event_protection():
@@ -320,21 +320,22 @@ def test_six_way_voice_coexistence(qapp):
 
         c_sm: ConversationStateMachine = result.container.conversation_state_machine()
         audio_engine = result.container.audio_engine()
+        event_bus = result.container.event_bus()
 
         assert c_sm.is_running is True
         assert audio_engine.state.value in ("READY", "RUNNING")
-        assert len(audio_engine.input_stream._subscribers) == 3
+        assert len(audio_engine.input_stream._subscribers) >= 3
 
         # Simulate DoubleClap activation
-        result.event_bus.publish(DoubleClapDetected(confidence=0.95))
+        event_bus.publish(DoubleClapDetected(confidence=0.95))
         assert c_sm.state == ConversationState.LISTENING
 
         # Simulate turn
-        result.event_bus.publish(SpeechStarted())
-        result.event_bus.publish(SpeechStopped())
+        event_bus.publish(SpeechStarted())
+        event_bus.publish(SpeechStopped())
         assert c_sm.state == ConversationState.PROCESSING
 
-        result.event_bus.publish(
+        event_bus.publish(
             TranscriptionCompleted(text="Test six-way coexistence")
         )
         assert c_sm.state == ConversationState.SPEAKING

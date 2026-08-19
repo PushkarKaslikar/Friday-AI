@@ -1,0 +1,19 @@
+{
+  "app_name": "Friday AI Assistant",
+  "version": "1.0.0",
+  "timestamp": "2026-08-19 20:36:18.527546",
+  "python_version": "3.14.5 (tags/v3.14.5:5607950, May 10 2026, 10:43:50) [MSC v.1944 64 bit (AMD64)]",
+  "os_platform": "win32",
+  "pid": 35828,
+  "exception": {
+    "type": "AssertionError",
+    "message": "",
+    "traceback": [
+      "Traceback (most recent call last):\n",
+      "  File \"D:\\Friday AI\\verify_live_pipeline.py\", line 76, in <module>\n    main()\n    ~~~~^^\n",
+      "  File \"D:\\Friday AI\\verify_live_pipeline.py\", line 56, in main\n    assert \"muted\" in response.lower()\n           ^^^^^^^^^^^^^^^^^^^^^^^^^^^\n",
+      "AssertionError\n"
+    ]
+  },
+  "extra_context": {}
+}

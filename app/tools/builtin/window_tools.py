@@ -56,16 +56,22 @@ class WindowListTool(BaseTool):
         windows_list = []
 
         if win32gui and win32process:
+            try:
+                def enum_handler(hwnd, _):
+                    try:
+                        if win32gui.IsWindow(hwnd) and win32gui.IsWindowVisible(hwnd):
+                            title = win32gui.GetWindowText(hwnd)
+                            if title and title.strip():
+                                _, pid = win32process.GetWindowThreadProcessId(hwnd)
+                                windows_list.append({"hwnd": hwnd, "title": title, "pid": pid})
+                    except Exception:
+                        pass
 
-            def enum_handler(hwnd, _):
-                if win32gui.IsWindowVisible(hwnd):
-                    title = win32gui.GetWindowText(hwnd)
-                    if title and title.strip():
-                        _, pid = win32process.GetWindowThreadProcessId(hwnd)
-                        windows_list.append({"hwnd": hwnd, "title": title, "pid": pid})
-
-            win32gui.EnumWindows(enum_handler, None)
-            return {"window_count": len(windows_list), "windows": windows_list}
+                win32gui.EnumWindows(enum_handler, None)
+                return {"window_count": len(windows_list), "windows": windows_list}
+            except Exception as exc:
+                if windows_list:
+                    return {"window_count": len(windows_list), "windows": windows_list}
 
         # Mock fallback
         return {

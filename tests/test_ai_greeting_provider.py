@@ -1,8 +1,5 @@
-"""Comprehensive test suite for Contextual AI Greeting Provider.
-
-Phase 4.6 - Contextual Greetings & Intelligent Activation Responses
-"""
-
+from app.ai.gateway.model_manager import LLMModelManager
+from app.ai.providers.fake_provider import FakeAIModelProvider
 from app.bootstrap.bootstrapper import AppBootstrapper
 from app.voice.greeting.ai_greeting_provider import AIGreetingProvider
 from app.voice.greeting.greeting_service import GreetingService
@@ -22,7 +19,10 @@ def test_ai_greeting_provider_name():
 
 def test_generate_ai_greeting_new_session():
     """Verify AI greeting generation for a new morning session."""
-    provider = AIGreetingProvider()
+    llm_manager = LLMModelManager(
+        provider=FakeAIModelProvider(default_response_text="Good morning Pushkar. Ready to assist.")
+    )
+    provider = AIGreetingProvider(llm_manager=llm_manager)
     ctx = GreetingContext(
         session_id="s-new-1",
         activation_source="WAKE_WORD",
@@ -40,7 +40,10 @@ def test_generate_ai_greeting_new_session():
 
 def test_generate_ai_greeting_returning_session():
     """Verify AI greeting generation for a returning session."""
-    provider = AIGreetingProvider()
+    llm_manager = LLMModelManager(
+        provider=FakeAIModelProvider(default_response_text="Welcome back Pushkar. Continuing our work.")
+    )
+    provider = AIGreetingProvider(llm_manager=llm_manager)
     ctx = GreetingContext(
         session_id="s-ret-1",
         activation_source="DOUBLE_CLAP",

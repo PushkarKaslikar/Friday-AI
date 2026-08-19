@@ -1,5 +1,6 @@
 """Assistant Interaction View connecting PySide6 Desktop UI with Friday Backend AI Engines & Voice Loop."""
 
+import time
 import uuid
 from typing import Any
 
@@ -30,7 +31,11 @@ from app.ui.widgets.chat_widget import (
 )
 from app.utilities.system_utils import get_timestamp_str
 from app.voice.clap.events import DoubleClapDetected
-from app.voice.conversation.events import ConversationStateChanged
+from app.voice.conversation.events import (
+    ConversationSpeakingCompleted,
+    ConversationSpeakingStarted,
+    ConversationStateChanged,
+)
 from app.voice.stt.events import TranscriptionCompleted
 from app.voice.wakeword.events import WakeWordDetected
 
@@ -55,104 +60,77 @@ class AIRequestWorker(QObject):
 
     def run(self) -> None:
         """Process user request and execute tools or return response payload."""
-        p_lower = self.prompt.lower().strip()
         resp_text = ""
         tool_id = "assistant.reason"
         success = True
 
-        # Quick Actions
-        if (
-            p_lower in ("window.list_open", "list open windows", "list windows")
-            and self.executor
-        ):
-            res = self.executor.execute("window.list_open", {})
-            data = res.data if res and isinstance(res.data, dict) else {}
-            windows = data.get("windows", [])
-            w_str = (
-                ", ".join([w.get("title", "Window") for w in windows[:5]])
-                if windows
-                else "No open windows found"
-            )
-            resp_text = f"Friday listed {len(windows)} open windows: {w_str}"
-            tool_id = "window.list_open"
-            success = res.success if res else False
+        # 1. First try OrchestratingResponseProvider if container is available
+        if self.container:
+            try:
+                provider = self.container.orchestrating_response_provider()
+                if provider:
+                    resp_text = provider.get_response(self.prompt)
+            except Exception as exc:  # noqa: BLE001
+                logger.warning(f"AIRequestWorker: OrchestratingResponseProvider error: {exc}")
 
-        elif (
-            p_lower in ("screen.capture", "capture screen", "screenshot")
-            and self.executor
-        ):
-            res = self.executor.execute("screen.capture", {})
-            data = res.data if res and isinstance(res.data, dict) else {}
-            resp_text = f"Screen capture completed successfully. Image dimensions: {data.get('width', 1920)}x{data.get('height', 1080)} pixels."
-            tool_id = "screen.capture"
-            success = res.success if res else False
+        # 2. Fallback direct execution if provider returned empty or was unavailable
+        if not resp_text:
+            p_lower = self.prompt.lower().strip()
+            if (
+                p_lower in ("window.list_open", "list open windows", "list windows")
+                and self.executor
+            ):
+                res = self.executor.execute("window.list_open", {})
+                data = res.data if res and isinstance(res.data, dict) else {}
+                windows = data.get("windows", [])
+                w_str = (
+                    ", ".join([w.get("title", "Window") for w in windows[:5]])
+                    if windows
+                    else "No open windows found"
+                )
+                resp_text = f"Friday listed {len(windows)} open windows: {w_str}"
+                tool_id = "window.list_open"
+                success = res.success if res else False
 
-        elif p_lower in ("safety.status", "safety status") and self.safety_manager:
-            st = self.safety_manager.state.value
-            ks = self.safety_manager.kill_switch.status.value
-            resp_text = f"Automation Safety Governance State: {st} | Emergency Kill Switch: {ks} | Failsafe: ARMED"
-            tool_id = "safety.status"
+            elif (
+                p_lower in ("screen.capture", "capture screen", "screenshot")
+                and self.executor
+            ):
+                res = self.executor.execute("screen.capture", {})
+                data = res.data if res and isinstance(res.data, dict) else {}
+                resp_text = f"Screen capture completed successfully. Image dimensions: {data.get('width', 1920)}x{data.get('height', 1080)} pixels."
+                tool_id = "screen.capture"
+                success = res.success if res else False
 
-        elif p_lower in ("diagnostics.health", "system health"):
-            resp_text = "Friday System Health Check: All 7 Phase 6 Subsystems READY. Local-first ONNX runtime & Security boundaries ACTIVE."
-            tool_id = "diagnostics.health"
+            elif p_lower in ("safety.status", "safety status") and self.safety_manager:
+                st = self.safety_manager.state.value
+                ks = self.safety_manager.kill_switch.status.value
+                resp_text = f"Automation Safety Governance State: {st} | Emergency Kill Switch: {ks} | Failsafe: ARMED"
+                tool_id = "safety.status"
 
-        elif (
-            any(k in p_lower for k in ("chrome", "browser"))
-            and any(k in p_lower for k in ("open", "launch", "start"))
-        ) and self.executor:
-            res = self.executor.execute("application.launch", {"application": "chrome"})
-            resp_text = "Opening Google Chrome..."
-            tool_id = "application.launch"
-            success = res.success if res else False
+            elif p_lower in ("diagnostics.health", "system health"):
+                resp_text = "Friday System Health Check: All 7 Phase 6 Subsystems READY. Local-first ONNX runtime & Security boundaries ACTIVE."
+                tool_id = "diagnostics.health"
 
-        elif (
-            any(k in p_lower for k in ("explorer", "file explorer", "folder"))
-            and any(k in p_lower for k in ("open", "launch", "start"))
-        ) and self.executor:
-            res = self.executor.execute(
-                "application.launch", {"application": "explorer"}
-            )
-            resp_text = "Opening File Explorer..."
-            tool_id = "application.launch"
-            success = res.success if res else False
+            elif self.executor and any(k in p_lower for k in ("open", "launch", "start")):
+                # Direct tool executor launch fallback
+                for app in ("chrome", "explorer", "notepad", "calc", "paint", "cmd", "powershell"):
+                    if app in p_lower:
+                        res = self.executor.execute("system.open_application", {"application": app})
+                        resp_text = f"Opening {app.title()} now."
+                        tool_id = "system.open_application"
+                        success = res.success if res else False
+                        break
 
-        elif (
-            any(k in p_lower for k in ("notepad", "text editor"))
-            and any(k in p_lower for k in ("open", "launch", "start"))
-        ) and self.executor:
-            res = self.executor.execute(
-                "application.launch", {"application": "notepad"}
-            )
-            resp_text = "Opening Notepad application..."
-            tool_id = "application.launch"
-            success = res.success if res else False
-
-        else:
-            # AI Orchestrator or Natural Language Processing
-            if self.container:
-                try:
-                    orchestrator = self.container.ai_orchestrator()
-                    if orchestrator:
-                        req = OrchestrationRequest(
-                            request_id=str(uuid.uuid4()),
-                            user_input=self.prompt,
-                        )
-                        orch_res = orchestrator.process_request(req)
-                        resp_text = getattr(orch_res, "final_response", "") or str(
-                            orch_res
-                        )
-                except Exception as exc:  # noqa: BLE001
-                    logger.warning(f"AIOrchestrator request processing fallback: {exc}")
-                    resp_text = f"Friday processed: '{self.prompt}'. Local reasoning & desktop automation engine is active."
-            else:
+            if not resp_text:
                 resp_text = f"Friday processed: '{self.prompt}'. Local desktop automation engine is active."
 
         # Speak Response Aloud via TTSService if container available
         if self.container and resp_text:
             try:
                 tts = self.container.tts_service()
-                tts.speak(resp_text)
+                if tts:
+                    tts.speak(resp_text)
             except Exception as tts_err:  # noqa: BLE001
                 logger.warning(
                     f"AIRequestWorker failed to speak response aloud: {tts_err}"
@@ -203,6 +181,7 @@ class AssistantPage(BasePage):
     eventbus_clap_signal = Signal()
     eventbus_transcription_signal = Signal(str)
     eventbus_state_signal = Signal(str)
+    eventbus_speaking_signal = Signal(str)
 
     def __init__(
         self,
@@ -222,6 +201,9 @@ class AssistantPage(BasePage):
         self.theme_manager = theme_manager or ThemeManager()
         self.container = container
         self._active_threads: list[QThread] = []
+        self._active_workers: list[QObject] = []
+        self._last_speaking_time: float = 0.0
+        self._recent_spoken_phrases: list[str] = []
 
         self._setup_assistant_ui()
         self._subscribe_to_voice_events()
@@ -327,6 +309,7 @@ class AssistantPage(BasePage):
         self.eventbus_clap_signal.connect(self._on_eventbus_clap)
         self.eventbus_transcription_signal.connect(self._on_eventbus_transcription)
         self.eventbus_state_signal.connect(self._on_eventbus_state)
+        self.eventbus_speaking_signal.connect(self._on_eventbus_speaking_started)
 
     def _subscribe_to_voice_events(self) -> None:
         """Subscribe to backend EventBus voice and conversation events."""
@@ -354,6 +337,10 @@ class AssistantPage(BasePage):
                     ConversationStateChanged,
                     lambda ev: self.eventbus_state_signal.emit(ev.new_state),
                 )
+                event_bus.subscribe(
+                    ConversationSpeakingStarted,
+                    lambda ev: self.eventbus_speaking_signal.emit(getattr(ev, "text", "")),
+                )
         except Exception as exc:  # noqa: BLE001
             logger.warning(f"AssistantPage failed to subscribe to EventBus: {exc}")
 
@@ -363,6 +350,7 @@ class AssistantPage(BasePage):
         """Run a worker object on a retained background QThread, preventing premature GC destruction."""
         thread = QThread()
         self._active_threads.append(thread)
+        self._active_workers.append(worker)
         worker.moveToThread(thread)
 
         thread.started.connect(worker.run)
@@ -376,6 +364,8 @@ class AssistantPage(BasePage):
         def _on_thread_finished() -> None:
             if thread in self._active_threads:
                 self._active_threads.remove(thread)
+            if worker in self._active_workers:
+                self._active_workers.remove(worker)
             thread.deleteLater()
 
         thread.finished.connect(_on_thread_finished)
@@ -420,17 +410,57 @@ class AssistantPage(BasePage):
             return
 
         clean_t = transcribed_text.lower().strip()
+        now = time.time()
 
-        # Suppress echo of Friday's own spoken greetings and system prompts
+        # 1. Acoustic Feedback Protection: Check if TTS is currently speaking or just completed
+        is_speaking_now = False
+        if self.container:
+            try:
+                tts = self.container.tts_service()
+                if tts and getattr(tts, "is_speaking", False):
+                    is_speaking_now = True
+            except Exception:  # noqa: BLE001
+                pass
+
+        if is_speaking_now or (now - self._last_speaking_time) < 2.0:
+            logger.info(
+                f"AssistantPage: Suppressing acoustic speaker echo during/after speech: '{transcribed_text}'"
+            )
+            return
+
+        # 2. Check recent spoken phrases similarity / containment
+        for phrase in self._recent_spoken_phrases:
+            if clean_t in phrase or phrase in clean_t:
+                logger.info(
+                    f"AssistantPage: Suppressing self-voice echo matching recent speech: '{transcribed_text}'"
+                )
+                return
+
+        # 3. Known system prompts / greetings / error phrases
         known_self_echos = (
             "initialized and active",
-            "how can i help",
-            "how can i assist",
+            "can i help",
+            "how can i",
+            "how may i",
+            "what can i do",
             "i am listening",
             "good evening",
             "good morning",
             "good afternoon",
             "friday ai assistant",
+            "encountered an error",
+            "processing your request",
+            "current state",
+            "local llm",
+            "opening ",
+            "closing ",
+            "volume set to",
+            "audio has been",
+            "screen capture completed",
+            "locking your computer",
+            "putting computer to sleep",
+            "personal ai assistant",
+            "desktop ai assistant",
         )
         if any(p in clean_t for p in known_self_echos):
             logger.info(
@@ -438,10 +468,57 @@ class AssistantPage(BasePage):
             )
             return
 
+        # Check if ConversationStateMachine is actively handling this turn
+        is_csm_processing = False
+        if self.container:
+            try:
+                csm = self.container.conversation_state_machine()
+                if csm and getattr(csm, "conversation_state", None) and getattr(csm.conversation_state, "value", "") == "PROCESSING":
+                    is_csm_processing = True
+            except Exception:  # noqa: BLE001
+                pass
+
+        if is_csm_processing:
+            logger.info(
+                f"AssistantPage: ConversationStateMachine is processing voice command: '{transcribed_text}'"
+            )
+            ts = get_timestamp_str()
+            self._add_message(sender="You (Voice)", text=transcribed_text, timestamp=ts)
+            self.lbl_state_badge.setText("🧠 State: PROCESSING...")
+            return
+
         logger.info(
             f"AssistantPage: Received valid voice command: '{transcribed_text}' -> Executing action."
         )
         self._on_user_send_prompt(transcribed_text)
+
+    def _on_eventbus_speaking_started(self, spoken_text: str) -> None:
+        if not spoken_text:
+            return
+
+        self._last_speaking_time = time.time()
+        self._recent_spoken_phrases.append(spoken_text.lower().strip())
+        if len(self._recent_spoken_phrases) > 20:
+            self._recent_spoken_phrases.pop(0)
+
+        self.lbl_state_badge.setText("🗣️ State: SPEAKING...")
+        # Avoid duplicate message in chat if already added
+        count = self.messages_layout.count()
+        last_msg = None
+        for i in range(count - 1, -1, -1):
+            item = self.messages_layout.itemAt(i)
+            if item and item.widget() and isinstance(item.widget(), ChatMessageWidget):
+                last_msg = item.widget()
+                break
+        if last_msg and getattr(last_msg, "sender_name", "") == "Friday AI Assistant" and getattr(last_msg, "text_content", "") == spoken_text:
+            return
+
+        self._add_message(
+            sender="Friday AI Assistant",
+            text=spoken_text,
+            timestamp=get_timestamp_str(),
+            tool_badge="voice.tts",
+        )
 
     def _on_eventbus_state(self, new_state: str) -> None:
         self.lbl_state_badge.setText(f"🎙️ State: {new_state}")

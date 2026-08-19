@@ -75,9 +75,9 @@ class ConversationStateMachine(BaseService, IConversationStateMachine):
             self._load_conversation_configuration()
         )
 
-        self._state: ConversationState = ConversationState.IDLE
+        self._conversation_state: ConversationState = ConversationState.IDLE
         self._session: ConversationSession | None = None
-        self._lock = threading.Lock()
+        self._lock = threading.RLock()
         self._timeout_timer: threading.Timer | None = None
         self._last_error: str | None = None
 
@@ -85,7 +85,7 @@ class ConversationStateMachine(BaseService, IConversationStateMachine):
     def state(self) -> ConversationState:
         """Current public state of conversation state machine."""
         with self._lock:
-            return self._state
+            return self._conversation_state
 
     @property
     def active_session(self) -> ConversationSession | None:
@@ -102,7 +102,7 @@ class ConversationStateMachine(BaseService, IConversationStateMachine):
     def is_active(self) -> bool:
         """Check if conversation session is currently active (not IDLE)."""
         with self._lock:
-            return self._state != ConversationState.IDLE and self._session is not None
+            return self._conversation_state != ConversationState.IDLE and self._session is not None
 
     def _load_conversation_configuration(self) -> ConversationConfiguration:
         """Load conversation settings from ConfigurationManager."""
@@ -125,9 +125,9 @@ class ConversationStateMachine(BaseService, IConversationStateMachine):
 
     def _set_state(self, new_state: ConversationState, reason: str = "") -> None:
         """Transition internal state and emit EventBus event."""
-        if self._state != new_state:
-            prev = self._state
-            self._state = new_state
+        if self._conversation_state != new_state:
+            prev = self._conversation_state
+            self._conversation_state = new_state
 
             sess_id = self._session.session_id if self._session else ""
             if self._session:
@@ -150,7 +150,7 @@ class ConversationStateMachine(BaseService, IConversationStateMachine):
     def _reset_timeout_timer(self) -> None:
         """Reset or start idle session timeout timer."""
         self._cancel_timeout_timer()
-        if self._state in (
+        if self._conversation_state in (
             ConversationState.LISTENING,
             ConversationState.CONVERSATION_ACTIVE,
         ):
@@ -225,10 +225,10 @@ class ConversationStateMachine(BaseService, IConversationStateMachine):
             source_str = source_enum.value
 
             # Activation Deduplication: Ignore if already active
-            if self._state != ConversationState.IDLE and self._session is not None:
+            if self._conversation_state != ConversationState.IDLE and self._session is not None:
                 logger.info(
                     f"ConversationStateMachine: Duplicate activation trigger '{source_str}' "
-                    f"ignored in state '{self._state.value}'."
+                    f"ignored in state '{self._conversation_state.value}'."
                 )
                 return self._session
 
@@ -261,9 +261,9 @@ class ConversationStateMachine(BaseService, IConversationStateMachine):
     def provide_response(self, text: str) -> None:
         """Provide response text for TTS synthesis."""
         with self._lock:
-            if self._state != ConversationState.PROCESSING or not self._session:
+            if self._conversation_state != ConversationState.PROCESSING or not self._session:
                 logger.warning(
-                    f"ConversationStateMachine: provide_response ignored in state '{self._state.value}'."
+                    f"ConversationStateMachine: provide_response ignored in state '{self._conversation_state.value}'."
                 )
                 return
 
@@ -296,7 +296,7 @@ class ConversationStateMachine(BaseService, IConversationStateMachine):
     def stop_speaking(self) -> None:
         """Stop TTS speaking playback and execute barge-in transition to LISTENING."""
         with self._lock:
-            if self._state != ConversationState.SPEAKING or not self._session:
+            if self._conversation_state != ConversationState.SPEAKING or not self._session:
                 return
 
             sess_id = self._session.session_id
@@ -351,18 +351,18 @@ class ConversationStateMachine(BaseService, IConversationStateMachine):
     def _on_speech_started(self, evt: SpeechStarted) -> None:
         """Event handler when user starts speaking."""
         with self._lock:
-            if self._state == ConversationState.SPEAKING:
+            if self._conversation_state == ConversationState.SPEAKING:
                 # User Barge-In Interruption
                 if self._conversation_config.barge_in_enabled:
                     logger.info(
                         "ConversationStateMachine: Barge-in detected during SPEAKING state."
                     )
                     self.stop_speaking()
-            elif self._state in (
+            elif self._conversation_state in (
                 ConversationState.LISTENING,
                 ConversationState.CONVERSATION_ACTIVE,
             ):
-                if self._state == ConversationState.CONVERSATION_ACTIVE:
+                if self._conversation_state == ConversationState.CONVERSATION_ACTIVE:
                     if self._session:
                         self._session.turn_count += 1
                     self._set_state(
@@ -373,7 +373,7 @@ class ConversationStateMachine(BaseService, IConversationStateMachine):
     def _on_speech_stopped(self, evt: SpeechStopped) -> None:
         """Event handler when user stops speaking."""
         with self._lock:
-            if self._state == ConversationState.LISTENING and self._session:
+            if self._conversation_state == ConversationState.LISTENING and self._session:
                 self._cancel_timeout_timer()
                 sess_id = self._session.session_id
                 turn = self._session.turn_count
@@ -388,7 +388,7 @@ class ConversationStateMachine(BaseService, IConversationStateMachine):
     def _on_transcription_completed(self, evt: TranscriptionCompleted) -> None:
         """Event handler when STT finishes transcription."""
         with self._lock:
-            if self._state != ConversationState.PROCESSING or not self._session:
+            if self._conversation_state != ConversationState.PROCESSING or not self._session:
                 return
 
             transcript = evt.text.strip()
@@ -425,7 +425,7 @@ class ConversationStateMachine(BaseService, IConversationStateMachine):
     def _on_transcription_failed(self, evt: TranscriptionFailed) -> None:
         """Event handler when STT transcription fails."""
         with self._lock:
-            if self._state == ConversationState.PROCESSING:
+            if self._conversation_state == ConversationState.PROCESSING:
                 self.metrics.record_error("stt")
                 logger.warning(
                     "ConversationStateMachine: STT transcription failed, returning to LISTENING."
@@ -440,7 +440,7 @@ class ConversationStateMachine(BaseService, IConversationStateMachine):
         """Event handler when TTS playback completes successfully (with stale event protection)."""
         with self._lock:
             # Stale Event Protection: Ignore if state is no longer SPEAKING
-            if self._state != ConversationState.SPEAKING or not self._session:
+            if self._conversation_state != ConversationState.SPEAKING or not self._session:
                 logger.debug(
                     "ConversationStateMachine: Stale TTSPlaybackCompleted event ignored."
                 )
@@ -467,7 +467,7 @@ class ConversationStateMachine(BaseService, IConversationStateMachine):
     def _on_tts_failed(self, evt: TTSFailed) -> None:
         """Event handler when TTS playback fails."""
         with self._lock:
-            if self._state == ConversationState.SPEAKING:
+            if self._conversation_state == ConversationState.SPEAKING:
                 self.metrics.record_error("tts")
                 logger.warning(
                     "ConversationStateMachine: TTS failed, transitioning to CONVERSATION_ACTIVE."
@@ -480,8 +480,8 @@ class ConversationStateMachine(BaseService, IConversationStateMachine):
     def get_health_report(self) -> dict[str, Any]:
         """Generate diagnostic health report."""
         with self._lock:
-            cur_state = self._state.value
-            active = self._session is not None and self._state != ConversationState.IDLE
+            cur_state = self._conversation_state.value
+            active = self._session is not None and self._conversation_state != ConversationState.IDLE
             sess_id = self._session.session_id if self._session else None
             source = self._session.activation_source.value if self._session else None
             turns = self._session.turn_count if self._session else 0

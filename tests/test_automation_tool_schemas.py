@@ -12,6 +12,7 @@ from app.tools.registry.tool_registry import ToolRegistry
 
 def test_automation_tool_schemas_generation():
     registry = ToolRegistry()
+    registry.clear()
     registry.register_tool(UiaFindElementTool())
     registry.register_tool(InputMouseClickTool())
     registry.register_tool(WindowFocusTool())

@@ -270,7 +270,7 @@ class AIOrchestrator(BaseService, IAIOrchestrator):
                             "success": tool_result.is_success,
                             "result": tool_result.result,
                             "error": (
-                                tool_result.error.message if tool_result.error else None
+                                str(tool_result.error) if tool_result.error else None
                             ),
                         }
                     )

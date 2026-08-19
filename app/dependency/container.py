@@ -273,6 +273,9 @@ from app.voice.conversation.diagnostics import ConversationDiagnostics
 from app.voice.conversation.manager_diagnostics import ConversationManagerDiagnostics
 from app.voice.conversation.manager_metrics import ConversationManagerMetrics
 from app.voice.conversation.metrics import ConversationMetrics
+from app.voice.conversation.orchestrating_response_provider import (
+    OrchestratingResponseProvider,
+)
 from app.voice.conversation.reference_resolver import DeterministicReferenceResolver
 from app.voice.conversation.state_machine import ConversationStateMachine
 from app.voice.conversation.test_response_provider import TestResponseProvider
@@ -303,12 +306,6 @@ from app.voice.wakeword.wakeword_detector import WakeWordDetector
 
 class ApplicationContainer(containers.DeclarativeContainer):
     """Main Dependency Injection container for the application."""
-
-    wiring_config = containers.WiringConfiguration(
-        modules=[
-            "app.bootstrap.bootstrapper",
-        ]
-    )
 
     # Configuration Manager singleton
     config_manager = providers.Singleton(
@@ -1038,6 +1035,15 @@ class ApplicationContainer(containers.DeclarativeContainer):
     orchestrator_diagnostics = providers.Singleton(
         OrchestratorDiagnostics,
         metrics=orchestrator_metrics,
+    )
+
+    # OrchestratingResponseProvider bridges voice transcripts to the AI pipeline.
+    # It replaces TestResponseProvider as the active response provider for the
+    # ConversationStateMachine, enabling real tool execution from voice commands.
+    # Defined here (after ai_orchestrator) to resolve declaration ordering.
+    orchestrating_response_provider = providers.Singleton(
+        OrchestratingResponseProvider,
+        ai_orchestrator=ai_orchestrator,
     )
 
     # Phase 5.1 Short-Term Memory Subsystem singletons
