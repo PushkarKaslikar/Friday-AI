@@ -1,5 +1,6 @@
 """Main Application Window for Friday AI Assistant."""
 
+from typing import Any
 from PySide6.QtGui import QCloseEvent
 from PySide6.QtWidgets import (
     QHBoxLayout,
@@ -39,12 +40,22 @@ class MainWindow(QMainWindow):
         asset_manager: AssetManager | None = None,
         navigation_manager: NavigationManager | None = None,
         window_manager: WindowManager | None = None,
+        tool_executor: Any | None = None,
+        tool_registry: Any | None = None,
+        safety_manager: Any | None = None,
+        audit_log: Any | None = None,
+        container: Any | None = None,
     ) -> None:
         super().__init__()
         self.theme_manager = theme_manager or ThemeManager()
         self.asset_manager = asset_manager or AssetManager()
         self.navigation_manager = navigation_manager or NavigationManager()
         self.window_manager = window_manager or WindowManager()
+        self.tool_executor = tool_executor
+        self.tool_registry = tool_registry
+        self.safety_manager = safety_manager
+        self.audit_log = audit_log
+        self.container = container
 
         self.setWindowTitle(APP_NAME)
         self.resize(1200, 800)
@@ -99,13 +110,37 @@ class MainWindow(QMainWindow):
         # Stacked Pages Container
         self.page_stack = QStackedWidget(body_widget)
 
-        self.page_stack.addWidget(HomePage(parent=self.page_stack))
-        self.page_stack.addWidget(AssistantPage(parent=self.page_stack))
+        self.page_stack.addWidget(
+            HomePage(
+                tool_registry=self.tool_registry,
+                safety_manager=self.safety_manager,
+                parent=self.page_stack,
+            )
+        )
+        self.page_stack.addWidget(
+            AssistantPage(
+                tool_executor=self.tool_executor,
+                safety_manager=self.safety_manager,
+                theme_manager=self.theme_manager,
+                container=self.container,
+                parent=self.page_stack,
+            )
+        )
         self.page_stack.addWidget(MemoryPage(parent=self.page_stack))
-        self.page_stack.addWidget(AutomationPage(parent=self.page_stack))
+        self.page_stack.addWidget(
+            AutomationPage(
+                tool_registry=self.tool_registry,
+                safety_manager=self.safety_manager,
+                parent=self.page_stack,
+            )
+        )
         self.page_stack.addWidget(PluginsPage(parent=self.page_stack))
-        self.page_stack.addWidget(LogsPage(parent=self.page_stack))
-        self.page_stack.addWidget(DiagnosticsPage(parent=self.page_stack))
+        self.page_stack.addWidget(
+            LogsPage(audit_log=self.audit_log, parent=self.page_stack)
+        )
+        self.page_stack.addWidget(
+            DiagnosticsPage(safety_manager=self.safety_manager, parent=self.page_stack)
+        )
 
         body_layout.addWidget(self.page_stack)
         main_layout.addWidget(body_widget)

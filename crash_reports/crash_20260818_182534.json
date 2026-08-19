@@ -1,0 +1,31 @@
+{
+  "app_name": "Friday AI Assistant",
+  "version": "1.0.0",
+  "timestamp": "2026-08-18 18:25:34.243409",
+  "python_version": "3.14.5 (tags/v3.14.5:5607950, May 10 2026, 10:43:50) [MSC v.1944 64 bit (AMD64)]",
+  "os_platform": "win32",
+  "pid": 28536,
+  "exception": {
+    "type": "ScreenCaptureFailedError",
+    "message": "Failed to execute full virtual screen capture.",
+    "traceback": [
+      "PermissionError: [WinError 5] Access is denied.\n",
+      "\nThe above exception was the direct cause of the following exception:\n\n",
+      "Traceback (most recent call last):\n",
+      "  File \"D:\\Friday AI\\app\\automation\\desktop\\screen_capturer.py\", line 50, in capture_all_monitors\n    shot = sct.grab(sct.monitors[0])\n",
+      "  File \"C:\\Users\\Pushkar\\AppData\\Local\\Programs\\Python\\Python314\\Lib\\site-packages\\mss\\base.py\", line 312, in grab\n    img_data_and_maybe_size = self._impl.grab(monitor)\n",
+      "  File \"C:\\Users\\Pushkar\\AppData\\Local\\Programs\\Python\\Python314\\Lib\\site-packages\\mss\\windows\\gdi.py\", line 380, in grab\n    gdi.BitBlt(memdc, 0, 0, width, height, srcdc, monitor[\"left\"], monitor[\"top\"], SRCCOPY | CAPTUREBLT)\n    ~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n",
+      "  File \"C:\\Users\\Pushkar\\AppData\\Local\\Programs\\Python\\Python314\\Lib\\site-packages\\mss\\windows\\gdi.py\", line 129, in _errcheck\n    raise ScreenShotError(msg, details=details) from winerror\n",
+      "mss.exception.ScreenShotError: Windows graphics function failed: BitBlt: Access is denied.\n",
+      "\nDuring handling of the above exception, another exception occurred:\n\n",
+      "Traceback (most recent call last):\n",
+      "  File \"D:\\Friday AI\\main.py\", line 5095, in <module>\n    sys.exit(main())\n             ~~~~^^\n",
+      "  File \"D:\\Friday AI\\main.py\", line 5052, in main\n    return run_screenshot_test(bootstrapper)\n",
+      "  File \"D:\\Friday AI\\main.py\", line 498, in run_screenshot_test\n    res = desktop_controller.capture_screen()\n",
+      "  File \"D:\\Friday AI\\app\\automation\\desktop\\desktop_controller.py\", line 129, in capture_screen\n    res = self.screen_capturer.capture_all_monitors()\n",
+      "  File \"D:\\Friday AI\\app\\automation\\desktop\\screen_capturer.py\", line 66, in capture_all_monitors\n    raise ScreenCaptureFailedError(\"Failed to execute full virtual screen capture.\", cause=exc)\n",
+      "app.automation.desktop.errors.ScreenCaptureFailedError: Failed to execute full virtual screen capture.\n"
+    ]
+  },
+  "extra_context": {}
+}

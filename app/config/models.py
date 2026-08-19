@@ -777,10 +777,333 @@ class UIAutomationSettings(BaseModel):
     )
 
 
+class AutomationInputSettings(BaseModel):
+    """Configuration settings for Phase 6.2 Mouse, Keyboard & Human-Like Input Subsystem."""
+
+    enabled: bool = Field(
+        default=True, description="Enable or disable input control engine"
+    )
+    default_backend: str = Field(
+        default="NATIVE", description="Default input backend (NATIVE, PYAUTOGUI)"
+    )
+    failsafe_enabled: bool = Field(
+        default=True, description="Enable top-left corner emergency mouse failsafe"
+    )
+    interruption_detection_enabled: bool = Field(
+        default=True,
+        description="Enable real-time physical user input override detection",
+    )
+    mouse_move_duration: float = Field(
+        default=0.2,
+        ge=0.0,
+        le=10.0,
+        description="Default mouse movement duration in seconds",
+    )
+    click_interval_ms: int = Field(
+        default=100,
+        ge=0,
+        le=5000,
+        description="Default mouse click interval in milliseconds",
+    )
+    typing_profile: str = Field(
+        default="NORMAL",
+        description="Default typing speed profile (INSTANT, FAST, NORMAL, SLOW)",
+    )
+    typing_interval_ms: int = Field(
+        default=50,
+        ge=0,
+        le=5000,
+        description="Default inter-character typing delay in milliseconds",
+    )
+    operation_timeout_ms: int = Field(
+        default=10000,
+        ge=1000,
+        le=60000,
+        description="Maximum operation timeout in milliseconds",
+    )
+    max_sequence_actions: int = Field(
+        default=50, ge=1, le=500, description="Maximum input sequence action cap"
+    )
+    coordinate_bounds_check: bool = Field(
+        default=True, description="Enable virtual screen coordinate bounds checking"
+    )
+
+
+class AutomationDesktopSettings(BaseModel):
+    """Phase 6.3 Window Management, Desktop Control, Clipboard & Screen Inspection Settings."""
+
+    enabled: bool = Field(
+        default=True, description="Enable or disable desktop control subsystem"
+    )
+    max_windows: int = Field(
+        default=100, ge=1, le=1000, description="Maximum window count limit"
+    )
+    max_monitors: int = Field(
+        default=10, ge=1, le=64, description="Maximum monitor count limit"
+    )
+    max_workspace_windows: int = Field(
+        default=50, ge=1, le=500, description="Maximum workspace layout window cap"
+    )
+    window_operation_timeout_ms: int = Field(
+        default=5000, ge=500, le=60000, description="Window operation timeout in ms"
+    )
+    screenshot_timeout_ms: int = Field(
+        default=3000, ge=500, le=30000, description="Screenshot capture timeout in ms"
+    )
+    clipboard_timeout_ms: int = Field(
+        default=2000, ge=200, le=10000, description="Clipboard operation timeout in ms"
+    )
+    clipboard_max_text_chars: int = Field(
+        default=100000,
+        ge=1000,
+        le=1000000,
+        description="Clipboard max text character limit",
+    )
+    screen_capture_enabled: bool = Field(
+        default=True, description="Enable or disable local screen capture"
+    )
+    workspace_enabled: bool = Field(
+        default=True, description="Enable or disable workspace layout capture/restore"
+    )
+    clipboard_enabled: bool = Field(
+        default=True, description="Enable or disable clipboard operations"
+    )
+    virtual_desktop_enabled: bool = Field(
+        default=True, description="Enable or disable virtual desktop queries"
+    )
+    diagnostic_redaction: bool = Field(
+        default=True, description="Mask sensitive information in diagnostic outputs"
+    )
+
+
+class AutomationAppsSettings(BaseModel):
+    """Configuration settings for Phase 6.4 Application Control & Interaction Adapters."""
+
+    enabled: bool = Field(
+        default=True, description="Enable or disable Application Adapters subsystem"
+    )
+    launch_timeout_ms: int = Field(
+        default=10000,
+        ge=1000,
+        le=60000,
+        description="Default application launch timeout in ms",
+    )
+    attach_timeout_ms: int = Field(
+        default=5000,
+        ge=500,
+        le=30000,
+        description="Default application attach timeout in ms",
+    )
+    explorer_enabled: bool = Field(
+        default=True, description="Enable or disable File Explorer adapter"
+    )
+    terminal_enabled: bool = Field(
+        default=True, description="Enable or disable Terminal family adapter"
+    )
+    launcher_enabled: bool = Field(
+        default=True, description="Enable or disable generic ApplicationLauncher"
+    )
+    preferred_terminal: str = Field(
+        default="cmd", description="Preferred terminal type (cmd, powershell, wt)"
+    )
+    max_output_characters: int = Field(
+        default=4096,
+        ge=100,
+        le=65536,
+        description="Maximum terminal output buffer character limit",
+    )
+    max_explorer_items: int = Field(
+        default=100,
+        ge=10,
+        le=1000,
+        description="Maximum visible Explorer items to inspect",
+    )
+
+
+class AutomationWorkflowSettings(BaseModel):
+    """Configuration settings for Phase 6.5 Multi-Step Automation Workflow Engine."""
+
+    enabled: bool = Field(
+        default=True, description="Enable or disable Workflow Engine subsystem"
+    )
+    max_steps: int = Field(
+        default=50,
+        ge=1,
+        le=100,
+        description="Maximum allowed steps bound per workflow plan",
+    )
+    max_retries_per_step: int = Field(
+        default=3,
+        ge=1,
+        le=10,
+        description="Maximum retries per workflow step",
+    )
+    max_total_retries: int = Field(
+        default=15,
+        ge=1,
+        le=50,
+        description="Maximum total retries per workflow execution",
+    )
+    default_step_timeout_ms: int = Field(
+        default=10000,
+        ge=500,
+        le=120000,
+        description="Default step execution timeout in ms",
+    )
+    default_workflow_timeout_ms: int = Field(
+        default=60000,
+        ge=1000,
+        le=600000,
+        description="Default total workflow timeout in ms",
+    )
+    verification_poll_interval_ms: int = Field(
+        default=250,
+        ge=50,
+        le=5000,
+        description="Default verification polling interval in ms",
+    )
+    history_size: int = Field(
+        default=100,
+        ge=10,
+        le=1000,
+        description="In-memory execution history snapshot limit",
+    )
+    default_mode: str = Field(
+        default="SIMULATE",
+        description="Default execution safety mode (DRY_RUN, SIMULATE, LIVE)",
+    )
+    parallelism_enabled: bool = Field(
+        default=False,
+        description="Enable or disable parallel workflow execution (Default: False)",
+    )
+
+
+class AutomationToolSettings(BaseModel):
+    """Configuration settings for Phase 6.6 Automation Tool Suite."""
+
+    enabled: bool = Field(
+        default=True, description="Enable or disable Automation Tool Suite"
+    )
+    uia_tools_enabled: bool = Field(
+        default=True, description="Enable or disable UIA inspection tools"
+    )
+    input_tools_enabled: bool = Field(
+        default=True, description="Enable or disable Mouse & Keyboard input tools"
+    )
+    window_tools_enabled: bool = Field(
+        default=True, description="Enable or disable Window control tools"
+    )
+    screen_tools_enabled: bool = Field(
+        default=True, description="Enable or disable Screen capture tools"
+    )
+    clipboard_tools_enabled: bool = Field(
+        default=True, description="Enable or disable Clipboard tools"
+    )
+    application_tools_enabled: bool = Field(
+        default=True, description="Enable or disable Application control tools"
+    )
+    explorer_tools_enabled: bool = Field(
+        default=True, description="Enable or disable File Explorer tools"
+    )
+    terminal_tools_enabled: bool = Field(
+        default=True, description="Enable or disable Terminal tools"
+    )
+    workflow_tool_enabled: bool = Field(
+        default=True, description="Enable or disable Workflow sequence execution tool"
+    )
+
+
+class AutomationSafetySettings(BaseModel):
+    """Configuration settings for Phase 6.7 Safety & Governance."""
+
+    enabled: bool = Field(
+        default=True, description="Enable or disable Safety Governance subsystem"
+    )
+    mode: str = Field(
+        default="NORMAL",
+        description="Execution safety policy mode (NORMAL, STRICT, LOCKDOWN)",
+    )
+    require_confirmation_high: bool = Field(
+        default=True,
+        description="Require explicit user confirmation for HIGH risk actions",
+    )
+    require_confirmation_critical: bool = Field(
+        default=True,
+        description="Require explicit user confirmation for CRITICAL risk actions",
+    )
+    max_steps: int = Field(
+        default=50, ge=1, le=100, description="Maximum steps blast radius bound"
+    )
+    max_duration_ms: int = Field(
+        default=300000,
+        ge=1000,
+        le=600000,
+        description="Maximum duration blast radius bound in ms",
+    )
+    max_blast_apps: int = Field(
+        default=5,
+        ge=1,
+        le=20,
+        description="Maximum target applications blast radius bound",
+    )
+    max_blast_files: int = Field(
+        default=20,
+        ge=1,
+        le=100,
+        description="Maximum target files blast radius bound",
+    )
+    max_actions_per_second: int = Field(
+        default=10, ge=1, le=50, description="Maximum action rate limit per second"
+    )
+    max_workflows_per_minute: int = Field(
+        default=15,
+        ge=1,
+        le=60,
+        description="Maximum workflow execution rate limit per minute",
+    )
+    kill_switch_enabled: bool = Field(
+        default=True, description="Enable or disable global emergency kill switch"
+    )
+    user_interrupt_enabled: bool = Field(
+        default=True,
+        description="Enable or disable physical user interruption monitoring",
+    )
+    failsafe_required: bool = Field(
+        default=True, description="Require top-left mouse failsafe corner protection"
+    )
+    audit_enabled: bool = Field(
+        default=True, description="Enable or disable safety audit logging"
+    )
+    audit_history_size: int = Field(
+        default=500,
+        ge=50,
+        le=5000,
+        description="Maximum bounded audit history events",
+    )
+    lockdown_on_failure: bool = Field(
+        default=False,
+        description="Automatically transition to LOCKDOWN on safety dependency failure",
+    )
+
+
 class AutomationSettings(BaseModel):
     """Phase 6 Computer Automation Subsystem Settings."""
 
     uia: UIAutomationSettings = Field(default_factory=UIAutomationSettings)
+    input: AutomationInputSettings = Field(default_factory=AutomationInputSettings)
+    desktop: AutomationDesktopSettings = Field(
+        default_factory=AutomationDesktopSettings
+    )
+    apps: AutomationAppsSettings = Field(default_factory=AutomationAppsSettings)
+    workflow: AutomationWorkflowSettings = Field(
+        default_factory=AutomationWorkflowSettings
+    )
+    tools: AutomationToolSettings = Field(
+        default_factory=AutomationToolSettings
+    )
+    safety: AutomationSafetySettings = Field(
+        default_factory=AutomationSafetySettings
+    )
 
 
 class Settings(BaseModel):

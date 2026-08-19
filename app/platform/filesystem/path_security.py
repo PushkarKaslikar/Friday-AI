@@ -3,7 +3,6 @@
 from pathlib import Path
 
 from app.logging import logger
-from app.tools.models.errors import ToolErrorCode, ToolExecutionError
 
 DEFAULT_PROTECTED_PATH_STRINGS: set[str] = {
     r"C:\Windows",
@@ -57,6 +56,8 @@ class PathSecurityManager:
 
     def normalize(self, path_str: str) -> Path:
         """Resolve absolute path, removing relative symlink traversal tokens."""
+        from app.tools.models.errors import ToolErrorCode, ToolExecutionError
+
         if not path_str or not path_str.strip():
             raise ToolExecutionError(
                 error_code=ToolErrorCode.INVALID_INPUT,

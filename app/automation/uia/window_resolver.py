@@ -36,6 +36,14 @@ class WindowResolver:
         """Check if native window resolution dependencies are available."""
         return self._is_windows and PYWIN32_AVAILABLE
 
+    def is_window_valid(self, hwnd: int) -> bool:
+        """Check if top-level window handle is valid and active."""
+        if not hwnd or hwnd <= 0:
+            return False
+        if PYWIN32_AVAILABLE:
+            return bool(win32gui.IsWindow(hwnd))
+        return True
+
     def _get_process_name(self, pid: int) -> str:
         """Helper to get process executable name by PID."""
         if not pid or pid == 0:

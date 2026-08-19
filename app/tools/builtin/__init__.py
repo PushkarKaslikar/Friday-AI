@@ -92,6 +92,32 @@ from app.tools.builtin.window_tools import (
     RestoreWindowTool,
     WindowListTool,
 )
+from app.tools.builtin.automation import (
+    ApplicationAttachTool,
+    ApplicationLaunchTool,
+    ApplicationStatusTool as AutomationApplicationStatusTool,
+    AutomationToolDiagnostics,
+    AutomationToolMetrics,
+    ClipboardGetContentTool,
+    ClipboardSetContentTool,
+    ExplorerNavigateTool,
+    ExplorerOpenItemTool,
+    InputMouseClickTool,
+    InputPressHotkeyTool,
+    InputTypeTextTool,
+    ScreenCaptureTool,
+    ScreenListMonitorsTool,
+    TerminalLaunchTool,
+    TerminalReadOutputTool,
+    UiaFindElementTool,
+    UiaInspectWindowTool,
+    UiaListWindowsTool,
+    WindowFocusTool as AutomationWindowFocusTool,
+    WindowListOpenTool,
+    WindowMaximizeTool as AutomationWindowMaximizeTool,
+    WindowSnapTool,
+    WorkflowExecuteSequenceTool,
+)
 
 __all__ = [
     "ActiveTabTool",

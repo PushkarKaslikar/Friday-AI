@@ -1,0 +1,51 @@
+"""Friday AI Assistant - Phase 6.2 Mouse, Keyboard & Human-Like Input Control Engine."""
+
+from app.automation.input.errors import (
+    BackendUnavailableError,
+    FailsafeAbortedError,
+    InputBusyError,
+    InputCancelledError,
+    InputEngineError,
+    InputInterruptedError,
+    InputTimeoutError,
+    InvalidCoordinatesError,
+    InvalidKeyError,
+    InvalidTargetError,
+)
+from app.automation.input.models import (
+    EasingProfile,
+    InputResult,
+    InputSource,
+    InputStatus,
+    InputTarget,
+    KeyboardAction,
+    MouseButton,
+    MousePosition,
+    TargetType,
+    TypingProfile,
+    get_typing_interval_seconds,
+)
+
+__all__ = [
+    "BackendUnavailableError",
+    "EasingProfile",
+    "FailsafeAbortedError",
+    "InputBusyError",
+    "InputCancelledError",
+    "InputEngineError",
+    "InputInterruptedError",
+    "InputResult",
+    "InputSource",
+    "InputStatus",
+    "InputTarget",
+    "InputTimeoutError",
+    "InvalidCoordinatesError",
+    "InvalidKeyError",
+    "InvalidTargetError",
+    "KeyboardAction",
+    "MouseButton",
+    "MousePosition",
+    "TargetType",
+    "TypingProfile",
+    "get_typing_interval_seconds",
+]

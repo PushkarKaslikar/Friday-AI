@@ -35,6 +35,26 @@ class ToolResult(BaseModel):
         default_factory=dict, description="Additional context metadata"
     )
 
+    @property
+    def is_success(self) -> bool:
+        """Alias for success attribute."""
+        return self.success
+
+    @property
+    def data(self) -> Any:
+        """Alias for result_data attribute."""
+        return self.result_data
+
+    @property
+    def result(self) -> Any:
+        """Alias for result_data attribute."""
+        return self.result_data
+
+    @property
+    def result_id(self) -> str:
+        """Alias for execution_id attribute."""
+        return self.execution_id
+
     @classmethod
     def ok(
         cls,

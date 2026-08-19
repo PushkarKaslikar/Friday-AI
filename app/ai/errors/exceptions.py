@@ -12,7 +12,7 @@ class LLMBaseException(FridayBaseException):
     """Base exception class for all Local LLM Runtime errors."""
 
     def __init__(self, message: str, details: dict[str, Any] | None = None) -> None:
-        super().__init__(message=message, code="LLM_ERROR", details=details)
+        super().__init__(message=message, details=details)
 
 
 class ModelNotConfiguredError(LLMBaseException):

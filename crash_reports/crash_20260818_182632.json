@@ -1,0 +1,25 @@
+{
+  "app_name": "Friday AI Assistant",
+  "version": "1.0.0",
+  "timestamp": "2026-08-18 18:26:32.482329",
+  "python_version": "3.14.5 (tags/v3.14.5:5607950, May 10 2026, 10:43:50) [MSC v.1944 64 bit (AMD64)]",
+  "os_platform": "win32",
+  "pid": 6620,
+  "exception": {
+    "type": "ClipboardUnavailableError",
+    "message": "Could not read clipboard content.",
+    "traceback": [
+      "Traceback (most recent call last):\n",
+      "  File \"D:\\Friday AI\\app\\automation\\desktop\\clipboard_manager.py\", line 91, in get_text\n    clean_text = SensitiveDataSanitizer.sanitize_text(text)\n                 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n",
+      "AttributeError: type object 'SensitiveDataSanitizer' has no attribute 'sanitize_text'\n",
+      "\nDuring handling of the above exception, another exception occurred:\n\n",
+      "Traceback (most recent call last):\n",
+      "  File \"D:\\Friday AI\\main.py\", line 5095, in <module>\n    sys.exit(main())\n             ~~~~^^\n",
+      "  File \"D:\\Friday AI\\main.py\", line 5055, in main\n    return run_clipboard_test(bootstrapper)\n",
+      "  File \"D:\\Friday AI\\main.py\", line 529, in run_clipboard_test\n    res = cb_mgr.get_text(mask_secrets=True)\n",
+      "  File \"D:\\Friday AI\\app\\automation\\desktop\\clipboard_manager.py\", line 105, in get_text\n    raise ClipboardUnavailableError(\"Could not read clipboard content.\", cause=exc)\n",
+      "app.automation.desktop.errors.ClipboardUnavailableError: Could not read clipboard content.\n"
+    ]
+  },
+  "extra_context": {}
+}

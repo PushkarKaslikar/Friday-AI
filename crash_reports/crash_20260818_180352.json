@@ -1,0 +1,20 @@
+{
+  "app_name": "Friday AI Assistant",
+  "version": "1.0.0",
+  "timestamp": "2026-08-18 18:03:52.664277",
+  "python_version": "3.14.5 (tags/v3.14.5:5607950, May 10 2026, 10:43:50) [MSC v.1944 64 bit (AMD64)]",
+  "os_platform": "win32",
+  "pid": 9552,
+  "exception": {
+    "type": "NameError",
+    "message": "name 'InputTarget' is not defined",
+    "traceback": [
+      "Traceback (most recent call last):\n",
+      "  File \"D:\\Friday AI\\main.py\", line 4802, in <module>\n    sys.exit(main())\n             ~~~~^^\n",
+      "  File \"D:\\Friday AI\\main.py\", line 4374, in main\n    return run_input_test(bootstrapper, dry_run=dry_run)\n",
+      "  File \"D:\\Friday AI\\main.py\", line 297, in run_input_test\n    target = InputTarget(target_type=TargetType.SCREEN_COORDINATE, x=500, y=500)\n             ^^^^^^^^^^^\n",
+      "NameError: name 'InputTarget' is not defined\n"
+    ]
+  },
+  "extra_context": {}
+}

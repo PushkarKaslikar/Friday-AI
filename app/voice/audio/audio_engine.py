@@ -163,7 +163,7 @@ class AudioEngine(BaseService, IAudioEngine):
             logger.error(f"AudioEngine: Initialization error: {exc}")
 
     def _do_start(self) -> None:
-        """Lifecycle Hook 2: Transition AudioEngine to READY state (microphone NOT auto-recording on launch)."""
+        """Lifecycle Hook 2: Start microphone audio input stream and transition to READY state."""
         with self._engine_lock:
             if self._engine_state == AudioEngineState.ERROR:
                 logger.warning(
@@ -171,6 +171,14 @@ class AudioEngine(BaseService, IAudioEngine):
                 )
                 return
             self._engine_state = AudioEngineState.READY
+
+        try:
+            self.start_input()
+            logger.info("AudioEngine: Microphone input stream started successfully.")
+        except Exception as exc:  # noqa: BLE001
+            logger.warning(
+                f"AudioEngine: Non-fatal notice starting input stream: {exc}"
+            )
 
         self.event_bus.publish(AudioEngineReady())
         logger.info("AudioEngine: Transitioned to READY state.")

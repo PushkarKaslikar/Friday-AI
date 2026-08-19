@@ -27,6 +27,15 @@ class ToolPermission(str, Enum):
     BROWSER_NAVIGATE = "browser.navigate"
     BROWSER_TABS = "browser.tabs"
     BROWSER_SEARCH = "browser.search"
+    AUTOMATION_READ = "automation.read"
+    AUTOMATION_UI = "automation.ui"
+    AUTOMATION_INPUT = "automation.input"
+    AUTOMATION_WINDOW = "automation.window"
+    AUTOMATION_SCREEN = "automation.screen"
+    AUTOMATION_CLIPBOARD = "automation.clipboard"
+    AUTOMATION_APPLICATION = "automation.application"
+    AUTOMATION_TERMINAL = "automation.terminal"
+    AUTOMATION_WORKFLOW = "automation.workflow"
 
 
 class PermissionRequirement(BaseModel):

@@ -17,3 +17,8 @@ class ToolCategory(str, Enum):
     DEVELOPER = "DEVELOPER"
     UTILITY = "UTILITY"
     PLUGIN = "PLUGIN"
+    AUTOMATION = "AUTOMATION"
+    UIA = "UIA"
+    INPUT = "INPUT"
+    SCREEN = "SCREEN"
+    WORKFLOW = "WORKFLOW"

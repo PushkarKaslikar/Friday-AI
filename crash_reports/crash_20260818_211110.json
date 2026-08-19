@@ -1,0 +1,18 @@
+{
+  "app_name": "Friday AI Assistant",
+  "version": "1.0.0",
+  "timestamp": "2026-08-18 21:11:10.396169",
+  "python_version": "3.14.5 (tags/v3.14.5:5607950, May 10 2026, 10:43:50) [MSC v.1944 64 bit (AMD64)]",
+  "os_platform": "win32",
+  "pid": 28428,
+  "exception": {
+    "type": "AttributeError",
+    "message": "'NoneType' object has no attribute 'get'",
+    "traceback": [
+      "Traceback (most recent call last):\n",
+      "  File \"D:\\Friday AI\\app\\ui\\navigation\\pages\\assistant_page.py\", line 49, in run\n    windows = res.data.get(\"windows\", [])\n              ^^^^^^^^^^^^\n",
+      "AttributeError: 'NoneType' object has no attribute 'get'\n"
+    ]
+  },
+  "extra_context": {}
+}

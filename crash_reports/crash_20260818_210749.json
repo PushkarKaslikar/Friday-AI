@@ -1,0 +1,32 @@
+{
+  "app_name": "Friday AI Assistant",
+  "version": "1.0.0",
+  "timestamp": "2026-08-18 21:07:49.865428",
+  "python_version": "3.14.5 (tags/v3.14.5:5607950, May 10 2026, 10:43:50) [MSC v.1944 64 bit (AMD64)]",
+  "os_platform": "win32",
+  "pid": 11508,
+  "exception": {
+    "type": "InitializationError",
+    "message": "Application bootstrap failed during startup sequence: 'ColorPalette' object has no attribute 'surface_bright'",
+    "traceback": [
+      "Traceback (most recent call last):\n",
+      "  File \"D:\\Friday AI\\app\\bootstrap\\bootstrapper.py\", line 103, in run\n    self._step7_prepare_ui_initialization()\n    ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~^^\n",
+      "  File \"D:\\Friday AI\\app\\bootstrap\\bootstrapper.py\", line 437, in _step7_prepare_ui_initialization\n    self.main_window = MainWindow(\n                       ~~~~~~~~~~^\n        theme_manager=theme_manager,\n        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n    ...<6 lines>...\n        audit_log=audit_log,\n        ^^^^^^^^^^^^^^^^^^^^\n    )\n    ^\n",
+      "  File \"D:\\Friday AI\\app\\ui\\windows\\main_window.py\", line 61, in __init__\n    self._setup_ui()\n    ~~~~~~~~~~~~~~^^\n",
+      "  File \"D:\\Friday AI\\app\\ui\\windows\\main_window.py\", line 118, in _setup_ui\n    AssistantPage(\n    ~~~~~~~~~~~~~^\n        tool_executor=self.tool_executor,\n        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n    ...<2 lines>...\n        parent=self.page_stack,\n        ^^^^^^^^^^^^^^^^^^^^^^^\n    )\n    ^\n",
+      "  File \"D:\\Friday AI\\app\\ui\\navigation\\pages\\assistant_page.py\", line 129, in __init__\n    self._setup_assistant_ui()\n    ~~~~~~~~~~~~~~~~~~~~~~~~^^\n",
+      "  File \"D:\\Friday AI\\app\\ui\\navigation\\pages\\assistant_page.py\", line 147, in _setup_assistant_ui\n    self.input_widget = ChatPromptInputWidget(\n                        ~~~~~~~~~~~~~~~~~~~~~^\n        theme_manager=self.theme_manager, parent=self\n        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n    )\n    ^\n",
+      "  File \"D:\\Friday AI\\app\\ui\\widgets\\chat_widget.py\", line 132, in __init__\n    self._setup_ui()\n    ~~~~~~~~~~~~~~^^\n",
+      "  File \"D:\\Friday AI\\app\\ui\\widgets\\chat_widget.py\", line 162, in _setup_ui\n    f\"QPushButton {{ background-color: {p.surface_bright}; color: {p.text_primary}; \"\n                                        ^^^^^^^^^^^^^^^^\n",
+      "AttributeError: 'ColorPalette' object has no attribute 'surface_bright'\n",
+      "\nThe above exception was the direct cause of the following exception:\n\n",
+      "Traceback (most recent call last):\n",
+      "  File \"D:\\Friday AI\\main.py\", line 6326, in <module>\n    sys.exit(main())\n             ~~~~^^\n",
+      "  File \"D:\\Friday AI\\main.py\", line 6256, in main\n    return run_automation_health_check(bootstrapper)\n",
+      "  File \"D:\\Friday AI\\main.py\", line 4570, in run_automation_health_check\n    bootstrap_result = bootstrapper.run()\n",
+      "  File \"D:\\Friday AI\\app\\bootstrap\\bootstrapper.py\", line 129, in run\n    raise InitializationError(\n    ...<2 lines>...\n    ) from exc\n",
+      "app.exceptions.bootstrap.InitializationError: Application bootstrap failed during startup sequence: 'ColorPalette' object has no attribute 'surface_bright'\n"
+    ]
+  },
+  "extra_context": {}
+}

@@ -52,8 +52,7 @@ class CrashHandler:
 
         safe_msg = str(exc_value).replace("{", "{{").replace("}", "}}")
         logger.critical(
-            f"CrashHandler: Trapped unhandled crash! {exc_type.__name__}: {safe_msg}",
-            exc_info=(exc_type, exc_value, exc_tb),
+            f"CrashHandler: Trapped unhandled crash! {exc_type.__name__}: {safe_msg}"
         )
 
         try:

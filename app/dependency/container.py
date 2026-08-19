@@ -4,6 +4,73 @@ from dependency_injector import containers, providers
 
 from app.ai.diagnostics.diagnostics import LLMDiagnostics
 from app.automation.models import MatchMode
+from app.automation.apps.apps_controller import ApplicationAdapterManager
+from app.automation.apps.diagnostics import ApplicationAdapterDiagnostics
+from app.automation.apps.explorer_adapter import ExplorerAdapter
+from app.automation.apps.launcher import ApplicationLauncher
+from app.automation.apps.metrics import ApplicationAdapterMetrics
+from app.automation.apps.registry import ApplicationAdapterRegistry
+from app.automation.apps.terminal_adapter import TerminalAdapter
+from app.automation.workflow.action_registry import WorkflowActionRegistry
+from app.automation.workflow.diagnostics import WorkflowDiagnostics
+from app.automation.workflow.engine import WorkflowEngine
+from app.automation.workflow.metrics import WorkflowMetrics
+from app.automation.workflow.validator import WorkflowValidator
+from app.automation.workflow.verifier_registry import StepVerifier, VerificationRegistry
+from app.automation.workflow.workflow_controller import WorkflowManager
+from app.tools.builtin.automation import (
+    ApplicationAttachTool,
+    ApplicationLaunchTool,
+    ApplicationStatusTool as AutomationApplicationStatusTool,
+    AutomationToolDiagnostics,
+    AutomationToolMetrics,
+    ClipboardGetContentTool,
+    ClipboardSetContentTool,
+    ExplorerNavigateTool,
+    ExplorerOpenItemTool,
+    InputMouseClickTool,
+    InputPressHotkeyTool,
+    InputTypeTextTool,
+    ScreenCaptureTool,
+    ScreenListMonitorsTool,
+    TerminalLaunchTool,
+    TerminalReadOutputTool,
+    UiaFindElementTool,
+    UiaInspectWindowTool,
+    UiaListWindowsTool,
+    WindowFocusTool as AutomationWindowFocusTool,
+    WindowListOpenTool,
+    WindowMaximizeTool as AutomationWindowMaximizeTool,
+    WindowSnapTool,
+    WorkflowExecuteSequenceTool,
+)
+from app.automation.safety import (
+    AutomationAuditLog,
+    AutomationConfirmationManager,
+    AutomationKillSwitch,
+    AutomationSafetyAnalyzer,
+    AutomationSafetyDiagnostics,
+    AutomationSafetyManager,
+    AutomationSafetyMetrics,
+    AutomationSafetyPolicy,
+)
+from app.automation.desktop.clipboard_manager import ClipboardManager
+from app.automation.desktop.desktop_controller import DesktopController
+from app.automation.desktop.diagnostics import DesktopDiagnostics
+from app.automation.desktop.metrics import DesktopMetrics
+from app.automation.desktop.monitor_manager import MonitorManager
+from app.automation.desktop.screen_capturer import ScreenCapturer
+from app.automation.desktop.virtual_desktop import VirtualDesktopManager
+from app.automation.desktop.window_controller import WindowController
+from app.automation.desktop.workspace_manager import WorkspaceManager
+from app.automation.input.diagnostics import InputDiagnostics
+from app.automation.input.failsafe import InputFailsafe
+from app.automation.input.input_engine import InputEngine
+from app.automation.input.interruption_monitor import InterruptionMonitor
+from app.automation.input.metrics import InputMetrics
+from app.automation.input.native_input import NativeInputBackend
+from app.automation.input.pyautogui_fallback import PyAutoGUIInputBackend
+from app.automation.input.target_resolver import TargetResolver
 from app.automation.uia.diagnostics import UIAutomationDiagnostics
 from app.automation.uia.element_finder import ElementFinder
 from app.automation.uia.metrics import UIAutomationMetrics
@@ -1214,12 +1281,24 @@ class ApplicationContainer(containers.DeclarativeContainer):
 
     ui_tree_walker = providers.Singleton(
         UITreeWalker,
-        max_depth=providers.Callable(lambda s: s.automation.uia.max_tree_depth, s=settings),
-        max_nodes=providers.Callable(lambda s: s.automation.uia.max_tree_nodes, s=settings),
-        max_children_per_node=providers.Callable(lambda s: s.automation.uia.max_children, s=settings),
-        include_offscreen=providers.Callable(lambda s: s.automation.uia.include_offscreen, s=settings),
-        include_disabled=providers.Callable(lambda s: s.automation.uia.include_disabled, s=settings),
-        sanitize_sensitive=providers.Callable(lambda s: s.automation.uia.diagnostic_redaction, s=settings),
+        max_depth=providers.Callable(
+            lambda s: s.automation.uia.max_tree_depth, s=settings
+        ),
+        max_nodes=providers.Callable(
+            lambda s: s.automation.uia.max_tree_nodes, s=settings
+        ),
+        max_children_per_node=providers.Callable(
+            lambda s: s.automation.uia.max_children, s=settings
+        ),
+        include_offscreen=providers.Callable(
+            lambda s: s.automation.uia.include_offscreen, s=settings
+        ),
+        include_disabled=providers.Callable(
+            lambda s: s.automation.uia.include_disabled, s=settings
+        ),
+        sanitize_sensitive=providers.Callable(
+            lambda s: s.automation.uia.diagnostic_redaction, s=settings
+        ),
     )
 
     ui_element_finder = providers.Singleton(
@@ -1243,4 +1322,242 @@ class ApplicationContainer(containers.DeclarativeContainer):
         element_finder=ui_element_finder,
         metrics=ui_automation_metrics,
         diagnostics=ui_automation_diagnostics,
+    )
+
+    native_input_backend = providers.Singleton(NativeInputBackend)
+    pyautogui_input_backend = providers.Singleton(PyAutoGUIInputBackend)
+    input_target_resolver = providers.Singleton(
+        TargetResolver,
+        bounds_check_enabled=settings.provided.automation.input.coordinate_bounds_check,
+    )
+    input_metrics = providers.Singleton(InputMetrics)
+    input_failsafe = providers.Singleton(
+        InputFailsafe,
+        enabled=settings.provided.automation.input.failsafe_enabled,
+    )
+    input_interruption_monitor = providers.Singleton(
+        InterruptionMonitor,
+        enabled=settings.provided.automation.input.interruption_detection_enabled,
+    )
+    input_diagnostics = providers.Singleton(
+        InputDiagnostics,
+        native_backend=native_input_backend,
+        pyautogui_backend=pyautogui_input_backend,
+        failsafe=input_failsafe,
+        interruption_monitor=input_interruption_monitor,
+    )
+    input_engine = providers.Singleton(
+        InputEngine,
+        native_backend=native_input_backend,
+        pyautogui_backend=pyautogui_input_backend,
+        target_resolver=input_target_resolver,
+        failsafe=input_failsafe,
+        interruption_monitor=input_interruption_monitor,
+        metrics=input_metrics,
+        diagnostics=input_diagnostics,
+    )
+
+    desktop_monitor_manager = providers.Singleton(MonitorManager)
+    desktop_virtual_desktop_manager = providers.Singleton(VirtualDesktopManager)
+    desktop_window_controller = providers.Singleton(
+        WindowController,
+        window_resolver=window_resolver,
+        monitor_manager=desktop_monitor_manager,
+    )
+    desktop_workspace_manager = providers.Singleton(
+        WorkspaceManager,
+        window_controller=desktop_window_controller,
+        monitor_manager=desktop_monitor_manager,
+    )
+    desktop_screen_capturer = providers.Singleton(
+        ScreenCapturer,
+        monitor_manager=desktop_monitor_manager,
+    )
+    desktop_clipboard_manager = providers.Singleton(
+        ClipboardManager,
+        max_text_chars=settings.provided.automation.desktop.clipboard_max_text_chars,
+    )
+    desktop_metrics = providers.Singleton(DesktopMetrics)
+    desktop_diagnostics = providers.Singleton(
+        DesktopDiagnostics,
+        window_controller=desktop_window_controller,
+        monitor_manager=desktop_monitor_manager,
+        virtual_desktop_manager=desktop_virtual_desktop_manager,
+        screen_capturer=desktop_screen_capturer,
+        clipboard_manager=desktop_clipboard_manager,
+    )
+    desktop_controller = providers.Singleton(
+        DesktopController,
+        window_controller=desktop_window_controller,
+        monitor_manager=desktop_monitor_manager,
+        virtual_desktop_manager=desktop_virtual_desktop_manager,
+        workspace_manager=desktop_workspace_manager,
+        screen_capturer=desktop_screen_capturer,
+        clipboard_manager=desktop_clipboard_manager,
+        metrics=desktop_metrics,
+        diagnostics=desktop_diagnostics,
+    )
+
+    # Phase 6.4 Application Control & Interaction Adapters singletons
+    app_adapter_registry = providers.Singleton(ApplicationAdapterRegistry)
+    app_launcher = providers.Singleton(
+        ApplicationLauncher,
+        window_resolver=window_resolver,
+        window_controller=desktop_window_controller,
+        path_security=path_security_manager,
+    )
+    explorer_adapter = providers.Singleton(
+        ExplorerAdapter,
+        window_resolver=window_resolver,
+        window_controller=desktop_window_controller,
+        uia_engine=ui_automation_engine,
+        element_finder=ui_element_finder,
+        input_engine=input_engine,
+        filesystem_service=filesystem_service,
+        launcher=app_launcher,
+        path_security=path_security_manager,
+    )
+    terminal_adapter = providers.Singleton(
+        TerminalAdapter,
+        window_resolver=window_resolver,
+        window_controller=desktop_window_controller,
+        uia_engine=ui_automation_engine,
+        element_finder=ui_element_finder,
+        input_engine=input_engine,
+        launcher=app_launcher,
+        path_security=path_security_manager,
+    )
+    app_adapter_metrics = providers.Singleton(ApplicationAdapterMetrics)
+    app_adapter_diagnostics = providers.Singleton(
+        ApplicationAdapterDiagnostics,
+        registry=app_adapter_registry,
+        launcher=app_launcher,
+        explorer_adapter=explorer_adapter,
+        terminal_adapter=terminal_adapter,
+    )
+    app_adapter_manager = providers.Singleton(
+        ApplicationAdapterManager,
+        registry=app_adapter_registry,
+        launcher=app_launcher,
+        explorer_adapter=explorer_adapter,
+        terminal_adapter=terminal_adapter,
+        metrics=app_adapter_metrics,
+        diagnostics=app_adapter_diagnostics,
+    )
+
+    # Phase 6.5 Multi-Step Automation Workflow Engine singletons
+    workflow_action_registry = providers.Singleton(
+        WorkflowActionRegistry,
+        app_manager=app_adapter_manager,
+        desktop_controller=desktop_controller,
+        input_engine=input_engine,
+        filesystem_service=filesystem_service,
+    )
+    workflow_verification_registry = providers.Singleton(VerificationRegistry)
+    workflow_step_verifier = providers.Singleton(
+        StepVerifier,
+        registry=workflow_verification_registry,
+        app_manager=app_adapter_manager,
+        desktop_controller=desktop_controller,
+        uia_engine=ui_automation_engine,
+    )
+    workflow_validator = providers.Singleton(
+        WorkflowValidator,
+        action_registry=workflow_action_registry,
+        verifier_registry=workflow_verification_registry,
+    )
+    workflow_metrics = providers.Singleton(WorkflowMetrics)
+    workflow_engine = providers.Singleton(
+        WorkflowEngine,
+        action_registry=workflow_action_registry,
+        verifier_registry=workflow_verification_registry,
+        validator=workflow_validator,
+        step_verifier=workflow_step_verifier,
+        input_engine=input_engine,
+        event_bus=event_bus,
+        metrics=workflow_metrics,
+    )
+    workflow_diagnostics = providers.Singleton(
+        WorkflowDiagnostics,
+        engine=workflow_engine,
+        action_registry=workflow_action_registry,
+        verifier_registry=workflow_verification_registry,
+        metrics=workflow_metrics,
+    )
+    workflow_manager = providers.Singleton(
+        WorkflowManager,
+        app_manager=app_adapter_manager,
+        desktop_controller=desktop_controller,
+        input_engine=input_engine,
+        filesystem_service=filesystem_service,
+        event_bus=event_bus,
+    )
+
+    # Phase 6.6 Automation Tool Suite singletons
+    uia_list_windows_tool = providers.Singleton(UiaListWindowsTool, desktop_controller=desktop_controller)
+    uia_inspect_window_tool = providers.Singleton(UiaInspectWindowTool, desktop_controller=desktop_controller, uia_engine=ui_automation_engine)
+    uia_find_element_tool = providers.Singleton(UiaFindElementTool, desktop_controller=desktop_controller, uia_engine=ui_automation_engine)
+
+    input_mouse_click_tool = providers.Singleton(InputMouseClickTool, input_engine=input_engine)
+    input_type_text_tool = providers.Singleton(InputTypeTextTool, input_engine=input_engine)
+    input_press_hotkey_tool = providers.Singleton(InputPressHotkeyTool, input_engine=input_engine)
+
+    window_list_open_tool = providers.Singleton(WindowListOpenTool, desktop_controller=desktop_controller)
+    window_focus_tool = providers.Singleton(AutomationWindowFocusTool, desktop_controller=desktop_controller)
+    window_maximize_tool = providers.Singleton(AutomationWindowMaximizeTool, desktop_controller=desktop_controller)
+    window_snap_tool = providers.Singleton(WindowSnapTool, desktop_controller=desktop_controller)
+
+    screen_capture_tool = providers.Singleton(ScreenCaptureTool, desktop_controller=desktop_controller)
+    screen_list_monitors_tool = providers.Singleton(ScreenListMonitorsTool, desktop_controller=desktop_controller)
+
+    clipboard_get_content_tool = providers.Singleton(ClipboardGetContentTool, desktop_controller=desktop_controller)
+    clipboard_set_content_tool = providers.Singleton(ClipboardSetContentTool, desktop_controller=desktop_controller)
+
+    application_launch_tool = providers.Singleton(ApplicationLaunchTool, app_manager=app_adapter_manager)
+    application_attach_tool = providers.Singleton(ApplicationAttachTool, app_manager=app_adapter_manager)
+    application_status_tool = providers.Singleton(AutomationApplicationStatusTool, app_manager=app_adapter_manager)
+
+    explorer_navigate_tool = providers.Singleton(ExplorerNavigateTool, app_manager=app_adapter_manager)
+    explorer_open_item_tool = providers.Singleton(ExplorerOpenItemTool, app_manager=app_adapter_manager)
+
+    terminal_launch_tool = providers.Singleton(TerminalLaunchTool, app_manager=app_adapter_manager)
+    terminal_read_output_tool = providers.Singleton(TerminalReadOutputTool, app_manager=app_adapter_manager)
+
+    workflow_execute_sequence_tool = providers.Singleton(WorkflowExecuteSequenceTool, workflow_manager=workflow_manager)
+
+    automation_tool_metrics = providers.Singleton(AutomationToolMetrics)
+    automation_tool_diagnostics = providers.Singleton(
+        AutomationToolDiagnostics,
+        registry=tool_registry,
+        metrics=automation_tool_metrics,
+    )
+
+    # Phase 6.7 Safety Governance singletons
+    automation_safety_policy = providers.Singleton(AutomationSafetyPolicy)
+    automation_safety_analyzer = providers.Singleton(
+        AutomationSafetyAnalyzer,
+        policy=automation_safety_policy,
+        tool_registry=tool_registry,
+    )
+    automation_kill_switch = providers.Singleton(AutomationKillSwitch)
+    automation_confirmation_manager = providers.Singleton(AutomationConfirmationManager)
+    automation_audit_log = providers.Singleton(AutomationAuditLog)
+    automation_safety_metrics = providers.Singleton(AutomationSafetyMetrics)
+    automation_safety_diagnostics = providers.Singleton(
+        AutomationSafetyDiagnostics,
+        policy=automation_safety_policy,
+        kill_switch=automation_kill_switch,
+        registry=tool_registry,
+        metrics=automation_safety_metrics,
+    )
+    automation_safety_manager = providers.Singleton(
+        AutomationSafetyManager,
+        policy=automation_safety_policy,
+        analyzer=automation_safety_analyzer,
+        kill_switch=automation_kill_switch,
+        confirmation_manager=automation_confirmation_manager,
+        audit_log=automation_audit_log,
+        metrics=automation_safety_metrics,
+        event_bus=event_bus,
+        workflow_manager=workflow_manager,
     )

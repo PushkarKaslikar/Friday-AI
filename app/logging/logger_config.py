@@ -1,6 +1,8 @@
 """Centralized production-grade logging infrastructure using Loguru with multi-channel sinks."""
 
 import sys
+from collections.abc import Callable
+from typing import Any
 
 from loguru import logger
 
@@ -12,6 +14,43 @@ from app.utilities.path_utils import ensure_directory_exists
 PERFORMANCE_LOG_FILE = LOGS_DIR / "performance.log"
 PLUGINS_LOG_FILE = LOGS_DIR / "plugins.log"
 CRASH_LOG_FILE = LOGS_DIR / "crash.log"
+
+
+def _safe_add_file_sink(
+    filepath: Any,
+    level: str,
+    rotation: str,
+    retention: str,
+    filter_func: Callable[[dict], bool] | None = None,
+    backtrace: bool = False,
+    diagnose: bool = False,
+) -> None:
+    """Safely register a Loguru file sink with fallback if Windows file locking prevents rotation."""
+    kwargs: dict[str, Any] = {
+        "format": DEFAULT_LOG_FORMAT,
+        "level": level,
+        "encoding": "utf-8",
+        "enqueue": True,
+        "catch": True,
+        "delay": True,
+    }
+    if filter_func is not None:
+        kwargs["filter"] = filter_func
+    if backtrace:
+        kwargs["backtrace"] = True
+    if diagnose:
+        kwargs["diagnose"] = True
+
+    try:
+        logger.add(filepath, rotation=rotation, retention=retention, **kwargs)
+    except (PermissionError, OSError):
+        # Fallback to non-rotating file sink if file rotation is blocked on Windows
+        try:
+            logger.add(filepath, rotation=None, **kwargs)
+        except (PermissionError, OSError):
+            sys.stderr.write(
+                f"[LoggingWarning] Could not open log sink for {filepath}\n"
+            )
 
 
 class LoggingManager:
@@ -47,67 +86,52 @@ class LoggingManager:
             rotation_str = f"{self.settings.max_file_size_mb} MB"
             retention_str = f"{self.settings.retention_days} days"
 
-            # Application Log File (all logs at configured log level)
-            logger.add(
+            # Application Log File
+            _safe_add_file_sink(
                 APP_LOG_FILE,
-                format=DEFAULT_LOG_FORMAT,
                 level=log_level,
                 rotation=rotation_str,
                 retention=retention_str,
-                encoding="utf-8",
                 backtrace=True,
                 diagnose=True,
-                enqueue=True,
             )
 
-            # Error Log File (WARNING and above only)
-            logger.add(
+            # Error Log File
+            _safe_add_file_sink(
                 ERROR_LOG_FILE,
-                format=DEFAULT_LOG_FORMAT,
                 level="WARNING",
                 rotation=rotation_str,
                 retention=retention_str,
-                encoding="utf-8",
                 backtrace=True,
                 diagnose=True,
-                enqueue=True,
             )
 
-            # Performance Log File (filter for performance channel messages)
-            logger.add(
+            # Performance Log File
+            _safe_add_file_sink(
                 PERFORMANCE_LOG_FILE,
-                format=DEFAULT_LOG_FORMAT,
                 level="INFO",
-                filter=lambda record: "performance" in record["extra"]
-                or "Performance" in record["message"],
                 rotation=rotation_str,
                 retention=retention_str,
-                encoding="utf-8",
-                enqueue=True,
+                filter_func=lambda record: "performance" in record["extra"]
+                or "Performance" in record["message"],
             )
 
             # Plugins Log File
-            logger.add(
+            _safe_add_file_sink(
                 PLUGINS_LOG_FILE,
-                format=DEFAULT_LOG_FORMAT,
                 level="INFO",
-                filter=lambda record: "plugin" in record["extra"]
-                or "Plugin" in record["message"],
                 rotation=rotation_str,
                 retention=retention_str,
-                encoding="utf-8",
-                enqueue=True,
+                filter_func=lambda record: "plugin" in record["extra"]
+                or "Plugin" in record["message"],
             )
 
             # Crash Log File
-            logger.add(
+            _safe_add_file_sink(
                 CRASH_LOG_FILE,
-                format=DEFAULT_LOG_FORMAT,
                 level="CRITICAL",
                 rotation=rotation_str,
                 retention=retention_str,
-                encoding="utf-8",
-                enqueue=True,
             )
 
         self._initialized = True

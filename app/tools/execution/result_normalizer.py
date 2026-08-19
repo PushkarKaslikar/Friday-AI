@@ -46,12 +46,32 @@ class SensitiveDataSanitizer:
         return data
 
     @classmethod
+    def sanitize_dict(cls, data: Any) -> Any:
+        """Alias for sanitize method."""
+        return cls.sanitize(data)
+
+    @classmethod
     def contains_sensitive_data(cls, text: str) -> bool:
         """Check whether a text string contains sensitive keys or credential patterns."""
         if not text or not isinstance(text, str):
             return False
         text_lower = text.lower()
         return any(s_key in text_lower for s_key in SENSITIVE_KEYS)
+
+    @classmethod
+    def sanitize_text(cls, text: str) -> str:
+        """Sanitize sensitive keys or credential patterns in a text string."""
+        if not text or not isinstance(text, str):
+            return text
+        import re
+
+        clean = text
+        for s_key in SENSITIVE_KEYS:
+            pattern = re.compile(
+                rf"({s_key}\s*[:=]|\b{s_key}\s+is\s+)([^\s,;]+)", re.IGNORECASE
+            )
+            clean = pattern.sub(r"\1********", clean)
+        return clean
 
 
 class ResultNormalizer:

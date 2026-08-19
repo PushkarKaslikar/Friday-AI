@@ -76,7 +76,11 @@ class VADDetector(BaseService, IVADDetector):
     def _load_vad_configuration(self) -> VADConfiguration:
         """Extract VADConfiguration from SettingsManager."""
         try:
-            settings = self.config_manager.get_settings()
+            settings = getattr(self.config_manager, "settings", None) or (
+                self.config_manager.get_settings()
+                if hasattr(self.config_manager, "get_settings")
+                else None
+            )
             vad_s = getattr(settings, "voice", None)
             if vad_s and hasattr(vad_s, "vad"):
                 v = vad_s.vad

@@ -137,9 +137,11 @@ class ElementAdapter:
             class_name=element.class_name,
             process_id=element.process_id,
             window_handle=element.window_handle,
-            bounding_rectangle=element.bounding_rectangle.to_dict()
-            if element.bounding_rectangle
-            else None,
+            bounding_rectangle=(
+                element.bounding_rectangle.to_dict()
+                if element.bounding_rectangle
+                else None
+            ),
             is_enabled=element.is_enabled,
             is_visible=element.is_visible,
             is_offscreen=element.is_offscreen,

@@ -1,6 +1,7 @@
 """Application bootstrapper managing the 8-stage startup sequence."""
 
 import sys
+import threading
 from typing import NamedTuple
 
 from PySide6.QtWidgets import QApplication
@@ -214,6 +215,21 @@ class AppBootstrapper:
         except Exception as uia_exc:
             logger.warning(f"UI Automation Engine non-fatal startup warning: {uia_exc}")
 
+        input_engine = self.container.input_engine()
+        logger.debug("InputEngine initialized in IDLE state.")
+
+        desktop_controller = self.container.desktop_controller()
+        logger.debug("DesktopController initialized in IDLE state.")
+
+        app_adapter_manager = self.container.app_adapter_manager()
+        logger.debug("ApplicationAdapterManager initialized in IDLE state.")
+
+        workflow_manager = self.container.workflow_manager()
+        logger.debug("WorkflowManager initialized in IDLE state.")
+
+        automation_safety_manager = self.container.automation_safety_manager()
+        logger.debug("AutomationSafetyManager initialized in READY state.")
+
         # Register background services
         self.service_manager.register_service(scheduler_service)
         self.service_manager.register_service(health_monitor)
@@ -326,6 +342,29 @@ class AppBootstrapper:
             self.container.sleep_computer_tool(),
             self.container.restart_computer_tool(),
             self.container.shutdown_computer_tool(),
+            # Phase 6.6 Automation Tool Suite
+            self.container.uia_list_windows_tool(),
+            self.container.uia_inspect_window_tool(),
+            self.container.uia_find_element_tool(),
+            self.container.input_mouse_click_tool(),
+            self.container.input_type_text_tool(),
+            self.container.input_press_hotkey_tool(),
+            self.container.window_list_open_tool(),
+            self.container.window_focus_tool(),
+            self.container.window_maximize_tool(),
+            self.container.window_snap_tool(),
+            self.container.screen_capture_tool(),
+            self.container.screen_list_monitors_tool(),
+            self.container.clipboard_get_content_tool(),
+            self.container.clipboard_set_content_tool(),
+            self.container.application_launch_tool(),
+            self.container.application_attach_tool(),
+            self.container.application_status_tool(),
+            self.container.explorer_navigate_tool(),
+            self.container.explorer_open_item_tool(),
+            self.container.terminal_launch_tool(),
+            self.container.terminal_read_output_tool(),
+            self.container.workflow_execute_sequence_tool(),
         ]
 
         for t in tools_to_register:
@@ -355,6 +394,17 @@ class AppBootstrapper:
         # Initialize and start core services
         self.service_manager.initialize_all()
         self.service_manager.start_all()
+
+        # Background pre-warm local LLM model so UI stays 100% unblocked on first prompt
+        def _prewarm_llm() -> None:
+            try:
+                llm_mgr = self.container.llm_model_manager()
+                if llm_mgr:
+                    llm_mgr.load_model()
+            except Exception as err:  # noqa: BLE001
+                logger.warning(f"Background LLM pre-warm: {err}")
+
+        threading.Thread(target=_prewarm_llm, daemon=True).start()
 
         logger.info(
             f"[Bootstrap Step 5/8] Core services started. Registered tools: {tool_registry.registered_count}."
@@ -390,12 +440,22 @@ class AppBootstrapper:
             self.container.notification_manager()
         )
 
+        tool_executor = self.container.tool_executor()
+        tool_registry = self.container.tool_registry()
+        safety_manager = self.container.automation_safety_manager()
+        audit_log = self.container.automation_audit_log()
+
         # Initialize Main Window
         self.main_window = MainWindow(
             theme_manager=theme_manager,
             asset_manager=asset_manager,
             navigation_manager=navigation_manager,
             window_manager=window_manager,
+            tool_executor=tool_executor,
+            tool_registry=tool_registry,
+            safety_manager=safety_manager,
+            audit_log=audit_log,
+            container=self.container,
         )
         window_manager.register_window("main", self.main_window)
 
@@ -449,6 +509,18 @@ class AppBootstrapper:
             else:
                 state_manager.set_state(ApplicationState.MINIMIZED)
                 logger.info("Starting minimized to system tray per configuration.")
+
+            # Trigger spoken startup welcome greeting in background thread
+            def _speak_startup() -> None:
+                try:
+                    tts = self.container.tts_service()
+                    tts.speak(
+                        "Friday AI Assistant is initialized and active. How can I help you today?"
+                    )
+                except Exception as tts_err:  # noqa: BLE001
+                    logger.warning(f"Failed to play spoken startup greeting: {tts_err}")
+
+            threading.Thread(target=_speak_startup, daemon=True).start()
 
         logger.info(
             f"[Bootstrap Step 8/8] Application {self.settings.app.name} v{self.settings.app.version} initialization complete."

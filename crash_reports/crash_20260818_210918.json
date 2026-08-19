@@ -1,0 +1,31 @@
+{
+  "app_name": "Friday AI Assistant",
+  "version": "1.0.0",
+  "timestamp": "2026-08-18 21:09:18.405442",
+  "python_version": "3.14.5 (tags/v3.14.5:5607950, May 10 2026, 10:43:50) [MSC v.1944 64 bit (AMD64)]",
+  "os_platform": "win32",
+  "pid": 7480,
+  "exception": {
+    "type": "InitializationError",
+    "message": "Application bootstrap failed during startup sequence: 'ToolMetadata' object has no attribute 'id'",
+    "traceback": [
+      "Traceback (most recent call last):\n",
+      "  File \"D:\\Friday AI\\app\\bootstrap\\bootstrapper.py\", line 103, in run\n    self._step7_prepare_ui_initialization()\n    ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~^^\n",
+      "  File \"D:\\Friday AI\\app\\bootstrap\\bootstrapper.py\", line 437, in _step7_prepare_ui_initialization\n    self.main_window = MainWindow(\n                       ~~~~~~~~~~^\n        theme_manager=theme_manager,\n        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n    ...<6 lines>...\n        audit_log=audit_log,\n        ^^^^^^^^^^^^^^^^^^^^\n    )\n    ^\n",
+      "  File \"D:\\Friday AI\\app\\ui\\windows\\main_window.py\", line 61, in __init__\n    self._setup_ui()\n    ~~~~~~~~~~~~~~^^\n",
+      "  File \"D:\\Friday AI\\app\\ui\\windows\\main_window.py\", line 127, in _setup_ui\n    AutomationPage(\n    ~~~~~~~~~~~~~~^\n        tool_registry=self.tool_registry,\n        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n        safety_manager=self.safety_manager,\n        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n        parent=self.page_stack,\n        ^^^^^^^^^^^^^^^^^^^^^^^\n    )\n    ^\n",
+      "  File \"D:\\Friday AI\\app\\ui\\navigation\\pages\\automation_page.py\", line 34, in __init__\n    self._populate_content()\n    ~~~~~~~~~~~~~~~~~~~~~~^^\n",
+      "  File \"D:\\Friday AI\\app\\ui\\navigation\\pages\\automation_page.py\", line 91, in _populate_content\n    f\"• {t.id} [{t.category.value}] — {t.description} (Risk: {t.risk_level.value})\"\n         ^^^^\n",
+      "  File \"C:\\Users\\Pushkar\\AppData\\Local\\Programs\\Python\\Python314\\Lib\\site-packages\\pydantic\\main.py\", line 1042, in __getattr__\n    raise AttributeError(f'{type(self).__name__!r} object has no attribute {item!r}')\n",
+      "AttributeError: 'ToolMetadata' object has no attribute 'id'\n",
+      "\nThe above exception was the direct cause of the following exception:\n\n",
+      "Traceback (most recent call last):\n",
+      "  File \"D:\\Friday AI\\main.py\", line 6326, in <module>\n    sys.exit(main())\n             ~~~~^^\n",
+      "  File \"D:\\Friday AI\\main.py\", line 6256, in main\n    return run_automation_health_check(bootstrapper)\n",
+      "  File \"D:\\Friday AI\\main.py\", line 4570, in run_automation_health_check\n    bootstrap_result = bootstrapper.run()\n",
+      "  File \"D:\\Friday AI\\app\\bootstrap\\bootstrapper.py\", line 129, in run\n    raise InitializationError(\n    ...<2 lines>...\n    ) from exc\n",
+      "app.exceptions.bootstrap.InitializationError: Application bootstrap failed during startup sequence: 'ToolMetadata' object has no attribute 'id'\n"
+    ]
+  },
+  "extra_context": {}
+}

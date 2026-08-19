@@ -1,0 +1,33 @@
+{
+  "app_name": "Friday AI Assistant",
+  "version": "1.0.0",
+  "timestamp": "2026-08-18 21:08:36.062622",
+  "python_version": "3.14.5 (tags/v3.14.5:5607950, May 10 2026, 10:43:50) [MSC v.1944 64 bit (AMD64)]",
+  "os_platform": "win32",
+  "pid": 9772,
+  "exception": {
+    "type": "InitializationError",
+    "message": "Application bootstrap failed during startup sequence: type object 'PySide6.QtWidgets.QLabel' has no attribute 'TextInteractionFlag'",
+    "traceback": [
+      "Traceback (most recent call last):\n",
+      "  File \"D:\\Friday AI\\app\\bootstrap\\bootstrapper.py\", line 103, in run\n    self._step7_prepare_ui_initialization()\n    ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~^^\n",
+      "  File \"D:\\Friday AI\\app\\bootstrap\\bootstrapper.py\", line 437, in _step7_prepare_ui_initialization\n    self.main_window = MainWindow(\n                       ~~~~~~~~~~^\n        theme_manager=theme_manager,\n        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n    ...<6 lines>...\n        audit_log=audit_log,\n        ^^^^^^^^^^^^^^^^^^^^\n    )\n    ^\n",
+      "  File \"D:\\Friday AI\\app\\ui\\windows\\main_window.py\", line 61, in __init__\n    self._setup_ui()\n    ~~~~~~~~~~~~~~^^\n",
+      "  File \"D:\\Friday AI\\app\\ui\\windows\\main_window.py\", line 118, in _setup_ui\n    AssistantPage(\n    ~~~~~~~~~~~~~^\n        tool_executor=self.tool_executor,\n        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n    ...<2 lines>...\n        parent=self.page_stack,\n        ^^^^^^^^^^^^^^^^^^^^^^^\n    )\n    ^\n",
+      "  File \"D:\\Friday AI\\app\\ui\\navigation\\pages\\assistant_page.py\", line 129, in __init__\n    self._setup_assistant_ui()\n    ~~~~~~~~~~~~~~~~~~~~~~~~^^\n",
+      "  File \"D:\\Friday AI\\app\\ui\\navigation\\pages\\assistant_page.py\", line 155, in _setup_assistant_ui\n    self._add_message(\n    ~~~~~~~~~~~~~~~~~^\n        sender=\"Friday AI Assistant\",\n        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n        text=\"Hello! I am Friday, your local-first personal AI assistant. How can I automate your desktop today?\",\n        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n        timestamp=get_timestamp_str(),\n        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n    )\n    ^\n",
+      "  File \"D:\\Friday AI\\app\\ui\\navigation\\pages\\assistant_page.py\", line 169, in _add_message\n    msg_widget = ChatMessageWidget(\n        sender=sender,\n    ...<5 lines>...\n        parent=self.messages_container,\n    )\n",
+      "  File \"D:\\Friday AI\\app\\ui\\widgets\\chat_widget.py\", line 41, in __init__\n    self._setup_ui()\n    ~~~~~~~~~~~~~~^^\n",
+      "  File \"D:\\Friday AI\\app\\ui\\widgets\\chat_widget.py\", line 99, in _setup_ui\n    QLabel.TextInteractionFlag.TextSelectableByMouse\n    ^^^^^^^^^^^^^^^^^^^^^^^^^^\n",
+      "AttributeError: type object 'PySide6.QtWidgets.QLabel' has no attribute 'TextInteractionFlag'. Did you mean: 'textInteractionFlags'?\n",
+      "\nThe above exception was the direct cause of the following exception:\n\n",
+      "Traceback (most recent call last):\n",
+      "  File \"D:\\Friday AI\\main.py\", line 6326, in <module>\n    sys.exit(main())\n             ~~~~^^\n",
+      "  File \"D:\\Friday AI\\main.py\", line 6256, in main\n    return run_automation_health_check(bootstrapper)\n",
+      "  File \"D:\\Friday AI\\main.py\", line 4570, in run_automation_health_check\n    bootstrap_result = bootstrapper.run()\n",
+      "  File \"D:\\Friday AI\\app\\bootstrap\\bootstrapper.py\", line 129, in run\n    raise InitializationError(\n    ...<2 lines>...\n    ) from exc\n",
+      "app.exceptions.bootstrap.InitializationError: Application bootstrap failed during startup sequence: type object 'PySide6.QtWidgets.QLabel' has no attribute 'TextInteractionFlag'\n"
+    ]
+  },
+  "extra_context": {}
+}

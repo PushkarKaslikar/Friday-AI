@@ -1531,14 +1531,622 @@ flowchart TD
 ### Diagram 6 — Phase 6 Evolution
 ```mermaid
 flowchart TD
-    P61["6.1 UIA Foundation (CURRENT PHASE)"] --> P62["6.2 Input Engine (Mouse & Keyboard)"]
-    P62 --> P63["6.3 Desktop / Screen Control"]
+    P61["6.1 UIA Foundation"] --> P62["6.2 Input Engine"]
+    P62 --> P63["6.3 Desktop Control (CURRENT PHASE)"]
     P63 --> P64["6.4 Application Adapters"]
     P64 --> P65["6.5 Workflow Engine"]
     P65 --> P66["6.6 Automation Tools for AI"]
     P66 --> P67["6.7 Security / Failsafe Guardrails"]
 
-    style P61 fill:#2d5a88,stroke:#333,stroke-width:2px,color:#fff
+    style P63 fill:#2d5a88,stroke:#333,stroke-width:2px,color:#fff
+```
+
+---
+
+## 7.3 Phase 6.3 — Window Management, Desktop Control, Clipboard & Screen Inspection Architecture
+
+### Diagram 1 — Desktop Control Architecture
+```mermaid
+flowchart TD
+    Desk["Windows Desktop"] --> WC["WindowController"]
+    Desk --> SC["ScreenCapturer (mss)"]
+    Desk --> CB["ClipboardManager"]
+    WC --> DC["DesktopController"]
+    SC --> DC
+    CB --> DC
+```
+
+### Diagram 2 — Window Management Flow
+```mermaid
+flowchart TD
+    Req["Window Action Request"] --> WC["WindowController"]
+    WC --> Resolve["Resolve HWND"]
+    Resolve --> Validate{"Validate IsWindow"}
+    Validate -->|Invalid| Err["WindowClosedError"]
+    Validate -->|Valid| Exec["Win32 User32 Action (Focus / Move / Snap / Close)"]
+    Exec --> Result["WindowOperationResult"]
+```
+
+### Diagram 3 — Multi-Monitor Topology
+```mermaid
+flowchart TD
+    VS["Virtual Screen Space"] --> M1["Monitor #0 (Primary)"]
+    VS --> M2["Monitor #1"]
+    VS --> M3["Monitor #N"]
+    M1 --> MM["MonitorManager"]
+    M2 --> MM
+    M3 --> MM
+    MM --> Map["Window-to-Monitor & Work Area Mapping"]
+```
+
+### Diagram 4 — Workspace Topology Snapshot & Restore
+```mermaid
+flowchart TD
+    Capture["capture_workspace_layout()"] --> WinList["Enumerate Windows"]
+    WinList --> MonMap["Map to Monitors & Rects"]
+    MonMap --> Layout["WorkspaceLayout Snapshot"]
+    Layout --> Restore["restore_workspace_layout()"]
+    Restore --> Match{"Match Window"}
+    Match -->|Found| Apply["Apply Geometry & State"]
+    Match -->|Missing| Skip["Skip Safely (No App Launch)"]
+```
+
+### Diagram 5 — Screen & Clipboard Privacy Architecture
+```mermaid
+flowchart TD
+    Req["Explicit Desktop Request"] --> Target{"Request Type"}
+    Target -->|Screen Capture| SC["ScreenCapturer (mss)"]
+    SC --> MemImg["In-Memory PNG Bytes"]
+    MemImg --> NoCloud["X Zero Cloud Upload / X Zero Auto-Save"]
+    Target -->|Clipboard Read| CB["ClipboardManager"]
+    CB --> Mask["SensitiveDataSanitizer Secret Masking"]
+    Mask --> NoLog["X Zero Keystroke/Clipboard Logging"]
+```
+
+---
+
+## 7.2 Phase 6.2 — Mouse, Keyboard & Human-Like Input Control Engine Architecture
+
+### Diagram 1 — Input Engine Architecture
+```mermaid
+flowchart TD
+    Req["Input Request"] --> Engine["InputEngine (IInputEngine)"]
+    Engine --> Exclusivity["Channel Exclusivity Lock"]
+    Exclusivity --> BackendSel{"Select Backend"}
+    BackendSel -->|Primary| Native["NativeInputBackend (Win32 SendInput)"]
+    BackendSel -->|Fallback| PyAutoGUI["PyAutoGUIInputBackend"]
+    Native --> Physical["Physical Input Dispatch"]
+    PyAutoGUI --> Physical
+```
+
+### Diagram 2 — UIA Target to Input Flow
+```mermaid
+flowchart TD
+    Elem["AutomationElement (Phase 6.1)"] --> Validation{"Validate Element"}
+    Validation -->|Disabled / Stale| Err["INVALID_TARGET"]
+    Validation -->|Valid| Rect["BoundingRectangle"]
+    Rect --> Center["Compute Center (x, y)"]
+    Center --> BoundsCheck{"Virtual Screen Bounds Check"}
+    BoundsCheck -->|Out of Bounds| ErrBounds["INVALID_COORDINATES"]
+    BoundsCheck -->|Valid| InputEng["InputEngine Action"]
+    InputEng --> PhysicalAction["Mouse Action Dispatch"]
+```
+
+### Diagram 3 — User Physical Interruption Flow
+```mermaid
+flowchart TD
+    Auto["Friday Automation Active"] --> Monitor["InterruptionMonitor"]
+    Monitor --> StateCheck{"Physical User Input Detected?"}
+    StateCheck -->|No| Continue["Continue Automation"]
+    StateCheck -->|Yes| Interrupt["Trigger USER_PHYSICAL_INPUT"]
+    Interrupt --> Release["release_all_inputs()"]
+    Release --> Evt["InputOperationInterrupted Event"]
+    Evt --> Yield["Yield Control to User (No Auto-Resume)"]
+```
+
+### Diagram 4 — Emergency Failsafe Architecture
+```mermaid
+flowchart TD
+    Op["Input Operation"] --> Failsafe["InputFailsafe Check"]
+    Failsafe --> Corner{"Cursor in Emergency Top-Left Corner?"}
+    Corner -->|No| Exec["Execute Input Action"]
+    Corner -->|Yes| Abort["Emergency Abort"]
+    Abort --> ReleaseAll["release_all_inputs()"]
+    ReleaseAll --> Status["FAILSAFE_ABORTED"]
+```
+
+### Diagram 5 — Cancellation Flow
+```mermaid
+flowchart TD
+    Op["Input Action"] --> Token{"CancellationToken.is_cancelled?"}
+    Token -->|No| Dispatch["Execute Action"]
+    Token -->|Yes| Stop["Stop Issuing Input"]
+    Stop --> Cleanup["Release Held Inputs"]
+    Cleanup --> CancelledResult["Return InputResult(CANCELLED)"]
+```
+
+---
+
+## 7.4 Phase 6.4 — Application Control & Interaction Adapters Architecture
+
+Phase 6.4 provides specialized application adapters that transform generic Windows control primitives into domain-specific application automation abstractions for File Explorer, Terminal family (CMD, PowerShell, Windows Terminal), and generic application launch & attach services.
+
+### Diagram 1 — Subsystem Component Flow Architecture
+```mermaid
+flowchart TD
+    Req["Application Request"] --> Manager["ApplicationAdapterManager"]
+    Manager --> Registry["ApplicationAdapterRegistry"]
+    Registry --> Resolve{"Resolve App ID / Alias"}
+    Resolve -->|explorer| Exp["ExplorerAdapter"]
+    Resolve -->|terminal / cmd / powershell / wt| Term["TerminalAdapter"]
+    Resolve -->|unregistered app| Launch["ApplicationLauncher"]
+    
+    Exp --> UIA["Phase 6.1 UIA Engine"]
+    Exp --> Input["Phase 6.2 InputEngine"]
+    Exp --> FS["Phase 2 FilesystemService"]
+    
+    Term --> WinCtrl["Phase 6.3 WindowController"]
+    Term --> Input
+    Term --> Sanitize["SensitiveDataSanitizer"]
+    
+    Launch --> PathSec["Phase 2 PathSecurityManager"]
+    Launch --> Subproc["subprocess.Popen(shell=False)"]
+```
+
+### Diagram 2 — Safe Application Launch & Readiness Lifecycle
+```mermaid
+flowchart TD
+    Req["LaunchRequest"] --> ExecCheck{"Resolve Executable & Extension"}
+    ExecCheck -->|Invalid .bat/.py/.txt| ErrExec["INVALID_EXECUTABLE"]
+    ExecCheck -->|Valid .exe/.com| CwdCheck{"Validate Working Directory"}
+    
+    CwdCheck -->|Non-Existent / Inaccessible| ErrCwd["INVALID_WORKING_DIRECTORY"]
+    CwdCheck -->|Valid Path| Spawn["subprocess.Popen(cmd_list, shell=False)"]
+    
+    Spawn --> ProcCheck{"Process Alive?"}
+    ProcCheck -->|Exited / Failed| ErrLaunch["LAUNCH_FAILED"]
+    ProcCheck -->|Alive| WinCheck{"Window Created? (Bounded Wait)"}
+    
+    WinCheck -->|Timeout| WinPartial["ATTACHED_WITHOUT_WINDOW"]
+    WinCheck -->|Window Found| Focus["Focus Window & Attach"]
+    Focus --> Ready["State: READY"]
+```
+
+### Diagram 3 — File Explorer Navigation & Directory Operations
+```mermaid
+flowchart TD
+    NavReq["ExplorerAdapter.navigate_to(path)"] --> SecCheck{"PathSecurityManager.validate_path(path)"}
+    SecCheck -->|Protected / Restricted| ErrSec["NAVIGATION_FAILED (Security Violation)"]
+    SecCheck -->|Valid| ExistsCheck{"Path.exists()"}
+    
+    ExistsCheck -->|Does Not Exist| ErrNotExist["NAVIGATION_FAILED (Path Not Found)"]
+    ExistsCheck -->|Exists| UIAAddress["Set UIA Address Bar & Press Enter"]
+    
+    UIAAddress --> Success["State: ATTACHED / Navigated"]
+    
+    MkdirReq["ExplorerAdapter.create_folder(folder_path)"] --> FSCall["Phase 2 FilesystemService.create_folder(folder_path)"]
+    FSCall --> FSSec["PathSecurityManager System Protection"]
+    FSSec --> FSRet["Return ExplorerOperationResult"]
+```
+
+### Diagram 4 — Terminal Input Typing & Secret Masking Flow
+```mermaid
+flowchart TD
+    CmdReq["TerminalAdapter.type_command(cmd_text)"] --> MaskCheck["SensitiveDataSanitizer Masking"]
+    MaskCheck --> LogOutput["Log Masked Command (Secrets Hidden)"]
+    
+    LogOutput --> WinFocus["Focus Terminal HWND"]
+    WinFocus --> TypeText["InputEngine.type_text(raw_cmd)"]
+    TypeText --> PressEnter["InputEngine.press_key('enter')"]
+    PressEnter --> RetSuccess["Return TerminalOperationResult(SUCCESS)"]
+    
+    ReadReq["TerminalAdapter.read_output(max_chars)"] --> UIAText["Fetch UIA Text Control Buffer"]
+    UIAText --> SanitizeOut["SensitiveDataSanitizer.sanitize_text()"]
+    SanitizeOut --> RetOutput["Return TerminalOutput(sanitized_text)"]
+```
+
+### Diagram 5 — Adapter Registry & Deterministic Resolution
+```mermaid
+flowchart TD
+    RegInit["Initialize ApplicationAdapterRegistry"] --> RegExp["Register ExplorerAdapter (explorer, file explorer)"]
+    RegInit --> RegTerm["Register TerminalAdapter (terminal, cmd, powershell, wt)"]
+    
+    Query["get_adapter(query)"] --> AliasMatch{"Exact Match on App ID or Alias?"}
+    AliasMatch -->|Found| ReturnAdapter["Return Registered ApplicationAdapter Instance"]
+    AliasMatch -->|Not Found| ReturnNone["Return None (Fallback to Generic Launcher)"]
+```
+
+---
+
+## 7.5 Phase 6.5 — Multi-Step Automation Workflow Engine Architecture
+
+### Diagram 1 — Multi-Step Verified Execution Loop (ACTION -> VERIFY -> CONTINUE / RETRY / RECOVER / ABORT)
+```mermaid
+flowchart TD
+    Start["WorkflowManager.execute_plan(plan)"] --> Validate["WorkflowValidator.validate_plan(plan)"]
+    Validate --> ModeCheck{"Check Execution Mode"}
+    
+    ModeCheck -->|LIVE| AcqLock{"Acquire Live Execution Lock"}
+    AcqLock -->|Busy| ErrBusy["Raise ResourceBusyError (RESOURCE_BUSY)"]
+    AcqLock -->|Acquired| StartLoop["Start Sequential Step Loop"]
+    
+    ModeCheck -->|DRY_RUN / SIMULATE| StartLoop
+    
+    StartLoop --> CheckTimeout{"Workflow / Step Timeout Exceeded?"}
+    CheckTimeout -->|Yes| TimeoutAbort["Set State: FAILED / TIMEOUT"]
+    
+    CheckTimeout -->|No| CheckPrecond{"Precondition Condition Specified?"}
+    CheckPrecond -->|Yes| EvalPre["StepVerifier.verify_condition(precondition)"]
+    EvalPre -->|Failed| StepFailPre["Set Step State: FAILED (Precondition)"]
+    
+    CheckPrecond -->|No| ExecAct["WorkflowActionRegistry.execute_action(action)"]
+    EvalPre -->|Passed| ExecAct
+    
+    ExecAct --> ActStatus{"Action Execution Status?"}
+    ActStatus -->|Failed| RetryCheck{"RetryPolicy.is_idempotent & Attempts Left?"}
+    RetryCheck -->|Yes| Backoff["Apply Retry Delay / Backoff"] --> ExecAct
+    RetryCheck -->|No / Non-Idempotent| StepFailAct["Set Step State: FAILED"]
+    
+    ActStatus -->|Success| VerifyPost["StepVerifier.verify_condition(postcondition)"]
+    VerifyPost --> PostStatus{"Postcondition Verification Status?"}
+    
+    PostStatus -->|Passed| StepSuccess["Step State: COMPLETED -> Record Output Variable"]
+    StepSuccess --> NextStep{"More Steps Remaining?"}
+    NextStep -->|Yes| StartLoop
+    NextStep -->|No| WFComplete["Set State: COMPLETED / PARTIAL_SUCCESS"]
+    
+    PostStatus -->|Failed / Timeout| RecCheck{"RecoveryPolicy Attempts Remaining?"}
+    RecCheck -->|Yes| ExecRec["Execute Recovery Strategy (REFOCUS / RE_RESOLVE)"] --> VerifyPost
+    RecCheck -->|No / Abort| EvalFailPol{"Evaluate Workflow FailurePolicy"}
+    
+    EvalFailPol -->|FAIL_FAST| WFStateFail["Set Workflow State: FAILED"]
+    EvalFailPol -->|PAUSE_ON_FAILURE| WFStatePause["Set Workflow State: PAUSED"]
+```
+
+### Diagram 2 — Step Verification Engine & Composite Operators (ALL / ANY / NOT)
+```mermaid
+flowchart TD
+    ReqVer["StepVerifier.verify_condition(condition, context, mode)"] --> ModeSim{"Execution Mode?"}
+    ModeSim -->|DRY_RUN / SIMULATE| SimPass["Return VerificationResult(PASSED, SIMULATED)"]
+    
+    ModeSim -->|LIVE| PollLoop["Start Bounded Polling Loop (timeout_ms, poll_interval_ms)"]
+    PollLoop --> CheckCancel{"CancellationToken.is_cancelled?"}
+    CheckCancel -->|True| FailCancel["Return VerificationResult(FAILED, Cancelled)"]
+    
+    CheckCancel -->|False| EvalTree["_evaluate_condition_tree(condition)"]
+    
+    EvalTree --> OpType{"Condition Operator?"}
+    OpType -->|ALL| EvalAll["all(sub_conditions)"]
+    OpType -->|ANY| EvalAny["any(sub_conditions)"]
+    OpType -->|NOT| EvalNot["not any(sub_conditions)"]
+    OpType -->|Atomic| EvalAtomic["VerificationRegistry.evaluate_single(condition_type)"]
+    
+    EvalAll --> ResBool{"Tree Evaluated Result?"}
+    EvalAny --> ResBool
+    EvalNot --> ResBool
+    EvalAtomic --> ResBool
+    
+    ResBool -->|True| PassRes["Return VerificationResult(PASSED)"]
+    ResBool -->|False| CheckTime{"Elapsed Time >= timeout_ms?"}
+    CheckTime -->|Yes| TimeRes["Return VerificationResult(TIMEOUT)"]
+    CheckTime -->|No| SleepPoll["Sleep(poll_interval_ms)"] --> PollLoop
+```
+
+### Diagram 3 — Step Failure, Retry Policy & Recovery Strategy Loop
+```mermaid
+flowchart TD
+    ActFail["Action Execution Failed or Verification Failed"] --> IdemCheck{"Is Action / RetryPolicy Idempotent?"}
+    
+    IdemCheck -->|No| LogSkip["Log Warning: Non-Idempotent Action -> Skip Retry"] --> RecCheck
+    IdemCheck -->|Yes| AttCheck{"attempts < RetryPolicy.max_attempts?"}
+    
+    AttCheck -->|Yes| CalcBackoff["Calculate Delay (FIXED or EXPONENTIAL)"]
+    CalcBackoff --> EventRetry["Publish WorkflowStepRetryingEvent"]
+    EventRetry --> SleepDelay["Sleep(delay_ms)"] --> RetryExec["Re-execute Action"]
+    
+    AttCheck -->|No| RecCheck{"recovery_attempts < RecoveryPolicy.max_recovery_attempts?"}
+    
+    RecCheck -->|Yes| StratType{"RecoveryStrategy?"}
+    StratType -->|REFOCUS| ActRefocus["Focus Active Window HWND"]
+    StratType -->|RE_RESOLVE_TARGET| ActResolve["Re-resolve Target Locator / Path"]
+    StratType -->|REATTACH| ActAttach["Re-attach Application Adapter"]
+    StratType -->|PAUSE_FOR_USER| ActPause["Transition Workflow to PAUSED State"]
+    StratType -->|ABORT| ActAbort["Return Recovery Failed"]
+    
+    ActRefocus --> ReVerify["Re-evaluate Postcondition Verification"]
+    ActResolve --> ReVerify
+    ActAttach --> ReVerify
+    
+    ReVerify -->|Passed| StepRecCompleted["Step State: COMPLETED"]
+    ReVerify -->|Failed| AttCheck
+    
+    RecCheck -->|No| FinalStepFailed["Step State: FAILED"]
+```
+
+### Diagram 4 — Physical User Interruption & Mouse Failsafe Propagation
+```mermaid
+flowchart TD
+    InputEngine["Phase 6.2 InputEngine"] --> DetectInterrupt["Detect Physical User Mouse/Keyboard Activity"]
+    InputEngine --> DetectFailsafe["Detect Top-Left Screen Corner Mouse Position (0,0)"]
+    
+    DetectInterrupt --> PubInterrupt["Publish EventBus: InputOperationInterrupted"]
+    DetectFailsafe --> PubFailsafe["Publish EventBus: FailsafeTriggered"]
+    
+    PubInterrupt --> EngineHandlerInt["WorkflowEngine._on_user_interruption_event()"]
+    PubFailsafe --> EngineHandlerFail["WorkflowEngine._on_failsafe_event()"]
+    
+    EngineHandlerInt --> RelInputs["InputEngine.release_all_inputs()"]
+    EngineHandlerFail --> RelInputs
+    
+    RelInputs --> TransitionInt["Set Active Workflow State: INTERRUPTED"]
+    RelInputs --> TransitionFail["Set Active Workflow State: ABORTED"]
+    
+    TransitionInt --> StopLoop["Stop Scheduling Subsequent Workflow Steps"]
+    TransitionFail --> StopLoop
+    
+    StopLoop --> PubFinish["Publish WorkflowInterruptedEvent / WorkflowAbortedEvent"]
+```
+
+### Diagram 5 — Workflow Execution Modes & Single LIVE Resource Locking
+```mermaid
+flowchart TD
+    ExecReq["WorkflowManager.execute_plan(plan)"] --> ModeEval{"Plan Execution Mode?"}
+    
+    ModeEval -->|DRY_RUN| DryRunProc["Validate Plan Structure & Action Registration -> Zero Execution"]
+    ModeEval -->|SIMULATE| SimProc["Validate Plan -> Execute Mock Action Handlers & Verifiers"]
+    
+    ModeEval -->|LIVE| LiveProc["Check Single LIVE Workflow Concurrency Lock"]
+    
+    LiveProc --> LockCheck{"Is Active LIVE Workflow ID Set?"}
+    LockCheck -->|Yes| LockErr["Raise ResourceBusyError (RESOURCE_BUSY)"]
+    LockCheck -->|No| SetLock["Set active_live_workflow_id = plan.workflow_id"]
+    
+    SetLock --> LiveExec["Execute Physical Actions on Windows OS"]
+    LiveExec --> ReleaseLock["Finally: Reset active_live_workflow_id = None"]
+```
+
+### Diagram 6 — Pre-flight Plan Validator & Security Boundaries
+```mermaid
+flowchart TD
+    PlanIn["WorkflowPlan Specification"] --> ValCheck["WorkflowValidator.validate_plan(plan)"]
+    
+    ValCheck --> CheckEmpty{"steps is Non-Empty?"}
+    CheckEmpty -->|No| ErrEmpty["Raise WorkflowInvalidError"]
+    
+    CheckEmpty -->|Yes| CheckMaxSteps{"len(steps) <= max_steps (50)?"}
+    CheckMaxSteps -->|No| ErrMaxSteps["Raise WorkflowInvalidError"]
+    
+    CheckMaxSteps -->|Yes| CheckOrders{"Step Orders Unique & Ascending?"}
+    CheckOrders -->|No| ErrOrders["Raise WorkflowInvalidError"]
+    
+    CheckOrders -->|Yes| CheckActionReg{"ActionType Handler Registered?"}
+    CheckActionReg -->|No| ErrAction["Raise WorkflowInvalidError"]
+    
+    CheckActionReg -->|Yes| CheckVerifierReg{"VerificationType Evaluator Registered?"}
+    CheckVerifierReg -->|No| ErrVerifier["Raise WorkflowInvalidError"]
+    
+    CheckVerifierReg -->|Yes| CheckVarSafety{"Check Template Variables Syntax"}
+    CheckVarSafety -->|Invalid / Code Injection| ErrVar["Raise VariableInvalidError (No eval/exec)"]
+    CheckVarSafety -->|Valid| PlanApproved["Pre-flight Check PASSED -> Ready for Execution"]
+```
+
+---
+
+## 7.6 Phase 6.6 Automation Tool Suite & AI Orchestrator Integration Diagrams
+
+### Diagram 1 — End-to-End Execution Pipeline
+```mermaid
+flowchart TD
+    User["User (Voice / Text Request)"] --> Orchestrator["Phase 4 AIOrchestrator"]
+    Orchestrator --> CallEngine["Phase 4 ToolCallingEngine"]
+    CallEngine --> ToolDiscovery["ToolDiscoveryService"]
+    ToolDiscovery --> Registry["Phase 2 ToolRegistry"]
+    Registry --> AuthProvider["AuthorizationProvider"]
+    AuthProvider --> Executor["Phase 2 ToolExecutor"]
+    Executor --> AutoTools["Phase 6.6 Automation Tool Suite (BaseTool Wrappers)"]
+    AutoTools --> WorkflowEngine["Phase 6.5 WorkflowEngine"]
+    AutoTools --> Services6164["Phases 6.1-6.4 Automation Services"]
+    WorkflowEngine --> WindowsOS["Windows OS / Win32 / UIA"]
+    Services6164 --> WindowsOS
+```
+
+### Diagram 2 — Automation Tool Suite Taxonomy
+```mermaid
+flowchart TD
+    Subsystem["Phase 6.6 Automation Tool Suite"] --> UIA["UIA Tools (uia.*)"]
+    Subsystem --> Input["Input Tools (input.*)"]
+    Subsystem --> Window["Window Tools (window.*)"]
+    Subsystem --> Screen["Screen Tools (screen.*)"]
+    Subsystem --> Clipboard["Clipboard Tools (clipboard.*)"]
+    Subsystem --> App["Application Tools (application.*)"]
+    Subsystem --> Explorer["Explorer Tools (explorer.*)"]
+    Subsystem --> Terminal["Terminal Tools (terminal.*)"]
+    Subsystem --> Workflow["Workflow Tool (workflow.*)"]
+
+    UIA --> UiaList["uia.list_windows"]
+    UIA --> UiaInspect["uia.inspect_window"]
+    UIA --> UiaFind["uia.find_element"]
+
+    Input --> MouseClick["input.mouse_click"]
+    Input --> TypeText["input.type_text"]
+    Input --> PressHotkey["input.press_hotkey"]
+
+    Window --> WinList["window.list_open"]
+    Window --> WinFocus["window.focus"]
+    Window --> WinMax["window.maximize"]
+    Window --> WinSnap["window.snap"]
+
+    Screen --> ScrCap["screen.capture"]
+    Screen --> ScrMon["screen.list_monitors"]
+
+    Clipboard --> CbGet["clipboard.get_content"]
+    Clipboard --> CbSet["clipboard.set_content"]
+
+    App --> AppLaunch["application.launch"]
+    App --> AppAttach["application.attach"]
+    App --> AppStatus["application.status"]
+
+    Explorer --> ExpNav["explorer.navigate"]
+    Explorer --> ExpOpen["explorer.open_item"]
+
+    Terminal --> TermLaunch["terminal.launch"]
+    Terminal --> TermRead["terminal.read_output"]
+
+    Workflow --> WfExec["workflow.execute_sequence"]
+```
+
+### Diagram 3 — Tool Calling & Schema Generation Engine Flow
+```mermaid
+flowchart TD
+    ToolClass["BaseTool Subclass (Pydantic input_schema)"] --> Reg["ToolRegistry.register_tool()"]
+    Reg --> SchemaReg["ToolSchemaRegistry.get_tool_definition()"]
+    SchemaReg --> Gen["_generate_tool_definition()"]
+    Gen --> JsonSchema["Pydantic model_json_schema() Extraction"]
+    JsonSchema --> CanonicalDef["Canonical ToolDefinition (JSON Schema)"]
+    CanonicalDef --> LLMBinding["Phase 4 Model Tool Calling / Function Binding"]
+```
+
+### Diagram 4 — Prompt Injection Defense & Result Isolation Layer
+```mermaid
+flowchart TD
+    ToolExec["Tool Execution Output"] --> Sanitizer["SensitiveDataSanitizer"]
+    Sanitizer --> Masking["Mask Credentials (passwords, tokens, API keys)"]
+    Masking --> Bounder["Output Bounding (character/node limits)"]
+    Bounder --> Tagging["Wrap in <TOOL_RESULT> Untrusted DATA Tag"]
+    Tagging --> ModelContext["Pass Isolated Safe Payload to LLM Context"]
+```
+
+### Diagram 5 — Workflow Execution Tool Architecture
+```mermaid
+flowchart TD
+    ToolInput["WorkflowExecuteSequenceInput (WorkflowPlan)"] --> WfTool["WorkflowExecuteSequenceTool"]
+    WfTool --> Validator["Phase 6.5 WorkflowValidator"]
+    Validator --> Preflight{"Pre-flight Validation Passed?"}
+    Preflight -->|No| Reject["Return Validation Error Result"]
+    Preflight -->|Yes| Engine["Phase 6.5 WorkflowEngine"]
+    Engine --> Execution["Step-by-step Verified Execution Loop"]
+    Execution --> NormResult["Normalize WorkflowResult Payload"]
+```
+
+### Diagram 6 — Telemetry, Metrics & Subsystem Diagnostics
+```mermaid
+flowchart TD
+    ToolEvents["Tool Execution Events"] --> Metrics["AutomationToolMetrics"]
+    Metrics --> Snapshot["get_metrics_snapshot()"]
+    
+    RegistryState["ToolRegistry State"] --> Diag["AutomationToolDiagnostics"]
+    Metrics --> Diag
+    Diag --> Report["get_health_report() -> Status, Platform, Registered Tools, Telemetry"]
+```
+
+---
+
+## 7.7 Phase 6.7 Safety, Fail-Safe Guardrails, Privacy & Comprehensive Diagnostics Diagrams
+
+### Diagram 1 — Final Automation Security Architecture
+```mermaid
+flowchart TD
+    User["User (Voice / Text Request)"] --> Orchestrator["Phase 4 AIOrchestrator"]
+    Orchestrator --> CallEngine["Phase 4 ToolCallingEngine"]
+    CallEngine --> ToolDiscovery["ToolDiscoveryService"]
+    ToolDiscovery --> Registry["Phase 2 ToolRegistry"]
+    Registry --> SafetyPreflight["Phase 6.7 Safety Preflight (Analyzer & Policy)"]
+    
+    SafetyPreflight --> PreCheck{"Preflight Decision?"}
+    PreCheck -->|DENY / LOCKDOWN| Blocked["Reject Execution (Return Safety Evaluation)"]
+    PreCheck -->|REQUIRE_CONFIRMATION| ConfFlow["AutomationConfirmationManager (Wait for User)"]
+    ConfFlow --> ConfCheck{"User Confirmed?"}
+    ConfCheck -->|No / Expired| ConfDenied["Cancel & Audit Event"]
+    ConfCheck -->|Yes| AuthProvider
+    
+    PreCheck -->|ALLOW| AuthProvider["Phase 2 AuthorizationProvider"]
+    AuthProvider --> Executor["Phase 2 ToolExecutor"]
+    Executor --> AutoTools["Phase 6.6 Automation Tools"]
+    AutoTools --> WorkflowEngine["Phase 6.5 WorkflowEngine / 6.1-6.4 Services"]
+    WorkflowEngine --> WindowsOS["Windows OS / Win32 / UIA"]
+    AutoTools --> Postflight["Phase 6.7 Safety Postflight & Audit Log"]
+```
+
+### Diagram 2 — User Confirmation Lifecycle & Replay Protection
+```mermaid
+flowchart TD
+    Req["Automation Request (HIGH/CRITICAL Risk)"] --> GenFP["Generate SHA-256 Action Fingerprint"]
+    GenFP --> CreateReq["Create AutomationConfirmationRequest (PENDING)"]
+    CreateReq --> UserPrompt["Prompt User via Trusted UI / Voice"]
+    
+    UserPrompt --> UserAction{"User Choice?"}
+    UserAction -->|Explicit Yes| CheckReplay{"Is Fingerprint in Used Set?"}
+    CheckReplay -->|Yes / Replay Attack| ReplayBlock["Status = DENIED (Replay Blocked)"]
+    CheckReplay -->|No| Accept["Status = CONFIRMED -> Add FP to Used Set -> Execute"]
+    
+    UserAction -->|Explicit No / Stop| Deny["Status = DENIED -> Halt Execution"]
+    UserAction -->|Timeout 30s| Expire["Status = EXPIRED -> Invalidate Request"]
+```
+
+### Diagram 3 — Human Override & Emergency Interruption Flow
+```mermaid
+flowchart TD
+    Running["Automation Active / Input Execution"] --> InterruptSource{"Interruption Trigger Event?"}
+    
+    InterruptSource -->|Physical Mouse/Keyboard Activity| InterruptionMonitor["Phase 6.2 InterruptionMonitor"]
+    InterruptSource -->|Mouse in Top-Left Corner| FailsafeCorner["Phase 6.2 Top-Left Failsafe"]
+    InterruptSource -->|User Says 'Stop' / Emergency UI| KillSwitchTrigger["Phase 6.7 AutomationKillSwitch"]
+    
+    InterruptionMonitor --> SafetyMgr["AutomationSafetyManager.handle_user_interruption()"]
+    FailsafeCorner --> SafetyMgrF["AutomationSafetyManager.handle_failsafe_aborted()"]
+    KillSwitchTrigger --> SafetyMgrK["AutomationSafetyManager.trigger_kill_switch()"]
+    
+    SafetyMgr --> Yield["Release Physical Inputs -> Cancel Active Workflows -> Invalidate Confirmations -> State = INTERRUPTED"]
+    SafetyMgrF --> YieldF["Release Physical Inputs -> Cancel Workflows -> NO RETRY -> State = FAILSAFE_ABORTED"]
+    SafetyMgrK --> YieldK["Release Physical Inputs -> Cancel Workflows -> Block New Requests -> State = KILL_SWITCHED"]
+```
+
+### Diagram 4 — Safety Failure & Fail-Safe Dependency Handling
+```mermaid
+flowchart TD
+    SubsysInit["Automation Subsystem Initialization"] --> SafetyCheck{"Is Safety Manager & Diagnostics Available?"}
+    
+    SafetyCheck -->|Yes| NormalOps["Normal Governed Automation (READY)"]
+    SafetyCheck -->|No / Exception| SafeFailure["Fail-Safe Error Recovery Protocol"]
+    
+    SafeFailure --> ModeEval{"lockdown_on_failure Configured?"}
+    ModeEval -->|Yes| TransitionLockdown["Transition to LOCKDOWN Mode -> Block All Automation"]
+    ModeEval -->|No| TransitionDegraded["Transition to DEGRADED / AUTOMATION_DISABLED Mode"]
+    
+    TransitionLockdown --> RejectAll["Reject Tool Execution Requests (No Fail-Open)"]
+    TransitionDegraded --> RejectAll
+```
+
+### Diagram 5 — Privacy Boundary & Secret Masking Layer
+```mermaid
+flowchart TD
+    RawData["Raw Desktop Data (Clipboard, Terminal Output, UI Text)"] --> Bounder["Output Bounding (max chars / max nodes)"]
+    Bounder --> Sanitizer["SensitiveDataSanitizer (Regex Secret Pattern Matching)"]
+    Sanitizer --> MaskedData["Mask Credentials (passwords, tokens, API keys)"]
+    MaskedData --> UntrustedTagging["Wrap in <TOOL_RESULT> Untrusted DATA Tag"]
+    UntrustedTagging --> SafeContext["Pass Safe Payload to LLM Context / Non-sensitive Audit Log"]
+```
+
+### Diagram 6 — Complete Phase 6 Architecture
+```mermaid
+flowchart TD
+    GovernanceLayer["Phase 6.7 Safety, Guardrails & Comprehensive Diagnostics Governance Layer"]
+    
+    subgraph ComputerAutomation["Phase 6 Advanced Computer Automation Engine"]
+        P61["6.1 UI Automation Foundation (UIA, WindowResolver, ElementFinder)"]
+        P62["6.2 Input Control Engine (InputEngine, HumanCurve, Failsafe)"]
+        P63["6.3 Desktop Control (DesktopController, Clipboard, Monitor)"]
+        P64["6.4 Application Adapters (AppManager, Explorer, Terminal)"]
+        P65["6.5 Workflow Engine (WorkflowEngine, StepVerifier, Recovery)"]
+        P66["6.6 AI Automation Tools (BaseTool Wrappers, ToolCallingEngine)"]
+    end
+    
+    GovernanceLayer -. Cross-Cutting Governance .-> P61
+    GovernanceLayer -. Cross-Cutting Governance .-> P62
+    GovernanceLayer -. Cross-Cutting Governance .-> P63
+    GovernanceLayer -. Cross-Cutting Governance .-> P64
+    GovernanceLayer -. Cross-Cutting Governance .-> P65
+    GovernanceLayer -. Cross-Cutting Governance .-> P66
 ```
 
 ---
